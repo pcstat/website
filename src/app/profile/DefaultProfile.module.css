@@ -1,0 +1,448 @@
+.pageContainer {
+  display: block;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0;
+  transform: translateY(-50%);
+  text-decoration: none;
+  color: var(--ac);
+  font-size: 1rem;
+  font-family: var(--fm);
+  transition: color 0.2s, transform 0.2s;
+  z-index: 10;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: var(--ac);
+  transform: scale(1.1);
+}
+
+
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+
+.mobileSocialLinks {
+  display: none;
+}
+
+.desktopSocialLinks {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.socialLink {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--b);
+  color: var(--ac);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--fm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+
+.socialLink:hover {
+  border-color: var(--b2);
+  background: var(--s2);
+}
+
+.profileSection {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 4rem;
+  margin-bottom: 2rem;
+  border-top: 1px solid var(--b);
+  padding-top: 4rem;
+}
+
+.profileSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.avatarCircle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--ac);
+  margin: 0 auto;
+}
+
+.memberPhoto {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarName {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--txt);
+}
+
+.avatarRole {
+  font-family: var(--fm);
+  font-size: 0.8rem;
+  color: var(--ac);
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.memberDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--mut);
+  font-family: var(--fm);
+  border-top: 1px solid var(--b);
+  padding-top: 1.5rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detailRow span {
+  text-align: center;
+  flex: 1;
+}
+
+.detailValue {
+  color: var(--txt);
+}
+
+.profileMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  justify-content: center;
+}
+
+.profileBio {
+  display: flex;
+  gap: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--mut);
+  font-family: var(--fm);
+}
+
+.profileBioQuote {
+  width: 4px;
+  background-color: var(--ac);
+  flex-shrink: 0;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+}
+
+.focusHeader {
+  font-family: var(--fm);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ac);
+  margin-bottom: 1rem;
+}
+
+.focusTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.focusTag {
+  padding: 0.3rem 0.8rem;
+  border-radius: 2px;
+  background: var(--surface);
+  border: 1px solid var(--b);
+  font-size: 0.7rem;
+  font-family: var(--fm);
+  color: var(--mut);
+}
+
+.workSection {
+  margin-bottom: 6rem;
+  border-top: 1px solid var(--b);
+  padding-top: 4rem;
+}
+
+.workTitle {
+  font-family: var(--fh);
+  font-size: 2.2rem;
+  margin-bottom: 3rem;
+  border-left: 4px solid var(--ac);
+  padding-left: 1rem;
+}
+
+.workTitleAccent {
+  color: var(--ac);
+}
+
+.workList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.portfolioCard {
+  display: grid;
+  gap: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--b);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.workItemOdd {
+  grid-template-columns: 200px 1fr;
+}
+
+.workItemEven {
+  grid-template-columns: 1fr 200px;
+}
+
+.workItemVisual {
+  background: var(--s2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 100px;
+}
+
+.workItemNumber {
+  font-family: var(--fh);
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--ac);
+  opacity: 0.6;
+}
+
+.workItemContent {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.workItemLabel {
+  font-size: 0.6rem;
+  color: var(--ac);
+  font-family: var(--fm);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+
+.workItemHeading {
+  font-size: 1.4rem;
+  font-family: var(--fh);
+  margin-bottom: 0.75rem;
+  color: var(--txt);
+}
+
+.workItemDesc {
+  font-size: 0.9rem;
+  color: var(--mut);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.workItemTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.workItemTag {
+  font-size: 0.6rem;
+  color: var(--mut);
+  border: 1px solid var(--b);
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  font-family: var(--fm);
+}
+
+.workItemFooter {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.workItemYear {
+  font-size: 0.7rem;
+  color: var(--mut);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--fm);
+}
+
+.publicationsSection {
+  margin-bottom: 6rem;
+  border-top: 1px solid var(--b);
+  padding-top: 4rem;
+}
+
+.publicationsTitle {
+  font-family: var(--fh);
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  border-left: 4px solid var(--ac);
+  padding-left: 1rem;
+}
+
+.achievementsSection {
+  margin-bottom: 6rem;
+  border-top: 1px solid var(--b);
+  padding-top: 4rem;
+}
+
+.achievementsTitle {
+  font-family: var(--fh);
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  border-left: 4px solid var(--ac);
+  padding-left: 1rem;
+}
+
+.achievementsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.achievementCard {
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--b);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.achievementCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.achievementCardTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.achievementCardTitleText {
+  font-weight: 700;
+  color: var(--txt);
+  font-size: 1.1rem;
+}
+
+.achievementYear {
+  font-size: 0.7rem;
+  color: var(--mut);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--fm);
+}
+
+.achievementDetails {
+  font-size: 0.9rem;
+  color: var(--mut);
+  line-height: 1.5;
+}
+
+.achievementCategory {
+  font-size: 0.6rem;
+  color: var(--ac);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  font-family: var(--fm);
+  margin-top: auto;
+}
+
+.backLink {
+  text-align: center;
+  display: block;
+  color: var(--mut);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-family: var(--fm);
+  margin-top: 4rem;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: var(--ac);
+}
+
+.cvCallToAction {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+  margin-top: 2rem;
+  border-top: 1px solid var(--b);
+}
+
+@media (max-width: 650px) {
+  .profileSection {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-top: 2rem;
+  }
+
+  .workItemOdd,
+  .workItemEven {
+    grid-template-columns: 1fr;
+  }
+
+  .workItemVisual {
+    order: -1;
+    height: 100px !important;
+  }
+
+  .mobileSocialLinks {
+    display: flex;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .desktopSocialLinks {
+    display: none;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "executives": "https://programming-club-demo-data.pages.dev/database/executives.json",
+  "projects": "https://programming-club-demo-data.pages.dev/database/projects.json",
+  "events": "https://programming-club-demo-data.pages.dev/database/events.json",
+  "courses": "https://programming-club-demo-data.pages.dev/database/courses.json",
+  "achievements": "https://programming-club-demo-data.pages.dev/database/achievements.json",
+  "certificates": "resources/certificates/data/certificates.json",
+  "cloudflare": "https://programming-club-demo-data.pages.dev/database/",
+  "github": "https://raw.githubusercontent.com/Test-12345test/programming-club-demo-data/refs/heads/main/database/"
+}

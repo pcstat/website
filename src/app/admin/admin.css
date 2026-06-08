@@ -35,7 +35,7 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  overflow: hidden;
+  overflow-x: auto;
   font-family: var(--fm);
 }
 
@@ -215,7 +215,7 @@ body::before {
   display: block;
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   height: 100vh;
   transition: margin-left .3s ease;
   background: var(--bg);
@@ -614,7 +614,7 @@ body::before {
     overflow-y: auto !important;
     height: auto !important;
     width: 100% !important;
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
   }
   .editor-panel {
     overflow-y: visible !important;

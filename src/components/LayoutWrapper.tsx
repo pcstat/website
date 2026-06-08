@@ -74,6 +74,11 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
     // Enable smooth scrolling after hydration
     document.documentElement.style.scrollBehavior = 'smooth';
 
+    // Default sidebar to collapsed for profile and CV pages
+    if (pathname.startsWith('/profile') || pathname.startsWith('/cv')) {
+      setSidebarCollapsed(true);
+    }
+
     const handleResize = () => {
       const isMobileView = window.innerWidth <= 1000 || window.innerHeight < 500 || (window.innerWidth / window.innerHeight) <= 1;
       if (!isMobileView) {
@@ -89,6 +94,12 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    if (pathname.startsWith('/profile') || pathname.startsWith('/cv')) {
+      setSidebarCollapsed(true);
+    }
+  }, [pathname]);
 
   const handleSidebarToggle = () => {
     const nextState = !sidebarCollapsed;
@@ -129,7 +140,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   };
 
   const isAdmin = pathname.startsWith('/admin');
-  const isFullscreen = pathname?.startsWith('/profile') || pathname?.startsWith('/cv') || false;
+  const isFullscreen = false;
 
   if (isAdmin) {
     return <>{children}</>;

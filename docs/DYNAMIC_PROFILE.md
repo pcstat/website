@@ -114,8 +114,8 @@ The dynamic profile JSON is completely self-contained. It does not reference `pr
 
 ## 🎨 Layout & Design Integration
 
-1. **Full-Viewport Canvas**: When `DynamicProfile` mounts, it utilizes the `LayoutContext` to trigger fullscreen mode. This hides the club's standard desktop sidebar navigation and background glows.
-2. **Global Top Navigation**: Features the site's global mobile top navigation bar (which is forced to be visible in fullscreen mode). This provides a consistent unified top bar containing the club logo, theme toggle switch, and hamburger menu.
+1. **Standard Sidebar Layout**: The Dynamic Profile is integrated into the site's standard layout. To maximize focus on the content, the sidebar is collapsed by default upon navigation to a profile page, though users can manually expand it.
+2. **Global Top Navigation**: Features the site's global top navigation bar. This provides a consistent unified top bar containing the club logo, theme toggle switch, and hamburger menu.
 3. **Typography & Brand Style**: Inherits the club's brand typography:
    * **Syne** (`--fh`) for large, magazine-cover typographic headers.
    * **SpaceMono** (`--fm`) for monospaced numbers, tag labels, experience timeline, and body copy.
@@ -130,7 +130,7 @@ The dynamic profile JSON is completely self-contained. It does not reference `pr
 ## 🏛 Code Architecture
 
 * **Orchestrator ([page.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/app/profile/page.tsx))**: Decides which profile view to mount. It reads the member database first, checks for `profile_link`, and calls `clientLoadProfile` in a `try/catch` block.
-* **Layout Component ([LayoutWrapper.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/components/LayoutWrapper.tsx))**: Computes the `isFullscreen` layout mode directly from the current URL pathname (e.g. starting with `/profile` or `/cv`). This synchronous evaluation prevents the sidebar from flashing during client-side navigation. When active, it hides the desktop sidebar navigation and forces the global top navigation to appear.
+* **Layout Component ([LayoutWrapper.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/components/LayoutWrapper.tsx))**: Manages the shared navigation structure. For `/profile` and `/cv` routes, it ensures the sidebar is collapsed by default to provide a more focused viewing experience while maintaining access to global navigation.
 * **Fallback Component ([DefaultProfile.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/app/profile/DefaultProfile.tsx))**: Contains the original, standard layout logic for club profiles.
 
 ## 📱 Mobile Timeline Fix

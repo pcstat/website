@@ -177,6 +177,8 @@ export interface ProfileData {
   photo?: string;
   bio?: string;
   location?: string;
+  email?: string;
+  github?: string;
   session?: string;
   socials?: SocialLink[];
   stats?: ProfileStat[];

@@ -7,7 +7,7 @@
   font-family: var(--fm);
   line-height: 1.6;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: auto;
   padding-bottom: 8rem;
   padding-top: 5rem; /* Space for fixed navbar */
 }
@@ -27,6 +27,7 @@
   backdrop-filter: blur(12px);
   z-index: 100;
   transition: background-color 0.3s;
+  overflow: visible;
 }
 
 :global([data-theme="light"]) .topBar {
@@ -427,7 +428,7 @@
 .timelineCard {
   background-color: var(--surface);
   border: 1px solid var(--b);
-  border-radius: var(--rad);
+  border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -539,6 +540,7 @@
 .skillCategoryCard {
   background-color: var(--surface);
   border: 1px solid var(--b);
+  border-radius: 16px;
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
@@ -622,6 +624,7 @@
 .projectCard {
   background-color: var(--surface);
   border: 1px solid var(--b);
+  border-radius: 16px;
   padding: 2.5rem;
   display: flex;
   flex-direction: column;
@@ -742,6 +745,7 @@
 .pubCard {
   background-color: var(--surface);
   border: 1px solid var(--b);
+  border-radius: 16px;
   padding: 2.5rem;
   transition: all 0.3s;
 }
@@ -780,6 +784,7 @@
 .achievementCard {
   background-color: var(--surface);
   border: 1px solid var(--b);
+  border-radius: 16px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -875,7 +880,19 @@
   .heroSection {
     grid-template-columns: 1fr;
     gap: 3rem;
-    padding: 4rem 0;
+    padding: 2rem 0;
+  }
+  .fullscreenContainer {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+  .aboutSection,
+  .skillsSection,
+  .projectsSection,
+  .publicationsSection,
+  .achievementsSection,
+  .cvCtaSection {
+    padding: 3rem 0;
   }
   
   .heroRight {
@@ -914,18 +931,6 @@
 
   .contentWrapper {
     padding: 0 1.5rem;
-  }
-
-  .heroSection {
-    padding: 3rem 0;
-  }
-
-  .aboutSection,
-  .skillsSection,
-  .projectsSection,
-  .publicationsSection,
-  .achievementsSection {
-    padding: 4rem 0;
   }
 
   .statsGrid {

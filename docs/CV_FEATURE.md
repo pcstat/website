@@ -203,7 +203,7 @@ The core professional record. Supports nested bullets to describe project detail
 
 ## 🎨 Navigation & UI Integration
 
-To keep the academic record presentation clean and distraction-free:
-1. **Fullscreen Viewport**: The CV page utilizes the `LayoutWrapper`'s synchronous pathname checking to trigger fullscreen mode instantly. This eliminates sidebar flashing on navigation, hides the default desktop sidebar navigation, and removes background glows to provide a clean viewport.
-2. **Global Top Navigation**: Instead of a custom header, it seamlessly integrates with the site's global mobile top navigation bar (which is forced to be visible in fullscreen mode). This provides a consistent unified top bar containing the club logo, theme toggle switch, and a hamburger menu.
+To keep the academic record presentation clean and professional:
+1. **Focused Layout**: The CV page is integrated into the site's standard layout. To maximize focus on the record, the sidebar is collapsed by default upon navigation to a CV page, though users can manually expand it.
+2. **Global Top Navigation**: Seamlessly integrates with the site's global top navigation bar. This provides a consistent unified top bar containing the club logo, theme toggle switch, and a hamburger menu.
 3. **Bottom Profile Redirection**: The CV document ends with an accent-colored **"View Profile ↗"** button that takes the visitor directly back to the student's dynamic or default profile view (`/profile?id=<student_id>`). This button incorporates the site's signature card hover effects (lifts by `-3px`, top accent line expansion, and background highlighting).

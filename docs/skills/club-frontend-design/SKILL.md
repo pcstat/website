@@ -307,6 +307,13 @@ For terminal-like interfaces:
 
 ## 📱 Responsive Design System
 
+### General Layout Handling
+
+To prevent content clipping on small screens while maintaining fixed elements:
+
+- Use `overflow-x: auto` on the `body` or main container to allow users to scroll horizontally if content exceeds the viewport.
+- Ensure fixed navigation bars have `overflow: visible` to prevent clipping of dropdowns or interactive elements.
+
 ### Breakpoint Values
 
 ```css
@@ -338,6 +345,7 @@ For terminal-like interfaces:
   
   .tn {
     display: flex; /* Show mobile top nav */
+    overflow: visible;
   }
   
   .ct {

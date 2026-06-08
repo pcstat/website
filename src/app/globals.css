@@ -110,7 +110,7 @@ body {
   background: var(--bg);
   color: var(--txt);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
 }
 
@@ -487,7 +487,7 @@ ul {
   align-items: center;
   justify-content: space-between;
   padding: 0 1.25rem;
-  overflow: hidden;
+  overflow: visible;
   touch-action: none;
   overscroll-behavior: none;
 }
@@ -2203,16 +2203,19 @@ ul {
     max-width: 100% !important;
     height: auto !important;
   }
-  
-  @media (max-width: 480px) {
-    .stats {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 1rem !important;
-    }
-    .ac2.featured {
-      grid-column: span 1 !important;
-      flex-direction: column !important;
-    }
+}
+
+@media (max-width: 480px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  .ac2.featured {
+    grid-column: span 1 !important;
+    flex-direction: column !important;
+  }
+  .pt {
+    font-weight: 700 !important;
   }
 }
 

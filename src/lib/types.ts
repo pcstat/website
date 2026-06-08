@@ -133,8 +133,10 @@ export interface ProfileSkillGroup {
 
 export interface ProfileTimelineItem {
   role: string;
-  year: string;
-  current?: boolean;
+  start: string;
+  end: string;
+  description?: string;
+  tags?: string[];
 }
 
 export interface ProfileProject {

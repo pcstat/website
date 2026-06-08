@@ -66,7 +66,7 @@ A unified admin interface is provided at `/admin` to edit all data files:
 
 ### Key Components & Logic
 - `src/app/layout.tsx`: Root layout, Metadata, and Theme flash prevention script.
-- `src/components/LayoutWrapper.tsx`: Shared navigation structure. Supports `isFullscreen` toggle via `LayoutContext` to hide menus.
+- `src/components/LayoutWrapper.tsx`: Shared navigation structure. Computes fullscreen mode directly from the URL pathname to avoid sidebar flashes on navigation, hiding the sidebar and forcing the global topnav to appear.
 - `src/context/ThemeContext.tsx`: Theme state and toggle logic.
 - `src/lib/data.ts` & `src/lib/clientData.ts`: Data fetching and universal loading functions.
 - `src/app/profile/page.tsx`: Portfolio view orchestrator (`/profile?id=...`).

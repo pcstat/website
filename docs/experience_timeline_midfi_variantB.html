@@ -1,0 +1,674 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{padding:1.5rem 0;font-family:var(--font-sans)}
+
+.section-pill-row{display:flex;gap:8px;margin-bottom:2rem;flex-wrap:wrap}
+.spill{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 16px;border-radius:100px;
+  border:0.5px solid var(--color-border-secondary);
+  font-size:13px;color:var(--color-text-secondary);
+  cursor:pointer;background:transparent;transition:all .15s;
+  font-family:var(--font-sans);
+}
+.spill:hover{background:var(--color-background-secondary)}
+.spill.active{
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  border-color:var(--color-border-primary);
+  font-weight:500;
+}
+.spill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+.view-toggle{
+  display:flex;gap:0;margin-left:auto;
+  border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);overflow:hidden;
+}
+.vtog{
+  font-size:12px;padding:6px 14px;background:transparent;
+  border:none;cursor:pointer;color:var(--color-text-secondary);
+  font-family:var(--font-sans);display:flex;align-items:center;gap:5px;
+  border-right:0.5px solid var(--color-border-secondary);transition:all .15s;
+}
+.vtog:last-child{border-right:none}
+.vtog.active{background:var(--color-background-secondary);color:var(--color-text-primary)}
+
+.top-row{display:flex;align-items:center;gap:12px;margin-bottom:1.75rem;flex-wrap:wrap}
+
+.section-heading{
+  font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--color-text-tertiary);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:8px;
+}
+.section-heading::after{
+  content:'';flex:1;height:0.5px;background:var(--color-border-tertiary);
+}
+
+/* ── DESKTOP ALT TIMELINE ── */
+.alt-wrap{position:relative;display:none}
+.alt-wrap.show{display:block}
+.alt-spine{
+  position:absolute;left:50%;top:0;bottom:0;
+  width:1px;background:var(--color-border-secondary);
+  transform:translateX(-50%);
+}
+.alt-row{
+  display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);
+  margin-bottom:28px;align-items:start;
+}
+.alt-center-col{display:flex;flex-direction:column;align-items:center;padding-top:18px;position:relative;z-index:2}
+.alt-node{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--color-background-primary);
+  border:1.5px solid var(--color-border-primary);
+  flex-shrink:0;
+}
+.alt-node.current{background:#7F77DD;border-color:#7F77DD}
+.alt-node.edu{background:#1D9E75;border-color:#1D9E75}
+.alt-node.talk{background:#BA7517;border-color:#BA7517}
+
+.alt-card{
+  background:var(--color-background-primary);
+  border:0.5px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);
+  padding:14px 16px;
+  transition:border-color .15s;
+}
+.alt-card:hover{border-color:var(--color-border-primary)}
+
+.alt-left-slot{padding-right:16px;text-align:right}
+.alt-right-slot{padding-left:16px}
+.alt-empty{}
+
+.card-eyebrow{
+  font-size:11px;color:var(--color-text-tertiary);
+  font-weight:500;letter-spacing:.04em;margin-bottom:5px;
+}
+.card-role{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px;line-height:1.3}
+.card-company{font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.card-company-r{font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:5px;justify-content:flex-end}
+.card-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap}
+.card-tags-r{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.tag{
+  font-size:11px;padding:2px 8px;border-radius:100px;
+  border:0.5px solid var(--color-border-tertiary);
+  color:var(--color-text-secondary);background:var(--color-background-secondary);
+}
+.tag-work{background:#EEEDFE;color:#534AB7;border-color:#AFA9EC}
+.tag-edu{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
+.tag-talk{background:#FAEEDA;color:#854F0B;border-color:#EF9F27}
+
+.card-link{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;color:var(--color-text-secondary);margin-top:6px;
+  text-decoration:none;border-bottom:0.5px solid var(--color-border-tertiary);
+  padding-bottom:1px;
+}
+
+.year-badge{
+  font-size:11px;font-weight:500;
+  color:var(--color-text-tertiary);margin-bottom:6px;
+}
+
+/* connector lines */
+.alt-connector-l{
+  flex:1;height:0.5px;background:var(--color-border-tertiary);
+  width:100%;margin-top:5px;
+}
+.alt-connector-r{
+  flex:1;height:0.5px;background:var(--color-border-tertiary);
+  width:100%;margin-top:5px;
+}
+
+/* ── MOBILE VIEW ── */
+.mob-wrap{display:none}
+.mob-wrap.show{display:block}
+.mob-device{
+  max-width:320px;margin:0 auto;
+  background:var(--color-background-secondary);
+  border:0.5px solid var(--color-border-secondary);
+  border-radius:24px;padding:20px 16px;
+}
+.mob-status-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:20px;padding:0 4px;
+}
+.mob-time{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.mob-icons{display:flex;gap:6px;color:var(--color-text-secondary)}
+
+.mob-page-title{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.mob-page-sub{font-size:12px;color:var(--color-text-tertiary);margin-bottom:16px}
+
+.mob-tabs{display:flex;gap:6px;margin-bottom:20px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.mob-tabs::-webkit-scrollbar{display:none}
+.mob-tab{
+  font-size:12px;padding:5px 12px;border-radius:100px;white-space:nowrap;
+  border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);
+  background:transparent;cursor:pointer;flex-shrink:0;font-family:var(--font-sans);
+}
+.mob-tab.active{
+  background:var(--color-background-primary);color:var(--color-text-primary);
+  border-color:var(--color-border-primary);font-weight:500;
+}
+
+.mob-timeline{position:relative;padding-left:22px}
+.mob-spine{
+  position:absolute;left:5px;top:6px;bottom:0;
+  width:1px;background:var(--color-border-secondary);
+}
+.mob-item{position:relative;margin-bottom:16px}
+.mob-node{
+  position:absolute;left:-18px;top:16px;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--color-background-primary);
+  border:1.5px solid var(--color-border-secondary);
+}
+.mob-node.current{background:#7F77DD;border-color:#7F77DD}
+.mob-card{
+  background:var(--color-background-primary);
+  border:0.5px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);
+  padding:12px 13px;
+}
+.mob-eyebrow{font-size:10px;color:var(--color-text-tertiary);font-weight:500;letter-spacing:.04em;margin-bottom:3px}
+.mob-role{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.mob-co{font-size:11px;color:var(--color-text-secondary);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.mob-tags{display:flex;gap:4px;flex-wrap:wrap}
+.mob-tag{
+  font-size:10px;padding:2px 7px;border-radius:100px;
+  background:var(--color-background-secondary);color:var(--color-text-secondary);
+  border:0.5px solid var(--color-border-tertiary);
+}
+.mob-tag-work{background:#EEEDFE;color:#534AB7;border-color:#AFA9EC}
+
+.mob-desc{font-size:11px;color:var(--color-text-secondary);line-height:1.55;margin:6px 0 8px}
+
+.mob-bottom-nav{
+  display:flex;justify-content:space-around;align-items:center;
+  margin-top:20px;padding-top:12px;
+  border-top:0.5px solid var(--color-border-tertiary);
+}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px}
+.mob-nav-item span{font-size:10px;color:var(--color-text-tertiary)}
+.mob-nav-item.active i,.mob-nav-item.active span{color:var(--color-text-primary)}
+</style>
+
+<div class="root">
+  <h2 class="sr-only">Experience timeline — mid-fidelity mockup, variant B (alternating), desktop and mobile</h2>
+
+  <div class="top-row">
+    <div class="section-pill-row" style="margin-bottom:0;flex:1">
+      <button class="spill active" onclick="switchSection('work',this)">
+        <span class="spill-dot" style="background:#7F77DD"></span>Work
+      </button>
+      <button class="spill" onclick="switchSection('edu',this)">
+        <span class="spill-dot" style="background:#1D9E75"></span>Education &amp; projects
+      </button>
+      <button class="spill" onclick="switchSection('talk',this)">
+        <span class="spill-dot" style="background:#BA7517"></span>Talks &amp; blogs
+      </button>
+    </div>
+    <div class="view-toggle">
+      <button class="vtog active" id="btn-desktop" onclick="switchView('desktop')">
+        <i class="ti ti-device-desktop" aria-hidden="true"></i>Desktop
+      </button>
+      <button class="vtog" id="btn-mobile" onclick="switchView('mobile')">
+        <i class="ti ti-device-mobile" aria-hidden="true"></i>Mobile
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ DESKTOP ═══ -->
+  <div class="alt-wrap show" id="desktop-view">
+
+    <!-- WORK SECTION -->
+    <div id="sec-work">
+      <div class="section-heading">Work experience</div>
+      <div class="alt-wrap show" style="position:relative">
+        <div class="alt-spine"></div>
+
+        <div class="alt-row">
+          <div class="alt-left-slot">
+            <div class="year-badge">2023 – Present</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Current role</div>
+              <div class="card-role">Senior ML Engineer</div>
+              <div class="card-company-r"><i class="ti ti-building" aria-hidden="true" style="font-size:13px"></i>Acme AI · Full-time</div>
+              <div class="card-desc" style="text-align:right">Leading LLM infrastructure and agentic pipeline design. Built multi-model routing system reducing inference cost by 40%.</div>
+              <div class="card-tags-r">
+                <span class="tag tag-work">LLMs</span>
+                <span class="tag tag-work">MLOps</span>
+                <span class="tag tag-work">Python</span>
+              </div>
+            </div>
+          </div>
+          <div class="alt-center-col">
+            <div class="alt-node current"></div>
+            <div class="alt-connector-l"></div>
+          </div>
+          <div class="alt-empty"></div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-empty"></div>
+          <div class="alt-center-col">
+            <div class="alt-node"></div>
+            <div class="alt-connector-r"></div>
+          </div>
+          <div class="alt-right-slot">
+            <div class="year-badge">2021 – 2023</div>
+            <div class="alt-card">
+              <div class="card-role">ML Engineer</div>
+              <div class="card-company"><i class="ti ti-building" aria-hidden="true" style="font-size:13px"></i>DataCo · Full-time</div>
+              <div class="card-desc">Developed NLP pipelines for document classification at scale. Shipped production models serving 2M+ users.</div>
+              <div class="card-tags">
+                <span class="tag tag-work">PyTorch</span>
+                <span class="tag tag-work">NLP</span>
+                <span class="tag tag-work">FastAPI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-left-slot">
+            <div class="year-badge">2019 – 2021</div>
+            <div class="alt-card">
+              <div class="card-role">Data Scientist</div>
+              <div class="card-company-r"><i class="ti ti-building" aria-hidden="true" style="font-size:13px"></i>FinTech Corp · Full-time</div>
+              <div class="card-desc" style="text-align:right">Built predictive models for credit risk. Reduced false positive rate by 18% using ensemble methods.</div>
+              <div class="card-tags-r">
+                <span class="tag tag-work">XGBoost</span>
+                <span class="tag tag-work">Pandas</span>
+                <span class="tag tag-work">SQL</span>
+              </div>
+            </div>
+          </div>
+          <div class="alt-center-col">
+            <div class="alt-node"></div>
+            <div class="alt-connector-l"></div>
+          </div>
+          <div class="alt-empty"></div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-empty"></div>
+          <div class="alt-center-col">
+            <div class="alt-node"></div>
+          </div>
+          <div class="alt-right-slot">
+            <div class="year-badge">2018 – 2019</div>
+            <div class="alt-card">
+              <div class="card-role">Research Intern</div>
+              <div class="card-company"><i class="ti ti-school" aria-hidden="true" style="font-size:13px"></i>University AI Lab</div>
+              <div class="card-desc">Implemented novel attention mechanisms for sequence-to-sequence tasks under Prof. X.</div>
+              <div class="card-tags">
+                <span class="tag tag-work">Research</span>
+                <span class="tag tag-work">TensorFlow</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDU SECTION -->
+    <div id="sec-edu" style="display:none">
+      <div class="section-heading">Education &amp; projects</div>
+      <div style="position:relative">
+        <div class="alt-spine"></div>
+
+        <div class="alt-row">
+          <div class="alt-left-slot">
+            <div class="year-badge">2016 – 2018</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Degree</div>
+              <div class="card-role">MSc Machine Learning</div>
+              <div class="card-company-r"><i class="ti ti-school" aria-hidden="true" style="font-size:13px"></i>University Name · GPA 3.9</div>
+              <div class="card-desc" style="text-align:right">Thesis: "Efficient attention mechanisms for long-context transformers." Graduated with distinction.</div>
+              <div class="card-tags-r">
+                <span class="tag tag-edu">ML Theory</span>
+                <span class="tag tag-edu">Research</span>
+              </div>
+            </div>
+          </div>
+          <div class="alt-center-col">
+            <div class="alt-node edu"></div>
+            <div class="alt-connector-l"></div>
+          </div>
+          <div class="alt-empty"></div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-empty"></div>
+          <div class="alt-center-col">
+            <div class="alt-node edu"></div>
+            <div class="alt-connector-r"></div>
+          </div>
+          <div class="alt-right-slot">
+            <div class="year-badge">2023</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Open-source project</div>
+              <div class="card-role">Claude Code Hook Suite</div>
+              <div class="card-company"><i class="ti ti-brand-github" aria-hidden="true" style="font-size:13px"></i>github.com/nns · 340 stars</div>
+              <div class="card-desc">Smart read-guard hook with session-scoped state, mtime comparison, TTL eviction. 17-test suite.</div>
+              <div class="card-tags">
+                <span class="tag tag-edu">Python</span>
+                <span class="tag tag-edu">Claude Code</span>
+                <span class="tag tag-edu">OSS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-left-slot">
+            <div class="year-badge">2013 – 2016</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Degree</div>
+              <div class="card-role">BSc Statistics &amp; Computer Science</div>
+              <div class="card-company-r"><i class="ti ti-school" aria-hidden="true" style="font-size:13px"></i>University Name · First class</div>
+              <div class="card-tags-r">
+                <span class="tag tag-edu">Statistics</span>
+                <span class="tag tag-edu">Algorithms</span>
+              </div>
+            </div>
+          </div>
+          <div class="alt-center-col">
+            <div class="alt-node edu"></div>
+          </div>
+          <div class="alt-empty"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TALKS SECTION -->
+    <div id="sec-talk" style="display:none">
+      <div class="section-heading">Talks, workshops &amp; blogs</div>
+      <div style="position:relative">
+        <div class="alt-spine"></div>
+
+        <div class="alt-row">
+          <div class="alt-left-slot">
+            <div class="year-badge">Nov 2024</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Conference talk</div>
+              <div class="card-role">Agentic pipelines at scale: lessons from production</div>
+              <div class="card-company-r"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:13px"></i>NeurIPS 2024 · Workshop track</div>
+              <div class="card-tags-r">
+                <span class="tag tag-talk">Talk</span>
+                <span class="tag tag-talk">Agents</span>
+              </div>
+            </div>
+          </div>
+          <div class="alt-center-col">
+            <div class="alt-node talk"></div>
+            <div class="alt-connector-l"></div>
+          </div>
+          <div class="alt-empty"></div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-empty"></div>
+          <div class="alt-center-col">
+            <div class="alt-node talk"></div>
+            <div class="alt-connector-r"></div>
+          </div>
+          <div class="alt-right-slot">
+            <div class="year-badge">Mar 2024</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Blog post</div>
+              <div class="card-role">Building a 17-test Claude Code hook from scratch</div>
+              <div class="card-company"><i class="ti ti-writing" aria-hidden="true" style="font-size:13px"></i>Medium · 12k reads</div>
+              <div class="card-tags">
+                <span class="tag tag-talk">Blog</span>
+                <span class="tag tag-talk">Tutorial</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alt-row">
+          <div class="alt-left-slot">
+            <div class="year-badge">Sep 2023</div>
+            <div class="alt-card">
+              <div class="card-eyebrow">Workshop</div>
+              <div class="card-role">Prompt engineering masterclass</div>
+              <div class="card-company-r"><i class="ti ti-users" aria-hidden="true" style="font-size:13px"></i>Statistics Programming Club · 80 attendees</div>
+              <div class="card-tags-r">
+                <span class="tag tag-talk">Workshop</span>
+                <span class="tag tag-talk">Education</span>
+              </div>
+            </div>
+          </div>
+          <div class="alt-center-col">
+            <div class="alt-node talk"></div>
+          </div>
+          <div class="alt-empty"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ MOBILE ═══ -->
+  <div class="mob-wrap" id="mobile-view">
+    <div class="mob-device">
+      <div class="mob-status-bar">
+        <span class="mob-time">9:41</span>
+        <div class="mob-icons">
+          <i class="ti ti-signal" aria-hidden="true" style="font-size:14px"></i>
+          <i class="ti ti-wifi" aria-hidden="true" style="font-size:14px"></i>
+          <i class="ti ti-battery" aria-hidden="true" style="font-size:14px"></i>
+        </div>
+      </div>
+
+      <div class="mob-page-title">Experience</div>
+      <div class="mob-page-sub">Journey, projects &amp; ideas</div>
+
+      <div class="mob-tabs" id="mob-tab-row">
+        <button class="mob-tab active" onclick="mobSection('work',this)">Work</button>
+        <button class="mob-tab" onclick="mobSection('edu',this)">Education</button>
+        <button class="mob-tab" onclick="mobSection('talk',this)">Talks &amp; blogs</button>
+      </div>
+
+      <!-- Mobile work -->
+      <div id="mob-work">
+        <div class="mob-timeline">
+          <div class="mob-spine"></div>
+
+          <div class="mob-item">
+            <div class="mob-node current"></div>
+            <div class="mob-card" style="border-left:2px solid #7F77DD;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0">
+              <div class="mob-eyebrow">2023 – Present · Current</div>
+              <div class="mob-role">Senior ML Engineer</div>
+              <div class="mob-co"><i class="ti ti-building" aria-hidden="true" style="font-size:12px"></i>Acme AI</div>
+              <div class="mob-desc">Leading LLM infrastructure and agentic pipeline design.</div>
+              <div class="mob-tags">
+                <span class="mob-tag mob-tag-work">LLMs</span>
+                <span class="mob-tag mob-tag-work">MLOps</span>
+                <span class="mob-tag mob-tag-work">Python</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mob-item">
+            <div class="mob-node"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">2021 – 2023</div>
+              <div class="mob-role">ML Engineer</div>
+              <div class="mob-co"><i class="ti ti-building" aria-hidden="true" style="font-size:12px"></i>DataCo</div>
+              <div class="mob-desc">NLP pipelines for document classification at scale.</div>
+              <div class="mob-tags">
+                <span class="mob-tag mob-tag-work">PyTorch</span>
+                <span class="mob-tag mob-tag-work">NLP</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mob-item">
+            <div class="mob-node"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">2019 – 2021</div>
+              <div class="mob-role">Data Scientist</div>
+              <div class="mob-co"><i class="ti ti-building" aria-hidden="true" style="font-size:12px"></i>FinTech Corp</div>
+              <div class="mob-tags">
+                <span class="mob-tag mob-tag-work">XGBoost</span>
+                <span class="mob-tag mob-tag-work">SQL</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mob-item">
+            <div class="mob-node"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">2018 – 2019</div>
+              <div class="mob-role">Research Intern</div>
+              <div class="mob-co"><i class="ti ti-school" aria-hidden="true" style="font-size:12px"></i>University AI Lab</div>
+              <div class="mob-tags">
+                <span class="mob-tag mob-tag-work">Research</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile edu -->
+      <div id="mob-edu" style="display:none">
+        <div class="mob-timeline">
+          <div class="mob-spine"></div>
+          <div class="mob-item">
+            <div class="mob-node" style="background:#1D9E75;border-color:#1D9E75"></div>
+            <div class="mob-card" style="border-left:2px solid #1D9E75;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0">
+              <div class="mob-eyebrow">2016 – 2018 · Degree</div>
+              <div class="mob-role">MSc Machine Learning</div>
+              <div class="mob-co"><i class="ti ti-school" aria-hidden="true" style="font-size:12px"></i>University Name</div>
+              <div class="mob-desc">Thesis on efficient attention mechanisms. Graduated with distinction.</div>
+              <div class="mob-tags">
+                <span class="mob-tag" style="background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5">ML Theory</span>
+              </div>
+            </div>
+          </div>
+          <div class="mob-item">
+            <div class="mob-node" style="background:#1D9E75;border-color:#1D9E75"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">2023 · Open-source</div>
+              <div class="mob-role">Claude Code Hook Suite</div>
+              <div class="mob-co"><i class="ti ti-brand-github" aria-hidden="true" style="font-size:12px"></i>github.com/nns</div>
+              <div class="mob-tags">
+                <span class="mob-tag" style="background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5">Python</span>
+                <span class="mob-tag" style="background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5">OSS</span>
+              </div>
+            </div>
+          </div>
+          <div class="mob-item">
+            <div class="mob-node" style="background:#1D9E75;border-color:#1D9E75"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">2013 – 2016 · Degree</div>
+              <div class="mob-role">BSc Statistics &amp; CS</div>
+              <div class="mob-co"><i class="ti ti-school" aria-hidden="true" style="font-size:12px"></i>University Name</div>
+              <div class="mob-tags">
+                <span class="mob-tag" style="background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5">Statistics</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile talks -->
+      <div id="mob-talk" style="display:none">
+        <div class="mob-timeline">
+          <div class="mob-spine"></div>
+          <div class="mob-item">
+            <div class="mob-node" style="background:#BA7517;border-color:#BA7517"></div>
+            <div class="mob-card" style="border-left:2px solid #BA7517;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0">
+              <div class="mob-eyebrow">Nov 2024 · Talk</div>
+              <div class="mob-role">Agentic pipelines at scale</div>
+              <div class="mob-co"><i class="ti ti-map-pin" aria-hidden="true" style="font-size:12px"></i>NeurIPS 2024</div>
+              <div class="mob-tags">
+                <span class="mob-tag" style="background:#FAEEDA;color:#854F0B;border-color:#EF9F27">Talk</span>
+                <span class="mob-tag" style="background:#FAEEDA;color:#854F0B;border-color:#EF9F27">Agents</span>
+              </div>
+            </div>
+          </div>
+          <div class="mob-item">
+            <div class="mob-node" style="background:#BA7517;border-color:#BA7517"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">Mar 2024 · Blog</div>
+              <div class="mob-role">Building a 17-test Claude Code hook</div>
+              <div class="mob-co"><i class="ti ti-writing" aria-hidden="true" style="font-size:12px"></i>Medium · 12k reads</div>
+              <div class="mob-tags">
+                <span class="mob-tag" style="background:#FAEEDA;color:#854F0B;border-color:#EF9F27">Blog</span>
+              </div>
+            </div>
+          </div>
+          <div class="mob-item">
+            <div class="mob-node" style="background:#BA7517;border-color:#BA7517"></div>
+            <div class="mob-card">
+              <div class="mob-eyebrow">Sep 2023 · Workshop</div>
+              <div class="mob-role">Prompt engineering masterclass</div>
+              <div class="mob-co"><i class="ti ti-users" aria-hidden="true" style="font-size:12px"></i>Statistics Programming Club</div>
+              <div class="mob-tags">
+                <span class="mob-tag" style="background:#FAEEDA;color:#854F0B;border-color:#EF9F27">Workshop</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mob-bottom-nav">
+        <div class="mob-nav-item">
+          <i class="ti ti-user" aria-hidden="true" style="font-size:18px;color:var(--color-text-tertiary)"></i>
+          <span>About</span>
+        </div>
+        <div class="mob-nav-item active">
+          <i class="ti ti-timeline" aria-hidden="true" style="font-size:18px"></i>
+          <span>Experience</span>
+        </div>
+        <div class="mob-nav-item">
+          <i class="ti ti-folder" aria-hidden="true" style="font-size:18px;color:var(--color-text-tertiary)"></i>
+          <span>Work</span>
+        </div>
+        <div class="mob-nav-item">
+          <i class="ti ti-mail" aria-hidden="true" style="font-size:18px;color:var(--color-text-tertiary)"></i>
+          <span>Contact</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:1.5rem;padding-top:1rem;border-top:0.5px solid var(--color-border-tertiary)">
+    <button onclick="sendPrompt('Scaffold the Next.js + Tailwind component for this alternating timeline with all three sections and Framer Motion animations')">Build in Next.js + Framer Motion ↗</button>
+    <button onclick="sendPrompt('Show me dark mode treatment for this timeline mid-fi design')">Preview dark mode ↗</button>
+    <button onclick="sendPrompt('Design the expanded card state for timeline entries with modal or inline expand')">Design expanded card state ↗</button>
+  </div>
+</div>
+
+<script>
+function switchSection(sec, el) {
+  document.querySelectorAll('.spill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  ['work','edu','talk'].forEach(s => {
+    var el2 = document.getElementById('sec-'+s);
+    if(el2) el2.style.display = s === sec ? 'block' : 'none';
+  });
+}
+
+function switchView(view) {
+  document.getElementById('desktop-view').classList.toggle('show', view === 'desktop');
+  document.getElementById('mobile-view').classList.toggle('show', view === 'mobile');
+  document.getElementById('btn-desktop').classList.toggle('active', view === 'desktop');
+  document.getElementById('btn-mobile').classList.toggle('active', view === 'mobile');
+}
+
+function mobSection(sec, el) {
+  document.querySelectorAll('#mob-tab-row .mob-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  ['work','edu','talk'].forEach(s => {
+    var el2 = document.getElementById('mob-'+s);
+    if(el2) el2.style.display = s === sec ? 'block' : 'none';
+  });
+}
+</script>

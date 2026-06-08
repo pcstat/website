@@ -68,6 +68,8 @@ function ProfileContent() {
           return;
         }
 
+        const currentCommitteeLabel = db.committees.find(c => c.session === db.current_committee)?.label || '';
+
         // Check for dynamic profile link
         if (foundMember.profile_link) {
           try {
@@ -85,8 +87,6 @@ function ProfileContent() {
         }
 
         // Load standard profile data (fallback or default case)
-        const currentCommitteeLabel = db.committees.find(c => c.session === db.current_committee)?.label || '';
-
         // Load Projects
         const projectsData = await clientGetProjects();
         const memberProjects = (projectsData.projects || []).filter(p => p.members.includes(id));

@@ -318,36 +318,150 @@
   color: var(--txt);
 }
 
-.timelineContainer {
+/* Timeline Section */
+.timelineSection {
+  padding: 6rem 0;
+  border-bottom: 1px solid var(--b);
+}
+
+
+.timelineWrapper {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.timelineSpine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--b);
+  transform: translateX(-50%);
+}
+
+.timelineRow {
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  margin-bottom: 3rem;
+  align-items: start;
+}
+
+.timelineSlot {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 }
 
-.timelineItem {
+.leftSlot {
+  text-align: right;
+  padding-right: 2rem;
+}
+
+.rightSlot {
+  text-align: left;
+  padding-left: 2rem;
+}
+
+.emptySlot {
+  visibility: hidden;
+}
+
+.timelineCenter {
   display: flex;
-  gap: 2rem;
-  align-items: baseline;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px dashed var(--b);
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  padding-top: 1.2rem;
 }
 
-.timelineItem:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+.timelineNode {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--bg);
+  border: 2px solid var(--ac);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.currentNode {
+  background-color: var(--ac);
+  box-shadow: 0 0 0 4px var(--acd);
+}
+
+.timelineConnector {
+  flex: 1;
+  width: 1px;
+  background-color: var(--b);
+  margin-top: 0.5rem;
+  height: calc(100% - 12px);
+}
+
+.timelineCardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Right-align content in left slot cards */
+.leftSlot .timelineCardContainer,
+.leftSlot .timelineCard,
+.leftSlot .timelineDescription,
+.leftSlot .timelineTags {
+  text-align: right;
+}
+
+/* Right-align tags within left slot */
+.leftSlot .timelineTags {
+  justify-content: flex-end;
 }
 
 .timelineYear {
   font-family: var(--fm);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--ac);
-  min-width: 100px;
+  color: var(--mut);
+}
+
+.timelineCard {
+  background-color: var(--surface);
+  border: 1px solid var(--b);
+  border-radius: var(--rad);
+  padding: 1.5rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.timelineCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ac);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s ease;
+}
+
+.timelineCard:hover {
+  border-color: var(--b2);
+  background-color: var(--s2);
+  transform: translateY(-3px);
+}
+
+.timelineCard:hover::after {
+  transform: scaleX(1);
 }
 
 .timelineRole {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: var(--txt);
+  line-height: 1.4;
 }
 
 .currentBadge {
@@ -360,6 +474,54 @@
   margin-left: 0.75rem;
   font-family: var(--fm);
   text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.timelineDescription {
+  font-size: 0.9rem;
+  color: var(--mut);
+  line-height: 1.6;
+  margin-top: 0.75rem;
+}
+
+.timelineTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.timelineTag {
+  font-size: 0.7rem;
+  font-family: var(--fm);
+  border: 1px solid var(--b);
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  color: var(--mut);
+}
+
+/* Company information styling */
+.timelineCompany {
+  font-size: 0.9rem;
+  color: var(--mut);
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Right-align company info in left slot */
+.leftSlot .timelineCompany {
+  justify-content: flex-end;
+}
+
+.companyIcon {
+  font-size: 1rem;
+}
+
+.jobType {
+  color: var(--mut);
+  font-size: 0.85rem;
 }
 
 /* Skills Section */
@@ -783,5 +945,141 @@
 
   .featured .projectTitle {
     font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 650px) {
+  /* Mobile timeline container - matches wireframe */
+  .timelineWrapper {
+    padding-left: 22px;
+    position: relative;
+  }
+
+  /* Mobile spine - matches wireframe */
+  .timelineSpine {
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--b);
+    transform: none;
+  }
+
+  /* Mobile timeline row - use relative positioning like wireframe */
+  .timelineRow {
+    position: relative;
+    margin-bottom: 16px; /* Match wireframe */
+    display: block; /* Change from grid to block for mobile */
+    padding-left: 0;
+  }
+
+  /* Hide empty slots on mobile */
+  .emptySlot {
+    display: none;
+  }
+
+  /* Mobile timeline center - absolute positioning like wireframe */
+  .timelineCenter {
+    position: absolute;
+    left: -18px; /* Match wireframe: left: -18px */
+    top: 16px; /* Match wireframe: top: 16px */
+    z-index: 2;
+    padding-top: 0;
+  }
+
+  /* Mobile timeline node - matches wireframe sizing */
+  .timelineNode {
+    width: 9px;
+    height: 9px;
+    border-width: 1.5px;
+  }
+
+  /* Mobile timeline connector - matches wireframe */
+  .timelineConnector {
+    width: 1px;
+    background-color: var(--b);
+    height: calc(100% - 9px); /* Adjust for 9px node */
+    margin: 0.4rem auto 0;
+    flex: none;
+  }
+
+  /* Mobile slots - full width cards */
+  .leftSlot, .rightSlot {
+    display: block;
+    padding-left: 0;
+    text-align: left;
+    width: 100%;
+  }
+
+  .timelineCardContainer {
+    text-align: left;
+  }
+
+  /* Mobile card styling - more compact like wireframe */
+  .timelineCard {
+    width: 100%;
+    margin-left: 0;
+    padding: 12px 13px; /* Match wireframe compact padding */
+  }
+
+  /* Mobile card container - remove flex to match wireframe */
+  .timelineCardContainer {
+    display: block;
+  }
+
+  /* Mobile timeline year - smaller and more compact */
+  .timelineYear {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+
+  /* Mobile card content - smaller fonts */
+  .timelineRole {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  .timelineCompany {
+    font-size: 0.8rem;
+    margin: 2px 0 4px;
+    gap: 4px;
+  }
+
+  .companyIcon {
+    font-size: 0.9rem;
+  }
+
+  .jobType {
+    font-size: 0.75rem;
+  }
+
+  .timelineDescription {
+    font-size: 0.85rem;
+    margin: 6px 0 8px;
+  }
+
+  .timelineTags {
+    gap: 4px;
+  }
+
+  .timelineTag {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  /* Force left alignment on ALL cards in mobile layout */
+  .timelineCard,
+  .timelineCardContainer,
+  .timelineDescription,
+  .timelineTags,
+  .timelineCompany {
+    text-align: left !important;
+  }
+
+  /* Left-align tags and company in mobile */
+  .timelineTags,
+  .timelineCompany {
+    justify-content: flex-start !important;
   }
 }

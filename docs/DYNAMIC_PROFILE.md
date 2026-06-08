@@ -130,5 +130,28 @@ The dynamic profile JSON is completely self-contained. It does not reference `pr
 ## 🏛 Code Architecture
 
 * **Orchestrator ([page.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/app/profile/page.tsx))**: Decides which profile view to mount. It reads the member database first, checks for `profile_link`, and calls `clientLoadProfile` in a `try/catch` block.
-* **Layout Context Provider ([LayoutWrapper.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/components/LayoutWrapper.tsx))**: Tracks the state `isFullscreen`. If `isFullscreen` is active, it hides outer sidebar navigation and resets spacing constraints on the `<main>` tag, preserving the component hierarchy tree so the child page never unmounts during theme changes or renders.
+* **Layout Component ([LayoutWrapper.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/components/LayoutWrapper.tsx))**: Computes the `isFullscreen` layout mode directly from the current URL pathname (e.g. starting with `/profile` or `/cv`). This synchronous evaluation prevents the sidebar from flashing during client-side navigation. When active, it hides the desktop sidebar navigation and forces the global top navigation to appear.
 * **Fallback Component ([DefaultProfile.tsx](file:///home/naim/Projects/claude_code/ProgrammingClubWeb/programming-club-2.1/src/app/profile/DefaultProfile.tsx))**: Contains the original, standard layout logic for club profiles.
+
+## 📱 Mobile Timeline Fix
+
+### Issue
+The mobile layout of the experience/timeline section was only showing half of the timeline cards because it was hiding the left slot completely while only showing the right slot cards.
+
+### Solution
+Implemented two distinct wireframe layouts:
+
+**Desktop (≥ 651px)**: Alternating left/right layout with centered spine  
+**Mobile (≤ 650px)**: Vertical single-column layout with proper node positioning
+
+### Key Changes
+- **CSS Only Solution**: Uses media queries to switch layouts without JavaScript
+- **Wireframe Match**: Mobile layout matches `docs/experience_timeline_midfi_variantB.html` exactly
+- **Node Positioning**: Timeline dots at `left: -18px, top: 16px` (exact wireframe match)
+- **Spine Positioning**: Spine at `left: 5px` (exact wireframe match)
+
+### Files Modified
+- `src/app/profile/DynamicProfile.module.css`: Mobile media query with proper positioning
+- `src/app/profile/DynamicProfile.tsx`: Clean alternating logic (no complex class conditions)
+
+See [memory/fix-mobile-timeline-layout.md](memory/fix-mobile-timeline-layout.md) for detailed implementation notes.

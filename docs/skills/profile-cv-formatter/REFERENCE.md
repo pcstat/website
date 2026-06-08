@@ -17,7 +17,15 @@ The dynamic profile is an immersive, full-width, magazine-style editorial portfo
 - `stats` (Array): Metric grid values (`value`, `label`).
 - `focus_areas` (Array): List of string pills representing focus fields.
 - `skills` (Array): Categorized skill pill groups (`category`, `icon`, `items`).
-- `timeline` (Array): Monospace experience history (`role`, `year`, `current` boolean).
+- `timeline` (Array): Monospace experience history with fields for both desktop and mobile layouts:
+  - `role` (String): Job title/position (Required)
+  - `start` (String): Start year or "present" (Required)
+  - `end` (String): End year or "present" (Required)
+  - `description` (String): Full description for desktop layout
+  - `short_desc` (String): Compact description for mobile layout
+  - `tags` (Array): Skills/technologies used (e.g., ["Python", "ML"])
+  - `company` (String): Organization name
+  - `type` (String): Employment type (e.g., "Full-time", "Internship")
 - `projects` (Array): List of projects (`title`, `description`, `tags`, `featured` boolean, `links` object).
 - `publications` (Array): List of papers (`title`, `venue`, `tags`, `featured` boolean, `links` object).
 - `achievements` (Array): List of honors (`title`, `event`, `year`).
@@ -49,8 +57,26 @@ The dynamic profile is an immersive, full-width, magazine-style editorial portfo
     }
   ],
   "timeline": [
-    { "role": "Data Analyst", "year": "2020", "current": false },
-    { "role": "Senior ML Engineer", "year": "2023–present", "current": true }
+    {
+      "role": "Senior ML Engineer",
+      "start": "2023",
+      "end": "present",
+      "description": "Leading LLM infrastructure and agentic pipeline design.",
+      "short_desc": "Leading LLM infrastructure and agentic pipeline design.",
+      "tags": ["LLMs", "MLOps", "Python"],
+      "company": "Acme AI",
+      "type": "Full-time"
+    },
+    {
+      "role": "ML Engineer",
+      "start": "2021",
+      "end": "2023",
+      "description": "Developed NLP pipelines for document classification.",
+      "short_desc": "NLP pipelines for document classification.",
+      "tags": ["PyTorch", "NLP"],
+      "company": "DataCo",
+      "type": "Full-time"
+    }
   ],
   "projects": [
     {

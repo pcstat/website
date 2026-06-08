@@ -7,15 +7,27 @@
 
 ## 🎨 Design Foundations
 
+### Theme Contrast Fixes (Updated June 2026)
+
+**Issue**: The original theme colors had insufficient luminance separation, making cards and surfaces difficult to distinguish from backgrounds, especially in dark mode. Borders were also invisible in light mode due to using white opacity on white backgrounds.
+
+**Solution**: Updated color values to ensure proper contrast ratios:
+
+- **Dark Theme**: Increased separation between background, surface, and secondary surface layers
+- **Light Theme**: Adjusted background and surface colors for better visibility
+- **Borders**: Fixed light theme borders to use black opacity instead of white opacity
+
+These changes maintain the club's visual identity while improving accessibility and usability.
+
 ### Color System
 
 The club uses a dual-theme color system with CSS variables for easy theming:
 
 #### Dark Theme (Default)
 ```css
---bg: #060910;           /* Background */
---surface: #0d1117;     /* Card surfaces */
---s2: #161b22;          /* Secondary surfaces */
+--bg: #080c14;           /* Background */
+--surface: #111827;     /* Card surfaces */
+--s2: #1a2235;          /* Secondary surfaces */
 --txt: #e6edf3;         /* Primary text */
 --mut: rgba(230, 237, 243, 0.8);  /* Muted text */
 --ac: #00d97e;          /* Accent (primary brand color) */
@@ -32,9 +44,9 @@ The club uses a dual-theme color system with CSS variables for easy theming:
 
 #### Light Theme
 ```css
---bg: #f8fafc;
+--bg: #edf0f5;
 --surface: #ffffff;
---s2: #f1f5f9;
+--s2: #f4f7fb;
 --txt: #0f172a;
 --mut: rgba(15, 23, 42, .85);
 --ac: #00b366;
@@ -74,6 +86,12 @@ The club uses a dual-theme color system with CSS variables for easy theming:
 ```css
 --b: rgba(255, 255, 255, .07);   /* Light border (dark theme) */
 --b2: rgba(255, 255, 255, .13);  /* Medium border (dark theme) */
+```
+
+**Light Theme Borders** (automatically applied via `[data-theme="light"]`):
+```css
+--b: rgba(0, 0, 0, .08);    /* Light border (light theme) */
+--b2: rgba(0, 0, 0, .15);   /* Medium border (light theme) */
 ```
 
 ---
@@ -563,13 +581,9 @@ For creating standalone profile pages that match the club's design:
 ### Layout Structure
 
 ```html
+<!-- Global Mobile Top Navigation (provided automatically by LayoutWrapper for /profile routes) -->
+
 <div className="dynamic-profile">
-  <!-- Fixed top bar -->
-  <div className="top-bar">
-    <a href="/" className="back-button">← Back to Homepage</a>
-    <ThemeToggle />
-  </div>
-  
   <!-- Hero section -->
   <div className="profile-hero">
     <div className="profile-avatar">
@@ -683,20 +697,6 @@ For creating standalone profile pages that match the club's design:
   margin: 0 auto;
 }
 
-/* Fixed top bar */
-.top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background: var(--surface);
-  border-bottom: 1px solid var(--b);
-  z-index: 100;
-}
 
 /* Hero section */
 .profile-hero {
@@ -759,6 +759,8 @@ For creating standalone CV pages:
 ### Layout Structure
 
 ```html
+<!-- Global Mobile Top Navigation (provided automatically by LayoutWrapper for /cv routes) -->
+
 <div className="cv-container">
   <!-- Header -->
   <div className="cv-header">
@@ -1020,10 +1022,11 @@ For creating standalone CV pages:
 
 ### Colors
 - Primary: `--ac` (#00d97e / #00b366)
-- Background: `--bg` (#060910 / #f8fafc)
-- Surface: `--surface` (#0d1117 / #ffffff)
+- Background: `--bg` (#080c14 / #edf0f5)
+- Surface: `--surface` (#111827 / #ffffff)
 - Text: `--txt` (#e6edf3 / #0f172a)
 - Muted: `--mut` (rgba with 0.8 opacity)
+- Secondary Surface: `--s2` (#1a2235 / #f4f7fb)
 
 ### Typography
 - Headings: `--fh` (Syne, 700-800)
@@ -1050,11 +1053,12 @@ For creating standalone CV pages:
 ## ✅ Best Practices
 
 ### Do's
-- ✅ Use exact CSS variable names from this guide
+- ✅ Use exact CSS variable names from this guide (including updated theme colors)
 - ✅ Implement the full theme system with localStorage persistence
 - ✅ Apply signature hover effects to all interactive elements
 - ✅ Use the grid layout patterns for consistency
-- ✅ Test both light and dark themes
+- ✅ Test both light and dark themes for proper contrast
+- ✅ Verify that borders are visible in both themes
 - ✅ Follow responsive breakpoint values exactly
 - ✅ Use Syne for headings and SpaceMono for body text
 
@@ -1076,6 +1080,13 @@ For creating standalone CV pages:
 2. Verify CSS variables are defined in `:root`
 3. Ensure no conflicting styles override variables
 4. Check localStorage for theme value
+
+### Poor Contrast / Invisible Elements
+1. Verify you're using the updated theme colors from this guide
+2. Check contrast ratios using browser dev tools
+3. Ensure borders use correct opacity values for each theme
+4. Test in both light and dark modes
+5. Verify CSS variables are properly scoped to `[data-theme="light"]` for light theme overrides
 
 ### Inconsistent Colors
 1. Use browser dev tools to inspect computed values

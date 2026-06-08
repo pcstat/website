@@ -197,11 +197,13 @@ The core professional record. Supports nested bullets to describe project detail
 - **Desktop**: Displays a modern two-column layout with a sidebar on the left for Education/Certs/Languages and a main column on the right for Experience and Custom sections.
 - **Mobile**: Collapses into a single column, ordering the header/avatar first, sidebar content next, and main content last for optimized mobile readability.
 
+**Note**: For related mobile layout fixes, see the [Dynamic Profile Mobile Timeline Fix](#mobile-timeline-fix) section in the Dynamic Profile documentation.
+
 ---
 
 ## 🎨 Navigation & UI Integration
 
 To keep the academic record presentation clean and distraction-free:
-1. **Fullscreen Viewport**: The CV page utilizes the global `LayoutContext` to trigger fullscreen mode. This hides the default desktop sidebar navigation and background glows, providing a clean viewport.
+1. **Fullscreen Viewport**: The CV page utilizes the `LayoutWrapper`'s synchronous pathname checking to trigger fullscreen mode instantly. This eliminates sidebar flashing on navigation, hides the default desktop sidebar navigation, and removes background glows to provide a clean viewport.
 2. **Global Top Navigation**: Instead of a custom header, it seamlessly integrates with the site's global mobile top navigation bar (which is forced to be visible in fullscreen mode). This provides a consistent unified top bar containing the club logo, theme toggle switch, and a hamburger menu.
 3. **Bottom Profile Redirection**: The CV document ends with an accent-colored **"View Profile ↗"** button that takes the visitor directly back to the student's dynamic or default profile view (`/profile?id=<student_id>`). This button incorporates the site's signature card hover effects (lifts by `-3px`, top accent line expansion, and background highlighting).

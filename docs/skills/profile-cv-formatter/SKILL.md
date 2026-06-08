@@ -15,6 +15,7 @@ This skill helps convert raw information (resumes, text, markdown, or PDFs) into
    - Reference `REFERENCE.md` in this directory for the exact JSON schemas and examples.
    - Extract the raw info and meticulously map it to the requested JSON schema.
    - Ensure all keys and structures match the required format exactly.
+   - **For timeline entries**: Include both `description` (full) and `short_desc` (compact) fields to support both desktop and mobile layouts. If only one description is provided, use it for both fields.
 4. **Save File**:
    - Save the generated JSON file directly in the current working directory.
    - Name it `cv.json` or `profile.json` (or append the student ID if provided, e.g., `cv_12345.json`).

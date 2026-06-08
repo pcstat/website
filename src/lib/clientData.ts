@@ -11,7 +11,8 @@ export const MEDAL_ICON: Record<string, string> = {
 export function formatExecutiveRole(member: Member, isCurrentCommittee: boolean): string {
   if (!member.role) return '';
   const prefix = isCurrentCommittee ? '' : 'Former ';
-  return `${prefix}${member.role}`;
+  const roleStr = member.role.toLowerCase().startsWith('club ') ? member.role : `Club ${member.role}`;
+  return `${prefix}${roleStr}`;
 }
 
 export async function fetchJsonData<T>(source: string): Promise<T> {

@@ -1,7 +1,7 @@
 /* ── RESET & VARS ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #060910; --s: #0d1117; --s2: #161b22; --s3: #1f2937;
+  --bg: #080c14; --s: #111827; --s2: #1a2235; --s3: #1f2937;
   --b: rgba(255,255,255,.07); --b2: rgba(255,255,255,.13); --b3: rgba(255,255,255,.22);
   --txt: #e6edf3; --mut: rgba(230,237,243,.45);
   --ac: #00d97e; --acd: rgba(0,217,126,.1); --acg: rgba(0,217,126,.25);
@@ -15,8 +15,8 @@
 }
 
 [data-theme="light"] {
-  --bg: #f8fafc; --s: #ffffff; --s2: #f1f5f9; --s3: #e2e8f0;
-  --b: rgba(0,0,0,.07); --b2: rgba(0,0,0,.13); --b3: rgba(0,0,0,.22);
+  --bg: #edf0f5; --s: #ffffff; --s2: #f4f7fb; --s3: #e2e8f0;
+  --b: rgba(0,0,0,.08); --b2: rgba(0,0,0,.15); --b3: rgba(0,0,0,.22);
   --txt: #0f172a; --mut: rgba(15,23,42,.65);
   --ac: #00b366; --acd: rgba(0,179,102,.08); --acg: rgba(0,179,102,.22);
   --bl: #1d4ed8; --bld: rgba(29,78,216,.1);

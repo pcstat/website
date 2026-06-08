@@ -16,7 +16,7 @@
 @font-face {
   font-family: 'Syne';
   src: url('/fonts/Syne-VariableFont_wght.ttf') format('truetype');
-  font-weight: 700;
+  font-weight: 400 800;
 }
 
 /* ── RESET & VARIABLES ── */
@@ -35,9 +35,9 @@ p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
 }
 
 :root {
-  --bg: #060910;
-  --surface: #0d1117;
-  --s2: #161b22;
+  --bg: #0a101a;
+  --surface: #111827;
+  --s2: #1a2235;
   --b: rgba(255, 255, 255, .07);
   --b2: rgba(255, 255, 255, .13);
   --txt: #e6edf3;
@@ -52,7 +52,7 @@ p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
   --pud: rgba(167, 139, 250, .1);
   --py: #fbbf24;
   --rp: #3b79f5;
-  --icon-bg: var(--txt);
+  --icon-bg: #e0e0e0;
   --icon-txt: var(--bg);
   --btn-txt: #000;
   --repo-bg: #00d97e;
@@ -65,14 +65,15 @@ p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
   --nc: 64px;
   --nh: 60px;
   --ease: .28s cubic-bezier(.4, 0, .2, 1);
+  --nav-bg: rgba(10, 16, 26, 0.8);
 }
 
 [data-theme="light"] {
-  --bg: #f8fafc;
+  --bg: #edf0f5;
   --surface: #ffffff;
-  --s2: #f1f5f9;
-  --b: rgba(0, 0, 0, .07);
-  --b2: rgba(0, 0, 0, .13);
+  --s2: #f4f7fb;
+  --b: rgba(0, 0, 0, .08);
+  --b2: rgba(0, 0, 0, .15);
   --txt: #0f172a;
   --mut: rgba(15, 23, 42, .85);
   --ac: #00b366;
@@ -85,13 +86,14 @@ p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
   --pud: rgba(124, 58, 237, .1);
   --py: #b45309;
   --rp: #1e40af;
-  --icon-bg: var(--txt);
+  --icon-bg: #3e4147;
   --icon-txt: var(--bg);
   --btn-txt: #fff;
   --repo-bg: #00b366;
   --demo-bg: #7c3aed;
   --toggle-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.05);
   --toggle-inner: inset 0 1px 1px rgba(0, 0, 0, 0.1);
+  --nav-bg: rgba(237, 240, 245, 0.85);
 }
 
 h1,
@@ -123,6 +125,10 @@ body::before {
   z-index: 0;
 }
 
+[data-theme="light"] body::before {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, .04) 1px, transparent 1px);
+}
+
 /* Green ambient glow — top left */
 body::after {
   content: '';
@@ -146,6 +152,11 @@ body::after {
   background: radial-gradient(circle, rgba(139, 92, 246, .045) 0%, transparent 65%);
   pointer-events: none;
   z-index: 0;
+}
+
+[data-theme="light"] body::after,
+[data-theme="light"] .bg-glow2 {
+  opacity: 0.3;
 }
 
 a {
@@ -218,7 +229,7 @@ ul {
   font-size: 1.28rem;
   font-weight: 800;
   letter-spacing: -.02em;
-  line-height: 1;
+  line-height: 1.5;
 }
 
 .lm span {
@@ -483,12 +494,6 @@ ul {
 
 .force-tn {
   display: flex !important;
-}
-
-.force-mm {
-  /* mm is display:flex by default, but it might be hidden differently on desktop if not inside a media query. 
-     Wait, mm is not display none by default. It's hidden by transform. We don't need display: flex !important if it works properly. 
-     But let's just make sure it behaves like mobile. */
 }
 
 .fs-main {
@@ -756,8 +761,8 @@ ul {
 
 .pill-st {
   color: var(--ac);
-  border-color: rgba(88, 166, 255, .2);
-  background: rgba(88, 166, 255, .06);
+  border-color: var(--acg);
+  background: var(--acd);
 }
 
 .pill-cp {
@@ -910,7 +915,7 @@ ul {
 .t-bar-track {
   flex: 1;
   height: 6px;
-  background: rgba(255, 255, 255, .06);
+  background: var(--b);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -1356,18 +1361,18 @@ ul {
 }
 
 .ach.gold {
-  border-color: rgba(240, 183, 62, .22);
-  background: rgba(240, 183, 62, .03);
+  border-color: var(--py);
+  background: var(--pud);
 }
 
 .ach.silver {
-  border-color: rgba(178, 186, 200, .22);
+  border-color: var(--mut);
   background: rgba(178, 186, 200, .03);
 }
 
 .ach.blue {
-  border-color: rgba(88, 166, 255, .22);
-  background: rgba(88, 166, 255, .03);
+  border-color: var(--bl);
+  background: var(--bld);
 }
 
 .ai {
@@ -1697,6 +1702,10 @@ ul {
   transform: translateY(-1px);
 }
 
+[data-theme="light"] .pt-btn.active {
+  box-shadow: 0 0 10px var(--acg);
+}
+
 .pt-btn.active::after {
   content: '';
   position: absolute;
@@ -1857,7 +1866,7 @@ ul {
 .ovl {
   position: fixed;
   inset: 0;
-  background: rgba(6, 9, 16, .85);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
   backdrop-filter: blur(8px);
   z-index: 900;
   display: flex;
@@ -1951,8 +1960,8 @@ ul {
   font-weight: 800;
   color: var(--ac);
   flex-shrink: 0;
-  background: linear-gradient(135deg, rgba(0, 217, 126, .12), rgba(167, 139, 250, .1));
-  border: 1px solid rgba(0, 217, 126, .2);
+  background: linear-gradient(135deg, var(--acd), var(--pud));
+  border: 1px solid var(--acg);
   object-fit: cover;
 }
 
@@ -2034,8 +2043,8 @@ ul {
 }
 
 .sl.github:hover {
-  border-color: #e6edf3;
-  color: #e6edf3;
+  border-color: var(--txt);
+  color: var(--txt);
 }
 
 .sl.facebook:hover {
@@ -2083,6 +2092,17 @@ ul {
   gap: 3rem;
   padding: 0 2rem 0 0;
   margin-top: 3rem;
+}
+
+@media (min-width: 481px) {
+  .mm {
+    inset: calc(var(--nh) + 0.5rem) 1.25rem auto auto;
+    width: 350px;
+    border: 1px solid var(--b);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 1000px), (max-height: 500px), (max-aspect-ratio: 1) {
@@ -2134,9 +2154,6 @@ ul {
     grid-column: span 1 !important;
     flex-direction: column !important;
   }
-  .egrid {
-    grid-template-columns: 1fr;
-  }
   .proj-grid {
     grid-template-columns: 1fr;
   }
@@ -2145,17 +2162,6 @@ ul {
   }
   .stats {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: 480px) {
-    .stats {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 1rem !important;
-    }
-    .ac2.featured {
-      grid-column: span 1 !important;
-      flex-direction: column !important;
-    }
   }
   .hero {
     grid-template-columns: 1fr;
@@ -2196,6 +2202,17 @@ ul {
   #certificate-container svg {
     max-width: 100% !important;
     height: auto !important;
+  }
+  
+  @media (max-width: 480px) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 1rem !important;
+    }
+    .ac2.featured {
+      grid-column: span 1 !important;
+      flex-direction: column !important;
+    }
   }
 }
 
@@ -2338,13 +2355,13 @@ ul {
 .proj-status.active {
   background: var(--acd);
   color: var(--ac);
-  border: 1px solid rgba(0, 217, 126, .2);
+  border: 1px solid var(--acg);
 }
 
 .proj-status.completed {
   background: var(--bld);
   color: var(--bl);
-  border: 1px solid rgba(88, 166, 255, .2);
+  border: 1px solid var(--acg);
 }
 
 .proj-status.research {

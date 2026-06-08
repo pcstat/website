@@ -28,7 +28,8 @@
           "student_id": "2020001",
           "icon_link": "https://programming-club-demo-data.pages.dev/elon-musk/icon.webp",
           "cv_link": "https://programming-club-demo-data.pages.dev/elon-musk/cv.json",
-          "profile_link": "https://programming-club-demo-data.pages.dev/elon-musk/profile.json"
+          "profile_link": "/profile.json",
+          "profile_linka": "https://programming-club-demo-data.pages.dev/elon-musk/profile.json"
         },
         {
           "initial": "J",

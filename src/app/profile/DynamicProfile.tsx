@@ -178,31 +178,108 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                   </div>
                 </div>
               )}
-
-              {data.timeline && data.timeline.length > 0 && (
-                <div className={styles.timelineContainer}>
-                  <h3 className={styles.subHeading}>Experience Timeline</h3>
-                  <div className={styles.timelineList}>
-                    {data.timeline.map((item, idx) => (
-                      <div key={idx} className={styles.timelineItem}>
-                        <div className={styles.timelineYear}>{item.year}</div>
-                        <div className={styles.timelineRole}>
-                          {item.role}
-                          {item.current && <span className={styles.currentBadge}>Current</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </section>
 
+        {/* TIMELINE SECTION */}
+        {data.timeline && data.timeline.length > 0 && (
+          <section className={styles.timelineSection}>
+            <span className={styles.sectionNumber}>02 /</span>
+            <h2 className={styles.masthead}>Experience</h2>
+
+            <div className={styles.timelineWrapper}>
+              <div className={styles.timelineSpine}></div>
+
+              {data.timeline
+                .sort((a, b) => {
+                  const yearA = a.start === 'present' ? 9999 : parseInt(a.start);
+                  const yearB = b.start === 'present' ? 9999 : parseInt(b.start);
+                  return yearB - yearA;
+                })
+                .map((item, idx) => {
+                  const isLeft = idx % 2 === 0;
+                  return (
+                    <div key={idx} className={styles.timelineRow}>
+                      {/* Left slot - for even indices on desktop */}
+                      <div className={`${styles.timelineSlot} ${isLeft ? styles.leftSlot : styles.emptySlot}`}>
+                        {isLeft && (
+                          <div className={styles.timelineCardContainer}>
+                            <div className={styles.timelineYear}>{item.start} – {item.end}</div>
+                            <div className={styles.timelineCard}>
+                              <div className={styles.timelineRole}>
+                                {item.role}
+                                {item.end === 'present' && <span className={styles.currentBadge}>Current</span>}
+                              </div>
+                              {item.company && (
+                                <div className={styles.timelineCompany}>
+                                  <span className={styles.companyIcon}>🏢</span>
+                                  {item.company}
+                                  {item.type && <span className={styles.jobType}> · {item.type}</span>}
+                                </div>
+                              )}
+                              {item.description && (
+                                <div className={styles.timelineDescription}>{item.description}</div>
+                              )}
+                              {item.tags && item.tags.length > 0 && (
+                                <div className={styles.timelineTags}>
+                                  {item.tags.map((tag, tagIdx) => (
+                                    <span key={tagIdx} className={styles.timelineTag}>{tag}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className={styles.timelineCenter}>
+                        <div className={`${styles.timelineNode} ${item.end === 'present' ? styles.currentNode : ''}`}></div>
+                        {idx !== data.timeline.length - 1 && <div className={styles.timelineConnector}></div>}
+                      </div>
+
+                      {/* Right slot - for odd indices on desktop, ALL on mobile */}
+                      <div className={`${styles.timelineSlot} ${!isLeft ? styles.rightSlot : styles.emptySlot}`}>
+                        {!isLeft && (
+                          <div className={styles.timelineCardContainer}>
+                            <div className={styles.timelineYear}>{item.start} – {item.end}</div>
+                            <div className={styles.timelineCard}>
+                              <div className={styles.timelineRole}>
+                                {item.role}
+                                {item.end === 'present' && <span className={styles.currentBadge}>Current</span>}
+                              </div>
+                              {item.company && (
+                                <div className={styles.timelineCompany}>
+                                  <span className={styles.companyIcon}>🏢</span>
+                                  {item.company}
+                                  {item.type && <span className={styles.jobType}> · {item.type}</span>}
+                                </div>
+                              )}
+                              {item.description && (
+                                <div className={styles.timelineDescription}>{item.description}</div>
+                              )}
+                              {item.tags && item.tags.length > 0 && (
+                                <div className={styles.timelineTags}>
+                                  {item.tags.map((tag, tagIdx) => (
+                                    <span key={tagIdx} className={styles.timelineTag}>{tag}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </section>
+        )}
+
         {/* SKILLS SECTION */}
         {data.skills && data.skills.length > 0 && (
           <section className={styles.skillsSection}>
-            <span className={styles.sectionNumber}>02 /</span>
+            <span className={styles.sectionNumber}>03 /</span>
             <h2 className={styles.masthead}>Expertise</h2>
             
             <div className={styles.skillsGrid}>

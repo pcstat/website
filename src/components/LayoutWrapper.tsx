@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
@@ -42,6 +42,27 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuOpen &&
+        mobileNavRef.current &&
+        !mobileNavRef.current.contains(event.target as Node) &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
 
   // Sync sidebar state from localStorage on mount
   useEffect(() => {
@@ -178,7 +199,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       {/* ══════════════════════════════════════════
            MOBILE TOP NAV
            ══════════════════════════════════════════ */}
-      <nav className={`tn ${isFullscreen ? 'force-tn' : ''}`}>
+      <nav ref={mobileNavRef} className={`tn ${isFullscreen ? 'force-tn' : ''}`}>
         <div className="lm">
           <Link href="/" scroll={false}>
             Statistics<span style={{ color: 'var(--ac)' }}>.</span>
@@ -199,7 +220,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Mobile menu panel */}
-      <div className={`mm ${mobileMenuOpen ? 'open' : ''} ${isFullscreen ? 'force-mm' : ''}`} id="mm">
+      <div ref={mobileMenuRef} className={`mm ${mobileMenuOpen ? 'open' : ''} ${isFullscreen ? 'force-mm' : ''}`} id="mm">
         {NAV_ITEMS.map((item) => (
           <div key={item.path} className={`mi ${isActive(item.path) ? 'active' : ''}`}>
             <Link href={item.path} scroll={false} onClick={handleMobileLinkClick} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>

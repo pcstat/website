@@ -108,7 +108,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   };
 
   const isAdmin = pathname.startsWith('/admin');
-  const { isFullscreen } = useLayout();
+  const isFullscreen = pathname?.startsWith('/profile') || pathname?.startsWith('/cv') || false;
 
   if (isAdmin) {
     return <>{children}</>;
@@ -178,45 +178,41 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       {/* ══════════════════════════════════════════
            MOBILE TOP NAV
            ══════════════════════════════════════════ */}
-      {!isFullscreen && (
-        <nav className="tn">
-          <div className="lm">
-            <Link href="/" scroll={false}>
-              Statistics<span style={{ color: 'var(--ac)' }}>.</span>
-            </Link>
-          </div>
-          <div className="tn-right">
-            <button className="tn-theme-toggle" id="theme-toggle-mob" title="Toggle theme" onClick={toggleTheme}>
-              <div className="theme-switch">
-                <div className="switch-thumb">
-                  {theme === 'dark' ? MOON_ICON : SUN_ICON}
-                </div>
+      <nav className={`tn ${isFullscreen ? 'force-tn' : ''}`}>
+        <div className="lm">
+          <Link href="/" scroll={false}>
+            Statistics<span style={{ color: 'var(--ac)' }}>.</span>
+          </Link>
+        </div>
+        <div className="tn-right">
+          <button className="tn-theme-toggle" id="theme-toggle-mob" title="Toggle theme" onClick={toggleTheme}>
+            <div className="theme-switch">
+              <div className="switch-thumb">
+                {theme === 'dark' ? MOON_ICON : SUN_ICON}
               </div>
-            </button>
-            <div className={`hbg ${mobileMenuOpen ? 'open' : ''}`} id="hbg" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              <span></span><span></span><span></span>
             </div>
+          </button>
+          <div className={`hbg ${mobileMenuOpen ? 'open' : ''}`} id="hbg" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <span></span><span></span><span></span>
           </div>
-        </nav>
-      )}
+        </div>
+      </nav>
 
       {/* Mobile menu panel */}
-      {!isFullscreen && (
-        <div className={`mm ${mobileMenuOpen ? 'open' : ''}`} id="mm">
-          {NAV_ITEMS.map((item) => (
-            <div key={item.path} className={`mi ${isActive(item.path) ? 'active' : ''}`}>
-              <Link href={item.path} scroll={false} onClick={handleMobileLinkClick} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <span className="mi-icon">{item.icon}</span>&nbsp;&nbsp;{item.name}
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className={`mm ${mobileMenuOpen ? 'open' : ''} ${isFullscreen ? 'force-mm' : ''}`} id="mm">
+        {NAV_ITEMS.map((item) => (
+          <div key={item.path} className={`mi ${isActive(item.path) ? 'active' : ''}`}>
+            <Link href={item.path} scroll={false} onClick={handleMobileLinkClick} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <span className="mi-icon">{item.icon}</span>&nbsp;&nbsp;{item.name}
+            </Link>
+          </div>
+        ))}
+      </div>
 
       {/* ══════════════════════════════════════════
            MAIN CONTENT
            ══════════════════════════════════════════ */}
-      <main className={isFullscreen ? '' : `ct ${sidebarCollapsed ? 'col' : ''}`} id="ct">
+      <main className={isFullscreen ? 'fs-main' : `ct ${sidebarCollapsed ? 'col' : ''}`} id="ct">
         {children}
       </main>
     </>

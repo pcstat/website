@@ -50,7 +50,12 @@ export default function ExecList({ members, sessionLabel }: { members: Member[],
             data-m={member.student_id}
             onClick={() => openMember(member)}
           >
-            <div className="eav">{member.initial}</div>
+            <MemberImage
+              src={member.icon_link || ''}
+              alt={member.name}
+              fallback={member.initial}
+              className="eav"
+            />
             <div className={member.highlight ? 'ei' : ''}>
                     <div className="erl">{member.role_display || `// ${member.role?.toUpperCase()}`}</div>
               <div className="enm">{member.name}</div>

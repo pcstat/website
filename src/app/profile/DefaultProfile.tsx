@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { MemberImage } from './MemberImage';
 import styles from './DefaultProfile.module.css';
 import { Member, Project, Achievement } from '@/lib/types';
 import { formatExecutiveRole, MEDAL_ICON } from '@/lib/clientData';
+import { useLayout } from '@/components/LayoutWrapper';
 
 interface DefaultProfileProps {
   id: string;
@@ -28,13 +29,17 @@ export function DefaultProfile({
   achievements,
   uniqueTags,
 }: DefaultProfileProps) {
+  const { setIsFullscreen } = useLayout();
+
+  useEffect(() => {
+    setIsFullscreen(true);
+    return () => setIsFullscreen(false);
+  }, [setIsFullscreen]);
+
   return (
     <section className={`${styles.pageContainer} pg active`} id="page-profile">
       <div className="ph rv vis" style={{ position: 'relative' }}>
         <div className="pe">// Executive Profile</div>
-        <Link href="/" className={styles.closeButton}>
-          ← <span>Back</span>
-        </Link>
       </div>
 
       {/* SECTION II: PROFILE (About) */}
@@ -112,7 +117,7 @@ export function DefaultProfile({
             {projects.map((p, idx) => {
               const isOdd = (idx + 1) % 2 !== 0;
               return (
-                <div key={p.title} className={`${styles.portfolioCard} ${isOdd ? styles.workItemOdd : styles.workItemEven}`} >
+                <div key={p.title} className={`${styles.portfolioCard} ${isOdd ? styles.workItemOdd : styles.workItemEven} portfolio-card`} >
                   {isOdd && (
                     <div className={styles.workItemVisual}>
                       <div className={styles.workItemNumber}>
@@ -181,7 +186,7 @@ export function DefaultProfile({
             {publications.map((p, idx) => {
               const isOdd = (idx + 1) % 2 !== 0;
               return (
-                <div key={p.title} className={`${styles.portfolioCard} ${isOdd ? styles.workItemOdd : styles.workItemEven}`} >
+                <div key={p.title} className={`${styles.portfolioCard} ${isOdd ? styles.workItemOdd : styles.workItemEven} portfolio-card`} >
                   {isOdd && (
                     <div className={styles.workItemVisual}>
                       <div className={styles.workItemNumber}>

@@ -112,7 +112,7 @@ The portfolio page is located at `src/app/profile/page.tsx` and acts as an orche
 
 ##### UI Structure (Dynamic Profile)
 
-- **Fixed Top Bar**: Back button + interactive theme toggle.
+- **Global Top Navigation**: Site-wide mobile top navbar (logo, theme toggle, hamburger menu) forced visible.
 - **Hero Area**: Title, tagline, socials on the left; numeric key metrics on the right.
 - **Biography**: Main body description, focus areas list, and timeline list.
 - **Expertise**: Category-grouped skill tag pill cards.

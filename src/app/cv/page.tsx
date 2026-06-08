@@ -200,24 +200,7 @@ function CVContent() {
 
   return (
     <section className={`${styles.pageContainer} pg active`} id="page-cv">
-      {/* Sticky/Fixed Minimal Top Bar */}
-      <header className={styles.topBar}>
-        <Link href="/" className={styles.backButton}>
-          ← Back to Homepage
-        </Link>
-        <div 
-          onClick={toggleTheme} 
-          style={{ cursor: 'pointer' }} 
-          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          aria-label="Toggle Theme"
-        >
-          <div className="theme-switch">
-            <div className="switch-thumb">
-              {theme === 'dark' ? MOON_ICON : SUN_ICON}
-            </div>
-          </div>
-        </div>
-      </header>
+
 
       <div className={styles.cvLayout}>
         <header className={styles.cvHeader}>

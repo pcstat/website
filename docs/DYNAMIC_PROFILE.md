@@ -114,8 +114,8 @@ The dynamic profile JSON is completely self-contained. It does not reference `pr
 
 ## 🎨 Layout & Design Integration
 
-1. **Full-Viewport Canvas**: When `DynamicProfile` mounts, it utilizes the `LayoutContext` to trigger fullscreen mode. This hides the club's standard sidebar navigation, mobile headers, and background glows.
-2. **Fixed Navigation Top Bar**: Features a fixed top navbar containing a "← Back to Homepage" link and the club's interactive sliding theme toggle switch.
+1. **Full-Viewport Canvas**: When `DynamicProfile` mounts, it utilizes the `LayoutContext` to trigger fullscreen mode. This hides the club's standard desktop sidebar navigation and background glows.
+2. **Global Top Navigation**: Features the site's global mobile top navigation bar (which is forced to be visible in fullscreen mode). This provides a consistent unified top bar containing the club logo, theme toggle switch, and hamburger menu.
 3. **Typography & Brand Style**: Inherits the club's brand typography:
    * **Syne** (`--fh`) for large, magazine-cover typographic headers.
    * **SpaceMono** (`--fm`) for monospaced numbers, tag labels, experience timeline, and body copy.

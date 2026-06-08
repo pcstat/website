@@ -481,6 +481,20 @@ ul {
   overscroll-behavior: none;
 }
 
+.force-tn {
+  display: flex !important;
+}
+
+.force-mm {
+  /* mm is display:flex by default, but it might be hidden differently on desktop if not inside a media query. 
+     Wait, mm is not display none by default. It's hidden by transform. We don't need display: flex !important if it works properly. 
+     But let's just make sure it behaves like mobile. */
+}
+
+.fs-main {
+  padding-top: var(--nh);
+}
+
 .tn .lm {
   font-size: 1.3rem;
 }
@@ -1122,6 +1136,7 @@ ul {
   color: var(--ac);
   flex-shrink: 0;
   margin-bottom: 1rem;
+  object-fit: cover;
 }
 
 .pres .eav {

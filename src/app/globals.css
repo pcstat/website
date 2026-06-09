@@ -28,10 +28,10 @@
   padding: 0;
 }
 
-/* Ensure text blocks wrap long strings responsibly without breaking flex layout child scaling */
+/* Text blocks will overflow long strings since x-axis overflow is permitted on small devices */
 p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
+  overflow-wrap: normal;
+  word-wrap: normal;
 }
 
 :root {
@@ -66,14 +66,15 @@ p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
   --nh: 60px;
   --ease: .28s cubic-bezier(.4, 0, .2, 1);
   --nav-bg: rgba(10, 16, 26, 0.8);
+  --shadow: none;
 }
 
 [data-theme="light"] {
   --bg: #edf0f5;
   --surface: #ffffff;
   --s2: #f4f7fb;
-  --b: rgba(0, 0, 0, .08);
-  --b2: rgba(0, 0, 0, .15);
+  --b: #d1d9e6;
+  --b2: #b8c4d6;
   --txt: #0f172a;
   --mut: rgba(15, 23, 42, .85);
   --ac: #00b366;
@@ -94,6 +95,7 @@ p, h1, h2, h3, h4, h5, h6, li, .pd, .hdesc, .proj-desc, .c-desc, .mbi, .ebi {
   --toggle-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 10px rgba(0, 0, 0, 0.05);
   --toggle-inner: inset 0 1px 1px rgba(0, 0, 0, 0.1);
   --nav-bg: rgba(237, 240, 245, 0.85);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 h1,
@@ -105,12 +107,15 @@ h6 {
   font-family: var(--fh);
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--fm);
   background: var(--bg);
   color: var(--txt);
   min-height: 100vh;
-  overflow-x: auto;
   overflow-y: auto;
 }
 
@@ -487,7 +492,8 @@ ul {
   align-items: center;
   justify-content: space-between;
   padding: 0 1.25rem;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: visible;
   touch-action: none;
   overscroll-behavior: none;
 }
@@ -620,6 +626,7 @@ ul {
   position: relative;
   z-index: 1;
   transition: margin-left var(--ease);
+  overflow-x: auto;
 }
 
 .ct.col {
@@ -1017,7 +1024,7 @@ ul {
 }
 
 .pt {
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-size: clamp(2.4rem, 6vw, 4rem);
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.1;
@@ -1073,7 +1080,8 @@ ul {
   position: relative;
   overflow: hidden;
   user-select: none;
-  transition: border-color .2s, transform .2s, background .2s;
+  transition: border-color .2s, transform .2s, background .2s, box-shadow .2s;
+  box-shadow: var(--shadow);
 }
 
 .ec::after {
@@ -1222,9 +1230,10 @@ ul {
   border-radius: 8px;
   background: var(--surface);
   cursor: pointer;
-  transition: border-color .2s, background .2s, transform .2s;
+  transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .ac2::after {
@@ -1334,9 +1343,10 @@ ul {
   border: 1px solid var(--b);
   border-radius: 10px;
   padding: 1.7rem;
-  transition: transform .2s, border-color .2s, background .2s;
+  transition: transform .2s, border-color .2s, background .2s, box-shadow .2s;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .ach::after {
@@ -1387,7 +1397,7 @@ ul {
 }
 
 .ach.gold .ayr {
-  color: #f0b73e;
+  color: var(--py);
 }
 
 .ach.silver .ayr {
@@ -1443,11 +1453,12 @@ ul {
   grid-template-columns: 60px 1fr auto;
   gap: 1.4rem;
   align-items: center;
-  transition: background .18s, border-color .2s;
+  transition: background .18s, border-color .2s, box-shadow .2s;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--b);
   border-radius: 10px;
+  box-shadow: var(--shadow);
 }
 
 .ev::after {
@@ -1746,6 +1757,8 @@ ul {
   border: 1px solid var(--b);
   border-radius: 10px;
   padding: 1.9rem;
+  box-shadow: var(--shadow);
+  transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
 }
 
 .abc h3 {
@@ -1787,6 +1800,8 @@ ul {
   border: 1px solid var(--b);
   border-radius: 10px;
   padding: 1.4rem;
+  box-shadow: var(--shadow);
+  transition: border-color .2s, background .2s, transform .2s, box-shadow .2s;
 }
 
 .mtd {
@@ -2214,9 +2229,6 @@ ul {
     grid-column: span 1 !important;
     flex-direction: column !important;
   }
-  .pt {
-    font-weight: 700 !important;
-  }
 }
 
 /* ── PROJECT featured cards ── */
@@ -2319,9 +2331,10 @@ ul {
   display: flex;
   flex-direction: column;
   gap: .75rem;
-  transition: border-color .2s, transform .2s, background .2s;
+  transition: border-color .2s, transform .2s, background .2s, box-shadow .2s;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .proj-card::after {
@@ -2526,9 +2539,10 @@ ul {
   display: flex;
   flex-direction: column;
   gap: .75rem;
-  transition: border-color .2s, transform .2s, background .2s;
+  transition: border-color .2s, transform .2s, background .2s, box-shadow .2s;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .c-card::after {

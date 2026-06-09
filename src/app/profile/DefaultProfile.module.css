@@ -54,6 +54,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.2s;
+  box-shadow: var(--shadow);
 }
 
 .socialLink:hover {
@@ -89,6 +90,7 @@
   font-weight: 800;
   color: var(--ac);
   margin: 0 auto;
+  box-shadow: var(--shadow);
 }
 
 .memberPhoto {
@@ -185,6 +187,7 @@
   font-size: 0.7rem;
   font-family: var(--fm);
   color: var(--mut);
+  box-shadow: var(--shadow);
 }
 
 .workSection {
@@ -218,6 +221,7 @@
   border: 1px solid var(--b);
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .workItemOdd {
@@ -351,6 +355,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: var(--shadow);
 }
 
 .achievementCardHeader {

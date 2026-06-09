@@ -1,1 +1,0 @@
-- [Mobile Timeline Layout Fix](memory/fix-mobile-timeline-layout.md) — Fixed mobile timeline to show all experience cards

@@ -124,6 +124,7 @@ The dynamic profile JSON is completely self-contained. It does not reference `pr
    * Border transitions to `--b2` (border-2).
    * Background highlights with `--s2` (surface-2).
    * An accent-colored top line (`::after` border) slides in smoothly from the left.
+   * In light mode, cards utilize a subtle box-shadow for depth and a refined cool-grey border palette.
 
 ---
 
@@ -153,5 +154,3 @@ Implemented two distinct wireframe layouts:
 ### Files Modified
 - `src/app/profile/DynamicProfile.module.css`: Mobile media query with proper positioning
 - `src/app/profile/DynamicProfile.tsx`: Clean alternating logic (no complex class conditions)
-
-See [memory/fix-mobile-timeline-layout.md](memory/fix-mobile-timeline-layout.md) for detailed implementation notes.

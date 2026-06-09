@@ -79,10 +79,15 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
   // Fallback for missing photos
   const [imageError, setImageError] = React.useState(false);
 
+  // Calculate dynamic section numbers
+  let sectionCount = 0;
+  const getNextSectionNum = () => {
+    sectionCount++;
+    return sectionCount.toString().padStart(2, '0');
+  };
+
   return (
     <div className={styles.fullscreenContainer}>
-
-
       <div className={styles.contentWrapper}>
         {/* HERO SECTION */}
         <section className={styles.heroSection}>
@@ -95,7 +100,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
             {data.subtitle && (
               <div className={styles.heroSubtitle}>{data.subtitle}</div>
             )}
-            
+
             {socials.length > 0 && (
               <div className={styles.socialsList}>
                 {socials.map((s, idx) => (
@@ -123,17 +128,17 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
 
         {/* ABOUT SECTION */}
         <section className={styles.aboutSection}>
-          <span className={styles.sectionNumber}>01 /</span>
+          <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
           <h2 className={styles.masthead}>Biography</h2>
-          
+
           <div className={styles.aboutGrid}>
             <div className={styles.aboutSidebar}>
               <div className={styles.imageFrame}>
                 {profilePhoto && !imageError ? (
-                  <Image 
-                    src={profilePhoto} 
-                    alt={profileName} 
-                    width={320} 
+                  <Image
+                    src={profilePhoto}
+                    alt={profileName}
+                    width={320}
                     height={320}
                     className={styles.profileImage}
                     onError={() => setImageError(true)}
@@ -144,7 +149,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                   <div>{member.initial}</div>
                 )}
               </div>
-              
+
               <div className={styles.sidebarMeta}>
                 <div className={styles.metaRow}>
                   <span className={styles.metaLabel}>Session</span>
@@ -185,7 +190,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         {/* TIMELINE SECTION */}
         {data.timeline && data.timeline.length > 0 && (
           <section className={styles.timelineSection}>
-            <span className={styles.sectionNumber}>02 /</span>
+            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
             <h2 className={styles.masthead}>Experience</h2>
 
             <div className={styles.timelineWrapper}>
@@ -201,7 +206,6 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                   const isLeft = idx % 2 === 0;
                   return (
                     <div key={idx} className={styles.timelineRow}>
-                      {/* Left slot - for even indices on desktop */}
                       <div className={`${styles.timelineSlot} ${isLeft ? styles.leftSlot : styles.emptySlot}`}>
                         {isLeft && (
                           <div className={styles.timelineCardContainer}>
@@ -238,7 +242,6 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                         {idx !== data.timeline.length - 1 && <div className={styles.timelineConnector}></div>}
                       </div>
 
-                      {/* Right slot - for odd indices on desktop, ALL on mobile */}
                       <div className={`${styles.timelineSlot} ${!isLeft ? styles.rightSlot : styles.emptySlot}`}>
                         {!isLeft && (
                           <div className={styles.timelineCardContainer}>
@@ -279,9 +282,9 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         {/* SKILLS SECTION */}
         {data.skills && data.skills.length > 0 && (
           <section className={styles.skillsSection}>
-            <span className={styles.sectionNumber}>03 /</span>
+            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
             <h2 className={styles.masthead}>Expertise</h2>
-            
+
             <div className={styles.skillsGrid}>
               {data.skills.map((group, idx) => (
                 <div key={idx} className={styles.skillCategoryCard}>
@@ -309,11 +312,10 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         {/* PROJECTS SECTION */}
         {allProjects.length > 0 && (
           <section className={styles.projectsSection}>
-            <span className={styles.sectionNumber}>03 /</span>
+            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
             <h2 className={styles.masthead}>Featured Work</h2>
-            
+
             <div className={styles.projectsGrid}>
-              {/* Featured Projects First */}
               {featuredProjects.map((p, idx) => (
                 <div key={idx} className={`${styles.projectCard} ${styles.featured}`}>
                   <div>
@@ -328,7 +330,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   {p.links && Object.keys(p.links).length > 0 && (
                     <div className={styles.projectFooter}>
                       <div className={styles.projectLinks}>
@@ -353,7 +355,6 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                 </div>
               ))}
 
-              {/* Regular Projects */}
               {regularProjects.map((p, idx) => (
                 <div key={idx} className={styles.projectCard}>
                   <div>
@@ -368,7 +369,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   {p.links && Object.keys(p.links).length > 0 && (
                     <div className={styles.projectFooter}>
                       <div className={styles.projectLinks}>
@@ -394,11 +395,10 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         {/* PUBLICATIONS SECTION */}
         {allPublications.length > 0 && (
           <section className={styles.publicationsSection}>
-            <span className={styles.sectionNumber}>04 /</span>
+            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
             <h2 className={styles.masthead}>Publications</h2>
-            
+
             <div className={styles.projectsGrid}>
-              {/* Featured Publications First */}
               {featuredPublications.map((p, idx) => (
                 <div key={idx} className={`${styles.projectCard} ${styles.featured}`}>
                   <div>
@@ -413,7 +413,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   {p.links && p.links.paper && (
                     <div className={styles.projectFooter}>
                       <div className={styles.projectLinks}>
@@ -426,7 +426,6 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                 </div>
               ))}
 
-              {/* Regular Publications */}
               {regularPublications.map((p, idx) => (
                 <div key={idx} className={styles.projectCard}>
                   <div>
@@ -441,7 +440,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   {p.links && p.links.paper && (
                     <div className={styles.projectFooter}>
                       <div className={styles.projectLinks}>
@@ -460,9 +459,9 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         {/* ACHIEVEMENTS SECTION */}
         {data.achievements && data.achievements.length > 0 && (
           <section className={styles.achievementsSection}>
-            <span className={styles.sectionNumber}>05 /</span>
+            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
             <h2 className={styles.masthead}>Achievements</h2>
-            
+
             <div className={styles.achievementsGrid}>
               {data.achievements.map((a, idx) => (
                 <div key={idx} className={styles.achievementCard}>

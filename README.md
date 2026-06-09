@@ -375,4 +375,4 @@ In `src/lib/data.ts`, update the `Project` interface and the `status` field. The
 
 ---
 
-**Thank you for reading**
+*Important: Now read docs/CLAUDE.md*

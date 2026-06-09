@@ -74,7 +74,7 @@ The site uses the Next.js App Router for optimized routing and rendering:
 
 A robust light/dark mode system is implemented using:
 
-1.  **CSS Variables**: Core colors are defined as variables in `src/app/globals.css`.
+1.  **CSS Variables**: Core colors are defined as variables in `src/app/globals.css`. In light mode, a refined cool-grey palette is used for borders and a subtle box-shadow system provides z-axis depth (elevation) to surface elements.
 2.  **React Context**: `ThemeContext.tsx` manages the current theme state across the entire application.
 3.  **Persistence**: The user's preference is stored in `localStorage`.
 4.  **Flash Prevention**: An inline blocking script in `layout.tsx` applies the theme attribute to the `<html>` element before React hydration to prevent the "flash of unstyled content" (FOUC).

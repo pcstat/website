@@ -14,8 +14,8 @@
 **Solution**: Updated color values to ensure proper contrast ratios:
 
 - **Dark Theme**: Increased separation between background, surface, and secondary surface layers
-- **Light Theme**: Adjusted background and surface colors for better visibility
-- **Borders**: Fixed light theme borders to use black opacity instead of white opacity
+- **Light Theme**: Adjusted background and surface colors for better visibility. Replaced simple black opacity borders with a refined cool-grey palette and introduced subtle box-shadows for depth.
+- **Borders**: Fixed light theme borders to use a cohesive cool-grey palette instead of pure black opacity.
 
 These changes maintain the club's visual identity while improving accessibility and usability.
 
@@ -59,6 +59,7 @@ The club uses a dual-theme color system with CSS variables for easy theming:
 --pud: rgba(124, 58, 237, .1);
 --py: #b45309;
 --rp: #1e40af;
+--shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 ```
 
 ### Typography
@@ -90,8 +91,8 @@ The club uses a dual-theme color system with CSS variables for easy theming:
 
 **Light Theme Borders** (automatically applied via `[data-theme="light"]`):
 ```css
---b: rgba(0, 0, 0, .08);    /* Light border (light theme) */
---b2: rgba(0, 0, 0, .15);   /* Medium border (light theme) */
+--b: #d1d9e6;    /* Light border (light theme) */
+--b2: #b8c4d6;   /* Medium border (light theme) */
 ```
 
 ---
@@ -1055,6 +1056,7 @@ For creating standalone CV pages:
 - Card hover: `0 8px 24px var(--acg)`
 - Button: `0 0 15px var(--acg)`
 - Toggle: `var(--toggle-shadow)`
+- Light Mode Surface: `var(--shadow)`
 
 ---
 

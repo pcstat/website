@@ -64,6 +64,7 @@
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .cvDocHeader {
@@ -237,6 +238,7 @@
   border: 1px solid var(--b);
   color: var(--mut);
   font-family: var(--fm);
+  box-shadow: var(--shadow);
 }
 
 .cvDocMain {

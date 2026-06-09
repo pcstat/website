@@ -902,6 +902,10 @@
   .cvCtaSection {
     padding: 3rem 0;
   }
+
+  .metaRow {
+    gap: 2rem;
+  }
   
   .heroRight {
     border-left: none;

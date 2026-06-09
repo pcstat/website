@@ -7,6 +7,16 @@
   padding-bottom: 8rem;
 }
 
+@media (max-width: 1024px) {
+  .pageContainer {
+    padding-bottom: 0;
+  }
+  .profileCallToAction {
+    padding: 3rem 0 3rem;
+    margin-top: 2rem;
+  }
+}
+
 .closeButton {
   position: absolute;
   top: 0.5rem;

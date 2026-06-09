@@ -445,7 +445,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                     <div className={styles.projectFooter}>
                       <div className={styles.projectLinks}>
                         <a href={p.links.paper} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                          Paper ↗
+                          View Paper ↗
                         </a>
                       </div>
                     </div>

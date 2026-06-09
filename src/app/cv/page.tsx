@@ -186,9 +186,6 @@ function CVContent() {
     return (
       <section className={`${styles.pageContainer} pg active`}>
         <div className="ph rv vis" style={{ position: 'relative' }}>
-          <Link href="/" className={styles.closeButton}>
-            ← <span>Back</span>
-          </Link>
           <h2 className="pt" style={{ color: '#f44' }}>CV <span>Not Found</span></h2>
           <p className="pd">{error || 'The requested CV details could not be loaded.'}</p>
         </div>

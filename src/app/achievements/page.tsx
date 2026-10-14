@@ -1,40 +1,23 @@
 import React from 'react';
-import { getAchievements, Achievement } from '@/lib/data';
-import { resolveMemberNames } from '@/lib/resolvers';
+import { getAchievements, resolveMemberNameMap } from '@/lib/database/server';
 import AchievementGrid from './AchievementGrid';
 
-export const revalidate = 3600;
-
 export default async function AchievementsPage() {
-  let tally: { value: string; label: string }[] = [];
-  let achievements: Achievement[] = [];
-  let memberNamesMap: Record<string, string> = {};
+  const data = await getAchievements();
+  const tally = data.tally || [];
+  const achievements = data.achievements || [];
 
-  try {
-    const data = await getAchievements();
-    tally = data.tally || [];
-    achievements = data.achievements || [];
+  // Resolve all member IDs to names on the server
+  const allIds: string[] = [];
+  achievements.forEach(a => {
+    if (Array.isArray(a.members)) {
+      allIds.push(...a.members);
+    }
+  });
+  const memberNamesMap = await resolveMemberNameMap(allIds);
 
-    // Resolve all member IDs to names on the server
-    const allIds: string[] = [];
-    achievements.forEach(a => {
-      if (Array.isArray(a.members)) {
-        allIds.push(...a.members);
-      }
-    });
-
-    const uniqueIds = Array.from(new Set(allIds));
-    const names = await resolveMemberNames(uniqueIds);
-
-    uniqueIds.forEach((id, idx) => {
-      if (names[idx]) memberNamesMap[id] = names[idx];
-    });
-
-    // Sort featured achievements first
-    achievements.sort((a, b) => (a.featured === b.featured ? 0 : a.featured ? -1 : 1));
-  } catch (err) {
-    console.error('Error loading achievements:', err);
-  }
+  // Sort featured achievements first
+  achievements.sort((a, b) => (a.featured === b.featured ? 0 : a.featured ? -1 : 1));
 
   return (
     <section className="pg active" id="page-achievements" style={{ display: 'block' }}>

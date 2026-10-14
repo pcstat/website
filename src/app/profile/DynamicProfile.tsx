@@ -239,7 +239,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
 
                       <div className={styles.timelineCenter}>
                         <div className={`${styles.timelineNode} ${item.end === 'present' ? styles.currentNode : ''}`}></div>
-                        {idx !== data.timeline.length - 1 && <div className={styles.timelineConnector}></div>}
+                        {idx !== (data.timeline?.length ?? 0) - 1 && <div className={styles.timelineConnector}></div>}
                       </div>
 
                       <div className={`${styles.timelineSlot} ${!isLeft ? styles.rightSlot : styles.emptySlot}`}>

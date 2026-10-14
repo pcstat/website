@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Committee, Member } from '@/lib/data';
+import type { Committee, Member } from '@/lib/types';
 import Link from 'next/link';
 import { MemberImage } from '@/app/profile/MemberImage';
 

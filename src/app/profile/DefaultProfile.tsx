@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { MemberImage } from './MemberImage';
 import styles from './DefaultProfile.module.css';
 import { Member, Project, Achievement } from '@/lib/types';
-import { formatExecutiveRole, MEDAL_ICON } from '@/lib/clientData';
+import { formatExecutiveRole, MEDAL_ICON } from '@/lib/format';
 import { useLayout } from '@/components/LayoutWrapper';
 
 interface DefaultProfileProps {

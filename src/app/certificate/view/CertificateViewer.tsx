@@ -10,11 +10,12 @@ export default function CertificateViewer({ svgContent, certId }: { svgContent: 
     const container = containerRef.current;
     if (!container || !container.firstElementChild) return;
 
-    const svgElement = container.firstElementChild as SVGElement;
-    if (svgElement.tagName.toLowerCase() !== 'svg') {
+    const firstChild = container.firstElementChild;
+    if (firstChild.tagName.toLowerCase() !== 'svg') {
       console.error('No SVG found in container');
       return;
     }
+    const svgElement = firstChild as unknown as SVGSVGElement;
 
     try {
       // 1. Serialize SVG to XML

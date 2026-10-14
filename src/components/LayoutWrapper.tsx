@@ -139,12 +139,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
     return pathname === itemPath;
   };
 
-  const isAdmin = pathname.startsWith('/admin');
   const isFullscreen = false;
-
-  if (isAdmin) {
-    return <>{children}</>;
-  }
 
   return (
     <>

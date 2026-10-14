@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ClubEvent } from '@/lib/data';
+import type { ClubEvent } from '@/lib/types';
 
 const TAG_CLASS: Record<string, string> = {
   upcoming: 'tup',

@@ -1,20 +1,11 @@
 import React from 'react';
-import { getEvents } from '@/lib/data';
+import { getEvents } from '@/lib/database/server';
 import EventsList from './EventsList';
 
-export const revalidate = 3600;
-
 export default async function EventsPage() {
-  let events: any[] = [];
-  let note = '';
-
-  try {
-    const data = await getEvents();
-    events = data.events || [];
-    note = data.note || '';
-  } catch (err) {
-    console.error('Error loading events:', err);
-  }
+  const data = await getEvents();
+  const events = data.events || [];
+  const note = data.note || '';
 
   return (
     <section className="pg active" id="page-events" style={{ display: 'block' }}>

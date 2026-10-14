@@ -5,12 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './cv.module.css';
-import {
-  clientGetDatabase,
-  clientLoadExecutiveCV,
-  formatExecutiveRole
-} from '@/lib/clientData';
-import { Member } from '@/lib/types';
+import { clientGetExecutives, clientLoadCV } from '@/lib/database/client';
+import { formatExecutiveRole } from '@/lib/format';
+import type { Member } from '@/lib/types';
 import { useLayout } from '@/components/LayoutWrapper';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -35,7 +32,7 @@ const MOON_ICON = (
   </svg>
 );
 
-function RenderList({ bullets, format = 'bullets' }: { bullets: any[]; format?: 'bullets' | 'commas' }) {
+function RenderList({ bullets, format = 'bullets' }: { bullets?: any[]; format?: 'bullets' | 'commas' }) {
   if (!bullets || !Array.isArray(bullets)) return null;
 
   if (format === 'commas') {
@@ -123,7 +120,7 @@ function CVContent() {
 
     const loadData = async () => {
       try {
-        const db = await clientGetDatabase();
+        const db = await clientGetExecutives();
         
         let foundMember: Member | null = null;
         let committeeLabel = '';
@@ -152,7 +149,7 @@ function CVContent() {
         const currentCommitteeLabel = db.committees.find(c => c.session === db.current_committee)?.label || '';
 
         // Load CV JSON data
-        const cv = await clientLoadExecutiveCV<any>(foundMember.cv_link);
+        const cv = await clientLoadCV<any>(foundMember.cv_link);
 
         setCvData({
           member: foundMember,

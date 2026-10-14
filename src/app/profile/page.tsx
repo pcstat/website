@@ -7,12 +7,12 @@ import { DefaultProfile } from './DefaultProfile';
 import { DynamicProfile } from './DynamicProfile';
 import styles from './DefaultProfile.module.css';
 import {
-  clientGetDatabase,
+  clientGetExecutives,
   clientGetProjects,
   clientGetAchievements,
   clientLoadProfile
-} from '@/lib/clientData';
-import { Member, Project, Achievement, ProfileData } from '@/lib/types';
+} from '@/lib/database/client';
+import type { Member, Project, Achievement, ProfileData } from '@/lib/types';
 
 type ProfileState = 
   | { type: 'loading' }
@@ -49,7 +49,7 @@ function ProfileContent() {
 
     const loadData = async () => {
       try {
-        const db = await clientGetDatabase();
+        const db = await clientGetExecutives();
         
         let foundMember: Member | null = null;
         let committeeLabel = '';
@@ -73,7 +73,7 @@ function ProfileContent() {
         // Check for dynamic profile link
         if (foundMember.profile_link) {
           try {
-            const dynamicData = await clientLoadProfile<ProfileData>(foundMember.profile_link);
+            const dynamicData = await clientLoadProfile(foundMember.profile_link);
             setState({
               type: 'dynamic',
               id,

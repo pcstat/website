@@ -1,11 +1,9 @@
 import React from 'react';
-import { getDatabase } from '@/lib/data';
+import { getExecutives } from '@/lib/database/server';
 import ExecList from './ExecList';
 
-export const revalidate = 3600;
-
 export default async function ExecutivesPage() {
-  const db = await getDatabase();
+  const db = await getExecutives();
   const currentCommittee = db.committees.find(c => c.session === db.current_committee);
   const members = currentCommittee ? currentCommittee.members : [];
   const sessionLabel = currentCommittee ? currentCommittee.label : 'Active Session';

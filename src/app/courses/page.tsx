@@ -1,22 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import { getCourses } from '@/lib/data';
-
-export const revalidate = 3600;
+import { getCourses } from '@/lib/database/server';
 
 export default async function CoursesPage() {
-  let courses: any[] = [];
-  try {
-    const data = await getCourses();
-    courses = data.courses || [];
-    // Sort featured first, then by year descending
-    courses.sort((a, b) => {
-      if (a.featured !== b.featured) return a.featured ? -1 : 1;
-      return b.year.localeCompare(a.year);
-    });
-  } catch (err) {
-    console.error('Error loading courses:', err);
-  }
+  const data = await getCourses();
+  const courses = data.courses || [];
+  // Sort featured first, then by year descending
+  courses.sort((a, b) => {
+    if (a.featured !== b.featured) return a.featured ? -1 : 1;
+    return b.year.localeCompare(a.year);
+  });
 
   return (
     <section className="pg active" id="page-courses" style={{ display: 'block' }}>

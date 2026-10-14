@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Achievement } from '@/lib/data';
+import type { Achievement } from '@/lib/types';
 
 const MEDAL_ICON: Record<string, string> = {
   gold: '🥇',

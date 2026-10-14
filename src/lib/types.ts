@@ -31,8 +31,15 @@ export interface DatabaseSchema {
   committees: Committee[];
 }
 
-export interface RegistrySchema {
-  [key: string]: string;
+/** `database.json` — the index published by the database repo. */
+export interface DatabaseIndex {
+  imageBase: string;
+  executives: string;
+  projects: string;
+  events: string;
+  courses: string;
+  achievements: string;
+  certificates: string;
 }
 
 export interface Achievement {
@@ -103,6 +110,7 @@ export interface IssuedCertificate {
   course1?: string;
   course2?: string;
   date: string;
+  status?: string;
   template?: string;
   reason?: string;
   reason2?: string;
@@ -136,6 +144,9 @@ export interface ProfileTimelineItem {
   start: string;
   end: string;
   description?: string;
+  short_desc?: string;
+  company?: string;
+  type?: string;
   tags?: string[];
 }
 

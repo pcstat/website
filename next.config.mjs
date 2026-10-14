@@ -1,28 +1,19 @@
-/** @type {import('next').NextConfig} */
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/**
+ * The site is a fully static export (`out/`), hosted on Cloudflare Pages.
+ * Content comes from the database repo at build time — see src/lib/database/.
+ *
+ * @type {import('next').NextConfig}
+ */
 const nextConfig = {
-  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  output: 'export',
   images: {
     unoptimized: true,
   },
-  allowedDevOrigins: ['192.168.0.3'],
   turbopack: {
-    root: '.',
-  },
-  experimental: {
-  },
-  webpack: (config, { dev }) => {
-    if (!dev && config.optimization && config.optimization.minimizer) {
-      // Disable parallel minification to prevent SIGBUS/Bus error in restricted shm environments
-      config.optimization.minimizer.forEach((minimizer) => {
-        if (minimizer.options && minimizer.options.parallel !== undefined) {
-          minimizer.options.parallel = false;
-        }
-      });
-    }
-    return config;
-  },
-  typescript: {
-    ignoreBuildErrors: true,
+    root: path.dirname(fileURLToPath(import.meta.url)),
   },
 };
 

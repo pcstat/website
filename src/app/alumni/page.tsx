@@ -1,11 +1,9 @@
 import React from 'react';
-import { getDatabase } from '@/lib/data';
+import { getExecutives } from '@/lib/database/server';
 import AlumniList from './AlumniList';
 
-export const revalidate = 3600;
-
 export default async function AlumniPage() {
-  const db = await getDatabase();
+  const db = await getExecutives();
   const pastCommittees = db.committees.filter(c => c.session !== db.current_committee);
 
   return (

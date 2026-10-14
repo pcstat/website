@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { clientGetCertificates } from '@/lib/database/client';
 
 export default function CertificatePage() {
   const [certId, setCertId] = useState('');
@@ -19,11 +20,9 @@ export default function CertificatePage() {
     setResult(<span style={{ color: 'var(--mut)' }}>// Verifying...</span>);
 
     try {
-      // Fetch certificates from API
-      const response = await fetch('/api/certificates');
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data = await response.json();
-      const cert = data.issued_certificates.find((c: any) => c.id === trimmedId);
+      // Look the certificate up in the live certificates registry
+      const data = await clientGetCertificates();
+      const cert = data.issued_certificates.find((c) => c.id === trimmedId);
 
       if (cert) {
         setResult(

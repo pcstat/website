@@ -1,31 +1,31 @@
 {
   "name": "programming-club-website",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "private": true,
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "dev": "rm -rf .next && next dev",
+    "dev": "next dev",
     "build": "next build",
-    "start": "npx serve@latest out",
-    "serve": "npx serve@latest out",
-    "export": "next build && npx serve@latest out",
-    "lint": "next lint"
+    "start": "serve out",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@babel/runtime": "^7.29.7",
-    "next": "^16.2.6",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "eslint": "^10.4.0",
-    "eslint-config-next": "^16.2.6",
-    "typescript": "^6.0.3"
-  },
-  "overrides": {
-    "postcss": "^8.5.1",
-    "eslint": "^10.4.0"
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.0",
+    "serve": "^14.2.6",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   }
 }

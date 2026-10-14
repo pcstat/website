@@ -40,13 +40,10 @@ Thumbs.db
 *.swp
 *.swo
 
-# Vercel
-.vercel
-
 # Turbo
 .turbo
 
 # Project specific
 backup/
-out-repo-config/
 docs/temp
+*.tsbuildinfo

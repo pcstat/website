@@ -126,7 +126,7 @@
 
 .heroName {
   font-family: var(--fh);
-  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-size: clamp(3rem, 8vw, 7rem);
   font-weight: 700;
   line-height: 0.9;
   text-transform: uppercase;

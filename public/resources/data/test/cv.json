@@ -1,0 +1,214 @@
+{
+  "name": "Omon Das",
+  "role": "Intern Researcher",
+  "location": "Chittagong, Bangladesh",
+  "email": "omondas1234@gmail.com",
+  "github": "github.com/Omonsun",
+  "languages": ["Bengali", "English"],
+  "education": [
+    {
+      "degree": "M.Sc. in Statistics",
+      "institution": "University of Chittagong, Bangladesh",
+      "year": "Apr '26 - Ongoing",
+      "cgpa": "N/A"
+    },
+    {
+      "degree": "B.Sc. in Statistics",
+      "institution": "University of Chittagong, Bangladesh",
+      "year": "Jan '22 - May '26",
+      "cgpa": "3.45/4.0",
+      "rank": "Added soon /120"
+    }
+  ],
+  "certifications": [
+    {
+      "title": "Advanced Research Methodology (Certificate ID: 270448)",
+      "link": "researchhelpbd.info@gmail.com"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Intern Researcher",
+      "subtitle": "Datakothon Research Lab",
+      "dates": "May 2025 – July 2025",
+      "bullets": [
+        {
+          "text": "Project 1: Predicting Breast Cancer Mortality Trends Using Socioeconomic Indicators and Risk Factor Data with a Machine Learning Based Methodology",
+          "children": [
+            "Developed an end-to-end machine learning pipeline combining CatBoost, Random Forest, and LSTM to forecast breast cancer mortality trends across diverse socio-economic contexts.",
+            "Implemented advanced preprocessing techniques (feature selection, anomaly detection, power transformation) and applied post-hoc bias correction to enhance model accuracy and reliability.",
+            "Conducted SHAP analysis to interpret feature contributions, providing actionable insights into socio-economic drivers of breast cancer mortality for evidence-based policy planning.",
+            "(A manuscript from this project is under preparation for peer-reviewed publication)"
+          ]
+        },
+        {
+          "text": "Project 2: Machine Learning Framework for Water Quality Prediction in Karnaphuli River Basin",
+          "children": [
+            "Predicted salinity levels in the Karnaphuli River Basin to inform local water-management strategies.",
+            "Developed and validated hybrid ML models (XGBoost, AdaBoost, Stacking ensemble, ANN) to predict river water salinity using secondary data from CUET's Department of Civil Engineering.",
+            "Achieved high predictive accuracy with cross-validated metrics: ANN (R² = 0.98, RMSE = 0.84), Stacking Model (R² = 0.96, RMSE = 1.31), XGBoost (R² = 0.95, RMSE = 1.33), and AdaBoost (R² = 0.95, RMSE = 1.38)."
+          ]
+        }
+      ]
+    }
+  ],
+  "standard_test_scores": [
+    {
+      "title": "IELTS",
+      "subtitle": "N/A"
+    }
+  ],
+  "technical_skills": [
+    {
+      "subtitle": "Programming Languages",
+      "commas": ["Python", "R", "LaTeX", "PostgreSQL"]
+    },
+    {
+      "subtitle": "Data Science & Machine Learning Tools",
+      "commas": ["Pandas", "NumPy", "Matplotlib", "Seaborn", "Scikit-learn", "TensorFlow", "PyTorch", "Keras", "MLR"]
+    },
+    {
+      "subtitle": "Statistical Softwares",
+      "commas": ["SPSS", "Stata"]
+    },
+    {
+      "subtitle": "Tools",
+      "commas": ["Microsoft Office (Word, Excel, PowerPoint)", "Zotero"]
+    },
+    {
+      "subtitle": "Multimedia & Editing",
+      "commas": ["Canva"]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Brain Tumor Schematic Segmentation",
+      "bullets": [
+        "Implemented image segmentation techniques for brain tumor detection using deep learning architectures.",
+        "Utilized U-Net and CNN variants for precise pixel-wise segmentation tasks.",
+        "Applied preprocessing, augmentation, and evaluation metrics for model optimization and validation.",
+        "GitHub Repository"
+      ]
+    },
+    {
+      "title": "Road Lane Detection Using Mask R-CNN",
+      "bullets": [
+        "Developed a deep learning pipeline using Mask R-CNN with a ResNet-101 backbone on a custom COCO-format dataset.",
+        "Implemented instance segmentation for detecting and classifying seven categories of road lane markings.",
+        "Improved segmentation accuracy for complex road environments and lane structures.",
+        "GitHub Repository"
+      ]
+    },
+    {
+      "title": "Rainfall Prediction with Remote Sensing Simulated Data",
+      "bullets": [
+        "Developed a hybrid ResNet-LSTM framework for rainfall prediction using remote sensing simulated datasets.",
+        "Applied LIME for interpretable machine learning and local explanation analysis.",
+        "Evaluated temporal and spatial rainfall prediction performance using deep sequential architectures.",
+        "GitHub Repository"
+      ]
+    },
+    {
+      "title": "Salinity Prediction Using ANN",
+      "bullets": [
+        "Implemented ensemble machine learning methods alongside deep ANN architectures for salinity prediction.",
+        "Conducted preprocessing, model training, and comparative performance analysis.",
+        "Notebook"
+      ]
+    },
+    {
+      "title": "RNN Time-Series Classification",
+      "bullets": [
+        "Cleaned and preprocessed sequential datasets including imputation and exploratory visualization.",
+        "Applied recurrent neural networks for time-series forecasting and classification tasks.",
+        "Notebook"
+      ]
+    },
+    {
+      "title": "Dimension Reduction and Clustering",
+      "bullets": [
+        "Applied dimensionality reduction algorithms including PCA, UMAP, t-SNE, and LLE.",
+        "Implemented clustering methods such as K-means, DBSCAN, and HDBSCAN for unsupervised learning analysis.",
+        "Notebook"
+      ]
+    }
+  ],
+  "publications": [
+    {
+      "title": "Predicting Breast Cancer Mortality Trends Using Socioeconomic Indicators and Risk Factors Data with a Machine Learning-Based Methodology",
+      "dates": "Nov '25 - Ongoing",
+      "bullets": [
+        "(manuscript being revised for the methodology)"
+      ]
+    }
+  ],
+  "conferences": [
+    {
+      "title": "WCDF: A Modified Weibull Distribution-Based Deep Learning Activation Function",
+      "subtitle": "O. Das, S. Roy, and M. T. Sultan — 2025 28th International Conference on Computer and Information Technology (ICCIT), pp. 4378–4383",
+      "dates": "Dec. '25",
+      "bullets": [
+        "doi: 10.1109/ICCIT68739.2025.11489541"
+      ]
+    },
+    {
+      "title": "A Hybrid Convolutional Attention Residual Network (CARnet) for Enhanced Rainfall Prediction",
+      "subtitle": "S. Roy, O. Das, M. T. Sultan, and S. K. Adhikary — 2025 28th International Conference on Computer and Information Technology (ICCIT), pp. 4366–4371",
+      "dates": "Dec. '25",
+      "bullets": [
+        "doi: 10.1109/ICCIT68739.2025.11490463"
+      ]
+    }
+  ],
+  "activities": [
+    {
+      "title": "President",
+      "subtitle": "Programming Club, Department of Statistics",
+      "dates": "Feb '25 – Feb '26",
+      "bullets": [
+        "Helped foster a research environment in the University of Chittagong's first DATA-based IT club.",
+        "Conducted workshops on programming and statistical analysis topics.",
+        "Established collaborative learning initiatives focused on applied statistics and AI research.",
+        "Club ID: PC2023069"
+      ]
+    },
+    {
+      "title": "Associate Secretary",
+      "subtitle": "Leo Club of Chittagong",
+      "dates": "Jun '25 – Present",
+      "bullets": [
+        "Led volunteer initiatives and organized many collaborative events.",
+        "Delegated operational responsibilities among team members for efficient management.",
+        "MyLCI No: 6176459"
+      ]
+    },
+    {
+      "title": "Undergraduate Research Ambassador",
+      "subtitle": "Uthshorgo Undergraduate Research Ambassadors' Program",
+      "dates": "Jun '24 – Feb '25",
+      "bullets": [
+        "Mentored undergraduate students in conducting research projects.",
+        "Organized research workshops and seminars to foster a scholarly community.",
+        "Collaborated with faculty and staff to develop research resources."
+      ]
+    }
+  ],
+  "workshops_conducted": [
+    {
+      "title": "Workshop on Data Analysis in R & Basic Research Foundation",
+      "subtitle": "Programming Club, Department of Statistics, University of Chittagong — Collaborated with BIIHR",
+      "dates": "May '25",
+      "bullets": [
+        "Delivered interactive sessions on data manipulation, exploratory analysis, hypothesis testing, and regression modeling using R."
+      ]
+    },
+    {
+      "title": "Workshop on Writing Effective CV",
+      "subtitle": "Programming Club, Department of Statistics, University of Chittagong — Collaborated with Leo Club of Chittagong",
+      "dates": "Nov '25",
+      "bullets": [
+        "Delivered interactive sessions on CV structuring, professional writing, and application strategy."
+      ]
+    }
+  ]
+}

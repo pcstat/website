@@ -1,0 +1,67 @@
+name: Build and deploy website
+
+# The site is a static export, so it is built here on GitHub and only the finished files (out/) are
+# uploaded to Cloudflare Pages — Cloudflare spends no build time. The Pages project is created
+# automatically on the first run. Setup (secrets, project name): docs/DEPLOYMENT.md
+#
+# Runs when:
+#   * code is pushed to main,
+#   * the database repo changed (it starts this workflow with workflow_dispatch),
+#   * you start it by hand (Actions tab → Build and deploy website → Run workflow).
+# Pull requests only type-check, lint and build — nothing is deployed.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+# Never run two deployments at once; a newer run waits for the running one.
+concurrency:
+  group: website-${{ github.event_name == 'pull_request' && github.ref || 'deploy' }}
+  cancel-in-progress: false
+
+env:
+  # The Cloudflare Pages project name = the address <name>.pages.dev.
+  # Change it with a repository variable (Settings → Secrets and variables → Actions → Variables).
+  PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME || 'pcstat' }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The pnpm version comes from the "packageManager" field in package.json.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+
+      # Reads the live database (address in database.json). Fails — and deploys nothing — if it is unreachable.
+      - run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+
+      - name: Create the Cloudflare Pages project if it does not exist
+        if: github.event_name != 'pull_request'
+        run: node scripts/ensure-pages-project.mjs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name != 'pull_request'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out --project-name=${{ env.PROJECT_NAME }} --branch=main

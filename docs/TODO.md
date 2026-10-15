@@ -33,4 +33,3 @@ behaviour, so they were left for later. Check them off as they are fixed.
 ## Tooling
 - [ ] Remove the `typescript` → `@typescript/typescript6` alias once typescript-eslint supports TypeScript 7.
 - [ ] Move to ESLint 10 once `eslint-config-next` supports it.
-- [ ] Node 26 becomes LTS on 28 Oct 2026 — verify Cloudflare Pages' build image supports it.

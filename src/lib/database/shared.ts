@@ -36,14 +36,18 @@ export function buildContext(indexUrl: string, index: DatabaseIndex): DatabaseCo
   if (!index.imageBase) throw new Error(`database.json (${indexUrl}) has no "imageBase" entry.`);
   const root = new URL('./', indexUrl).href;
   const imageBase = new URL(index.imageBase.endsWith('/') ? index.imageBase : `${index.imageBase}/`, root).href;
-  return { index, root, imageBase };
+  // The database index holds paths relative to its own address (absolute URLs are also accepted);
+  // from here on every entry is an absolute URL.
+  const resolved = { ...index, imageBase } as DatabaseIndex;
+  for (const key of PAGE_KEYS) resolved[key] = resolveLink(index[key], root) as string;
+  return { index: resolved, root, imageBase };
 }
 
 export function assertAbsoluteIndexUrl(indexUrl: string): void {
   if (!/^https?:\/\//i.test(indexUrl)) {
     throw new Error(
-      `DATABASE_INDEX_URL must be an absolute http(s) URL, got "${indexUrl}". ` +
-        'Set NEXT_PUBLIC_DATABASE_INDEX_URL (see .env.example).'
+      `The database address must be an absolute http(s) URL, got "${indexUrl}". ` +
+        'Check "url" in database.json at the root of this repo.'
     );
   }
 }

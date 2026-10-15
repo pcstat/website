@@ -8,7 +8,7 @@ Guidance for Claude Code when working in this repository.
 
 ## Architecture in one paragraph
 Static Next.js export (`output: 'export'`). Content lives in a **separate database repo** and is fetched
-through `database.json` (`src/lib/config.ts`). List pages read it at build time
+through the address in the root `database.json` (`src/lib/config.ts`); the database's own index lists relative paths. List pages read it at build time
 (`src/lib/database/server.ts`); `?id=` pages read it in the browser (`src/lib/database/client.ts`).
 There is no admin code and no API route in this repo — the admin panel is its own repo.
 

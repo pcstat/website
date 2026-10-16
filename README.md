@@ -75,6 +75,10 @@ docs/             ARCHITECTURE.md · DEPLOYMENT.md · TODO.md · skills/
 
 See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — a step-by-step guide for all three repos. Short version: GitHub Actions (`.github/workflows/deploy.yml`) builds the static site and uploads `out/` to Cloudflare Pages, creating the project on the first run.
 
+## Live preview
+
+The admin panel can show this site with unsaved drafts (`NEXT_PUBLIC_ADMIN_ORIGIN`, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) step 12 and `src/lib/preview.ts`). It is off unless that variable is set.
+
 ## Common tasks
 
 * **Change content** (executives, projects, events…) → use the admin panel, or edit the JSON in the database repo. Never edit content in this repo.

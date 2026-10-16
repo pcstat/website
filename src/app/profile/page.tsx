@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { usePreview } from '@/lib/preview';
 import Link from 'next/link';
 import { DefaultProfile } from './DefaultProfile';
 import { DynamicProfile } from './DynamicProfile';
@@ -38,6 +39,8 @@ type ProfileState =
 function ProfileContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  // Inside the admin panel's live preview the page reloads its data whenever a new draft arrives.
+  const previewRev = usePreview()?.rev ?? 0;
 
   const [state, setState] = useState<ProfileState>({ type: 'loading' });
 
@@ -119,7 +122,7 @@ function ProfileContent() {
     };
 
     loadData();
-  }, [id]);
+  }, [id, previewRev]);
 
   if (state.type === 'loading') {
     return (

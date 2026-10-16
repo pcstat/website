@@ -50,6 +50,8 @@ jobs:
       - run: pnpm build
         env:
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          # Address of the admin panel — enables the admin's live preview (src/lib/preview.ts). Leave unset to disable it.
+          NEXT_PUBLIC_ADMIN_ORIGIN: ${{ vars.NEXT_PUBLIC_ADMIN_ORIGIN }}
 
       - name: Create the Cloudflare Pages project if it does not exist
         if: github.event_name != 'pull_request'

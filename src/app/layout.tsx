@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import LayoutWrapper from '@/components/LayoutWrapper';
+import PreviewBridge from '@/components/PreviewBridge';
 import Script from 'next/script';
 import { SITE_URL } from '@/lib/config';
 
@@ -42,6 +43,7 @@ export default function RootLayout({
             `,
           }}
         />
+        <PreviewBridge />
         <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>

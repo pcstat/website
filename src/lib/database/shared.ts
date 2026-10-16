@@ -71,3 +71,14 @@ export function resolveExecutives(data: DatabaseSchema, ctx: DatabaseContext): D
     })),
   };
 }
+
+/** Maps student IDs to member names (IDs that are not found are left out). */
+export function memberNameMap(db: DatabaseSchema, studentIds: string[]): Record<string, string> {
+  const members = db.committees.flatMap((committee) => committee.members);
+  const names: Record<string, string> = {};
+  for (const id of new Set(studentIds)) {
+    const name = members.find((m) => m.student_id === id)?.name;
+    if (name) names[id] = name;
+  }
+  return names;
+}

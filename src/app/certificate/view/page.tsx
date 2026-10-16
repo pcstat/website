@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { usePreview } from '@/lib/preview';
 import Link from 'next/link';
 import CertificateViewer from './CertificateViewer';
 import { clientGetCertificates } from '@/lib/database/client';
@@ -9,6 +10,8 @@ import { clientGetCertificates } from '@/lib/database/client';
 function CertificateContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  // Inside the admin panel's live preview the page reloads its data whenever a new draft arrives.
+  const previewRev = usePreview()?.rev ?? 0;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -73,7 +76,7 @@ function CertificateContent() {
     };
 
     fetchCertificate();
-  }, [id]);
+  }, [id, previewRev]);
 
   if (loading) {
     return (

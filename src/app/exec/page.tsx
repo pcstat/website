@@ -1,26 +1,8 @@
 import React from 'react';
 import { getExecutives } from '@/lib/database/server';
-import ExecList from './ExecList';
+import { execView } from '@/lib/views';
+import ExecPage from './ExecPage';
 
 export default async function ExecutivesPage() {
-  const db = await getExecutives();
-  const currentCommittee = db.committees.find(c => c.session === db.current_committee);
-  const members = currentCommittee ? currentCommittee.members : [];
-  const sessionLabel = currentCommittee ? currentCommittee.label : 'Active Session';
-
-  return (
-    <section className="pg active" id="page-exec" style={{ display: 'block' }}>
-      <div className="ph rv vis">
-        <div className="pe">// Committee</div>
-        <h2 className="pt">Current <span>Executives</span></h2>
-        <p className="pd">The team leading Statistics Programming Club this year. Click any card to view their profile &amp; social links.</p>
-        <div className="sbadge" id="exec-session-badge">
-          <span className="bdot"></span>
-          <span id="exec-session-text">Active Session · Committee {sessionLabel}</span>
-        </div>
-      </div>
-
-      <ExecList members={members} sessionLabel={sessionLabel} />
-    </section>
-  );
+  return <ExecPage initial={execView(await getExecutives())} />;
 }

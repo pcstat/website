@@ -189,7 +189,8 @@ The admin workflow copies `DATABASE_REPO_TOKEN`, `ADMIN_PASSWORD_HASH` and `AUTH
 | `CLOUDFLARE_PROJECT_NAME` | `website` | `pcstat` | Same, for the website |
 | `WEBSITE_REPO` | `database` | `<owner>/website` | `owner/name` of the website repo, if it is not called `website` |
 | `NEXT_PUBLIC_SITE_URL` | `website` | `https://pcstat.org` | Public address used in the page `<head>` (canonical / social-share links) |
-| `NEXT_PUBLIC_WEBSITE_URL` | `admin` | *(link hidden)* | "Open website" link in the admin sidebar |
+| `NEXT_PUBLIC_WEBSITE_URL` | `admin` | *(preview off)* | The website's address — enables the admin's **Preview site** button and the sidebar link |
+| `NEXT_PUBLIC_ADMIN_ORIGIN` | `website` | *(preview off)* | The admin panel's address — lets the admin's live preview send drafts to the site ([step 12](#12-live-preview-in-the-admin-panel-optional)) |
 
 ---
 
@@ -342,7 +343,8 @@ Now the website repo has its workflow, so the database can start it:
 | `CLOUDFLARE_PROJECT_NAME` | variable | database, website | You choose | Pages project name / address |
 | `WEBSITE_REPO` | variable | database | `owner/name` | Which repo to rebuild (default `<owner>/website`) |
 | `NEXT_PUBLIC_SITE_URL` | variable | website | Your public address | Canonical / Open Graph URLs |
-| `NEXT_PUBLIC_WEBSITE_URL` | variable | admin | The website's address | Sidebar link |
+| `NEXT_PUBLIC_WEBSITE_URL` | variable | admin | The website's address | Preview site button + sidebar link |
+| `NEXT_PUBLIC_ADMIN_ORIGIN` | variable | website | The admin panel's address | Allows the admin's live preview |
 
 Nothing secret is ever committed to git. The only values stored in the repos are the non-secret addresses in `database.json`.
 
@@ -361,3 +363,31 @@ pnpm dlx serve database --cors -l 8788
 pnpm install
 pnpm dev
 ```
+
+---
+
+## 12. Live preview in the admin panel (optional)
+
+The admin panel's **Preview site** button shows the real website in a frame with your **unsaved** changes, so you can check
+them before pressing Save. Two variables switch it on — each side must know the other's address:
+
+| Repo | Variable | Value |
+|---|---|---|
+| `admin` | `NEXT_PUBLIC_WEBSITE_URL` | `https://pcstat.pages.dev` (your website's address, no trailing slash) |
+| `website` | `NEXT_PUBLIC_ADMIN_ORIGIN` | `https://pcstat-admin.<your-name>.workers.dev` (your admin panel's address) |
+
+After adding them, **re-run both deploy workflows** (the values are baked in at build time).
+
+How it works and why it is safe: the website only reacts to drafts when it runs inside a frame **and** the message comes from
+exactly the origin in `NEXT_PUBLIC_ADMIN_ORIGIN`; the admin only talks to the origin in `NEXT_PUBLIC_WEBSITE_URL`. Drafts are
+shown in the browser only — nothing is saved or published. Without the variables the preview button is disabled and the website
+ignores all such messages.
+
+Local development: run the admin on `http://localhost:3000` and the website on another port, then set
+`NEXT_PUBLIC_WEBSITE_URL=http://localhost:3001` for the admin and `NEXT_PUBLIC_ADMIN_ORIGIN=http://localhost:3000` for the website.
+
+## 13. Members who maintain their own profile and CV
+
+A member can keep their profile and CV in their own public GitHub repository and edit them without any access to the admin
+panel. The admin links them in **Member files → Source…** (GitHub username + repository, or pasted links). Nothing has to be set
+up in Cloudflare or GitHub for this; see `docs/MEMBER-REPOS.md` in the admin repo for the member-facing instructions and templates.

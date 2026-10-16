@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { usePreview } from '@/lib/preview';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './cv.module.css';
@@ -90,6 +91,8 @@ function CVEntry({ title, subtitle, dates, bullets, commas }: { title?: string; 
 function CVContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
+  // Inside the admin panel's live preview the page reloads its data whenever a new draft arrives.
+  const previewRev = usePreview()?.rev ?? 0;
 
   const { setIsFullscreen } = useLayout();
   const { theme, toggleTheme } = useTheme();
@@ -166,7 +169,7 @@ function CVContent() {
     };
 
     loadData();
-  }, [id]);
+  }, [id, previewRev]);
 
   if (loading) {
     return (

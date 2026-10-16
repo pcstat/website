@@ -54,3 +54,15 @@ Light/dark via CSS variables and `ThemeContext`; an inline script in `layout.tsx
   typescript-eslint still need); the TypeScript 7 compiler is installed beside it as `@typescript/native` and provides the `tsc` binary.
   Drop the alias once typescript-eslint supports TypeScript 7.
 * ESLint 9: `eslint-config-next` does not support ESLint 10 yet.
+
+## Live preview (admin panel)
+
+`src/lib/preview.ts` + `src/components/PreviewBridge.tsx`. When the page runs inside a frame and `NEXT_PUBLIC_ADMIN_ORIGIN` is set,
+it announces itself to the parent (`club-preview:ready`) and accepts draft database files (`club-preview:data`) from that origin only.
+Drafts are held in a tiny external store:
+
+* list pages (home, exec, alumni, projects, events, achievements, courses) render through client views that derive their data with the
+  pure functions in `src/lib/views.ts` — from the build-time props normally, from the draft while previewing;
+* runtime-loaded pages (profile, CV, certificate) get drafts through `fetchJson` (`previewFile`) and reload when a new draft arrives.
+
+Nothing is persisted; without the variable the bridge does nothing.

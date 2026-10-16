@@ -17,6 +17,7 @@ import type {
 import {
   assertAbsoluteIndexUrl,
   buildContext,
+  memberNameMap,
   resolveExecutives,
   type DatabaseContext,
 } from './shared';
@@ -101,12 +102,5 @@ export async function getCertificates(): Promise<CertificatesSchema> {
 export async function resolveMemberNameMap(studentIds: string[]): Promise<Record<string, string>> {
   const unique = Array.from(new Set(studentIds));
   if (unique.length === 0) return {};
-  const db = await getExecutives();
-  const allMembers = db.committees.flatMap((committee) => committee.members);
-  const names: Record<string, string> = {};
-  for (const id of unique) {
-    const name = allMembers.find((m) => m.student_id === id)?.name;
-    if (name) names[id] = name;
-  }
-  return names;
+  return memberNameMap(await getExecutives(), unique);
 }

@@ -189,8 +189,8 @@ The admin workflow copies `DATABASE_REPO_TOKEN`, `ADMIN_PASSWORD_HASH` and `AUTH
 | `CLOUDFLARE_PROJECT_NAME` | `website` | `pcstat` | Same, for the website |
 | `WEBSITE_REPO` | `database` | `<owner>/website` | `owner/name` of the website repo, if it is not called `website` |
 | `NEXT_PUBLIC_SITE_URL` | `website` | `https://pcstat.org` | Public address used in the page `<head>` (canonical / social-share links) |
-| `NEXT_PUBLIC_WEBSITE_URL` | `admin` | *(preview off)* | The website's address — enables the admin's **Preview site** button and the sidebar link |
-| `NEXT_PUBLIC_ADMIN_ORIGIN` | `website` | *(preview off)* | The admin panel's address — lets the admin's live preview send drafts to the site ([step 12](#12-live-preview-in-the-admin-panel-optional)) |
+| `NEXT_PUBLIC_WEBSITE_URL` | `admin` | `website` field of `database.json` | Optional override of the website's address used by the admin's **Preview site** button and the sidebar link |
+| `NEXT_PUBLIC_ADMIN_ORIGIN` | `website` | `admin` field of `database.json` | Optional override of the admin panel's address — lets the admin's live preview send drafts to the site ([step 12](#12-live-preview-in-the-admin-panel-optional)) |
 
 ---
 
@@ -343,8 +343,8 @@ Now the website repo has its workflow, so the database can start it:
 | `CLOUDFLARE_PROJECT_NAME` | variable | database, website | You choose | Pages project name / address |
 | `WEBSITE_REPO` | variable | database | `owner/name` | Which repo to rebuild (default `<owner>/website`) |
 | `NEXT_PUBLIC_SITE_URL` | variable | website | Your public address | Canonical / Open Graph URLs |
-| `NEXT_PUBLIC_WEBSITE_URL` | variable | admin | The website's address | Preview site button + sidebar link |
-| `NEXT_PUBLIC_ADMIN_ORIGIN` | variable | website | The admin panel's address | Allows the admin's live preview |
+| `NEXT_PUBLIC_WEBSITE_URL` | variable (optional) | admin | The website's address | Overrides `website` in `database.json` |
+| `NEXT_PUBLIC_ADMIN_ORIGIN` | variable (optional) | website | The admin panel's address | Overrides `admin` in `database.json` |
 
 Nothing secret is ever committed to git. The only values stored in the repos are the non-secret addresses in `database.json`.
 
@@ -369,22 +369,26 @@ pnpm dev
 ## 12. Live preview in the admin panel (optional)
 
 The admin panel's **Preview site** button shows the real website in a frame with your **unsaved** changes, so you can check
-them before pressing Save. Two variables switch it on — each side must know the other's address:
+them before pressing Save. Each side must know the other's address, and both are written in the `database.json` file at the
+root of the repo (no GitHub variables needed):
 
-| Repo | Variable | Value |
+| Repo | `database.json` field | Value |
 |---|---|---|
-| `admin` | `NEXT_PUBLIC_WEBSITE_URL` | `https://pcstat.pages.dev` (your website's address, no trailing slash) |
-| `website` | `NEXT_PUBLIC_ADMIN_ORIGIN` | `https://pcstat-admin.<your-name>.workers.dev` (your admin panel's address) |
+| `admin` | `website` | `https://pcstat.pages.dev` (your website's address, no trailing slash) — this is already the default |
+| `website` | `admin` | `https://pcstat-admin.<your-name>.workers.dev` (your admin panel's address) |
 
-After adding them, **re-run both deploy workflows** (the values are baked in at build time).
+The button is always enabled once `website` is set. If the website has no `admin` yet, the frame shows the saved site and the
+panel tells you which address to enter. After editing the files, **re-run both deploy workflows** (the values are baked in at
+build time). The repository variables `NEXT_PUBLIC_WEBSITE_URL` (admin) and `NEXT_PUBLIC_ADMIN_ORIGIN` (website) still work and
+take precedence over the files.
 
 How it works and why it is safe: the website only reacts to drafts when it runs inside a frame **and** the message comes from
-exactly the origin in `NEXT_PUBLIC_ADMIN_ORIGIN`; the admin only talks to the origin in `NEXT_PUBLIC_WEBSITE_URL`. Drafts are
-shown in the browser only — nothing is saved or published. Without the variables the preview button is disabled and the website
-ignores all such messages.
+exactly the admin address; the admin only talks to the website address. Drafts are shown in the browser only — nothing is saved
+or published. With `admin` empty the website ignores all such messages.
 
 Local development: run the admin on `http://localhost:3000` and the website on another port, then set
-`NEXT_PUBLIC_WEBSITE_URL=http://localhost:3001` for the admin and `NEXT_PUBLIC_ADMIN_ORIGIN=http://localhost:3000` for the website.
+`NEXT_PUBLIC_WEBSITE_URL=http://localhost:3001` for the admin and `NEXT_PUBLIC_ADMIN_ORIGIN=http://localhost:3000` for the website
+(in `.env.local`, not in `database.json`).
 
 ## 13. Members who maintain their own profile and CV
 

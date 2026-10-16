@@ -9,6 +9,8 @@
  *   url     where the database is published — the address of its Cloudflare Pages site.
  *           Optional: when empty, the files are read straight from GitHub (raw.githubusercontent.com,
  *           public repos only, refreshed by GitHub every few minutes).
+ *   admin   address of the admin panel (https://<worker>.<account>.workers.dev). Lets the panel's live preview
+ *           send unsaved drafts to this site; empty = the site ignores such messages.
  *
  * NOTE: `process.env.NEXT_PUBLIC_*` must be written out literally so Next.js can inline it
  * into the browser bundle.
@@ -22,6 +24,7 @@ interface DatabaseLocation {
   repo: string;
   branch?: string;
   url?: string;
+  admin?: string;
 }
 
 function databaseBaseUrl(location: DatabaseLocation): string {
@@ -41,3 +44,9 @@ export const DATABASE_BASE_URL = databaseBaseUrl(databaseConfig);
  * Everything the website shows comes from the files this index points to.
  */
 export const DATABASE_INDEX_URL = `${DATABASE_BASE_URL}database.json`;
+
+/**
+ * Address of the admin panel that may preview drafts in this site (see src/lib/preview.ts).
+ * `admin` in database.json; the NEXT_PUBLIC_ADMIN_ORIGIN environment variable, when set, takes precedence.
+ */
+export const ADMIN_ORIGIN: string = (process.env.NEXT_PUBLIC_ADMIN_ORIGIN || (databaseConfig as DatabaseLocation).admin || '').trim();

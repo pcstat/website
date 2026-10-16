@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import PreviewBridge from '@/components/PreviewBridge';
-import Script from 'next/script';
 import { SITE_URL } from '@/lib/config';
 
 export const metadata: Metadata = {
@@ -27,22 +26,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
-      <head />
-      <body>
-        <Script
-          id="theme-script"
-          strategy="beforeInteractive"
+      <head>
+        {/*
+          Applies the saved theme before the first paint (no flash). It is a plain inline <script> in <head> —
+          not next/script — because next/script renders a <script> inside the React tree in <body>, and React
+          warns: "Encountered a script tag while rendering React component".
+        */}
+        <script
           dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme') || 'dark';
-                  document.documentElement.setAttribute('data-theme', theme);
-                } catch (e) {}
-              })()
-            `,
+            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`,
           }}
         />
+      </head>
+      <body>
         <PreviewBridge />
         <LayoutWrapper>{children}</LayoutWrapper>
       </body>

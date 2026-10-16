@@ -53,7 +53,7 @@ async function fetchJson<T>(url: string): Promise<T> {
       }
     }
     const reason = lastError instanceof Error ? lastError.message : String(lastError);
-    throw new Error(`Could not load database file ${url}: ${reason}`);
+    throw new Error(`Could not load database file ${url}: ${reason}. Check "url" / "repo" in database.json; if the address is an old one, delete the .next folder (it caches fetches).`);
   })();
 
   cache.set(url, { at: Date.now(), value });

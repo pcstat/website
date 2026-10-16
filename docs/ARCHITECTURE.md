@@ -57,7 +57,7 @@ Light/dark via CSS variables and `ThemeContext`; an inline script in `layout.tsx
 
 ## Live preview (admin panel)
 
-`src/lib/preview.ts` + `src/components/PreviewBridge.tsx`. When the page runs inside a frame and `NEXT_PUBLIC_ADMIN_ORIGIN` is set,
+`src/lib/preview.ts` + `src/components/PreviewBridge.tsx`. When the page runs inside a frame and `admin` in `database.json` (or `NEXT_PUBLIC_ADMIN_ORIGIN`) is set,
 it announces itself to the parent (`club-preview:ready`) and accepts draft database files (`club-preview:data`) from that origin only.
 Drafts are held in a tiny external store:
 

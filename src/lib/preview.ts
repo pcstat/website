@@ -4,14 +4,15 @@
  * The admin panel shows this site in an iframe and posts it the drafts (unsaved changes). While a draft is
  * present, the pages show it instead of the published data — nothing is saved anywhere.
  *
- * Off by default: it only runs inside an iframe, and only when NEXT_PUBLIC_ADMIN_ORIGIN (the admin panel's
- * address, e.g. https://pcstat-admin.example.workers.dev) is set at build time; messages from any other
+ * Off by default: it only runs inside an iframe, and only when "admin" in database.json (the admin panel's
+ * address, e.g. https://pcstat-admin.example.workers.dev; or NEXT_PUBLIC_ADMIN_ORIGIN) is set at build time; messages from any other
  * origin are ignored.
  *
  *   this site → admin   { type: "club-preview:ready" }
  *   admin → this site   { type: "club-preview:data", payload }
  */
 import { useSyncExternalStore } from 'react';
+import { ADMIN_ORIGIN } from './config';
 import { resolveExecutives, type DatabaseContext } from './database/shared';
 import type { AchievementsSchema, CertificatesSchema, Course, DatabaseSchema, EventsSchema, Project } from './types';
 
@@ -19,7 +20,7 @@ const READY = 'club-preview:ready';
 const DATA = 'club-preview:data';
 
 function adminOrigin(): string | null {
-  const raw = process.env.NEXT_PUBLIC_ADMIN_ORIGIN;
+  const raw = ADMIN_ORIGIN;
   if (!raw) return null;
   try {
     return new URL(raw).origin;

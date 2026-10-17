@@ -96,8 +96,10 @@ export default function EventsList({ events }: { events: ClubEvent[] }) {
 
   if (upcomingEvents.length === 0) {
     return (
-      <div style={{ fontFamily: 'var(--fm)', fontSize: '.8rem', color: 'var(--mut)', padding: '2rem 1.5rem' }}>
-        // No upcoming events at the moment. Check back soon.
+      <div className="empty-state">
+        <span className="empty-icon" aria-hidden="true">›_</span>
+        <div className="empty-title">No upcoming events at the moment</div>
+        <p className="empty-text">Check back soon — new workshops, contests and meetups are posted here as soon as they are scheduled.</p>
       </div>
     );
   }

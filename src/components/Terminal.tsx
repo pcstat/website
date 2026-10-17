@@ -1,114 +1,156 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 
-interface Token {
-  t: string; // token type (e.g. kw, tc, fn, num, cm)
-  v: string; // token value
+/** Everything the club shell prints. Comes from the database, so the terminal is never out of date. */
+export interface TerminalData {
+  members: number;
+  projects: number;
+  publications: number;
+  years: number;
+  recentProjects: { title: string; status: string }[];
+  events: { title: string; date: string; time?: string; location?: string }[];
 }
 
-interface TermLine {
+interface Token {
+  /** Style: fn (green), kw (purple), num (orange), key (blue), dim (muted), tc (plain) … */
+  t: string;
+  v: string;
+  href?: string;
+}
+type OutLine = Token[];
+interface ScreenLine {
+  prompt?: boolean;
   tokens: Token[];
 }
 
-const TERM_LINES: TermLine[] = [
-  { tokens: [{ t: 'cm', v: '# ML Workshop — Image Classifier' }] },
-  { tokens: [{ t: 'kw', v: 'import ' }, { t: 'tc', v: 'torch' }] },
-  { tokens: [{ t: 'kw', v: 'import ' }, { t: 'tc', v: 'torch.nn ' }, { t: 'kw', v: 'as ' }, { t: 'tc', v: 'nn' }] },
-  { tokens: [{ t: 'kw', v: 'from ' }, { t: 'tc', v: 'torchvision' }, { t: 'kw', v: ' import ' }, { t: 'tc', v: 'models' }]},
-  { tokens: [{ t: 'kw', v: 'from ' }, { t: 'tc', v: 'pcstat' }, { t: 'kw', v: ' import ' }, { t: 'tc', v: 'train' }]},
-  { tokens: [] }, // empty line
-  { tokens: [{ t: 'fn', v: 'model' }, { t: 'tc', v: ' = models.' }, { t: 'fn', v: 'resnet18' }, { t: 'tc', v: '(\u200B' }, { t: 'tc', v: 'pretrained=' }, { t: 'kw', v: 'True' }, { t: 'tc', v: ')' }] },
-  { tokens: [{ t: 'fn', v: 'optimizer' }, { t: 'tc', v: ' = torch.optim.' }, { t: 'fn', v: 'Adam' }, { t: 'tc', v: '(\u200B' }, { t: 'tc', v: 'model.parameters(), lr=' }, { t: 'num', v: '1e-4' }, { t: 'tc', v: ')' }] },
-  { tokens: [] }, // empty line
-  { tokens: [{ t: 'fn', v: 'train' }, { t: 'tc', v: '(model, epochs=' }, { t: 'num', v: '10' }, { t: 'tc', v: ')' }] },
-  { tokens: [] }, // empty line
-];
+const COMMANDS = ['about', 'stats', 'projects', 'events', 'join'] as const;
+type Command = (typeof COMMANDS)[number];
 
-export default function Terminal() {
-  const [typedLines, setTypedLines] = useState<{tokens: {text: string, type: string}[]}[]>([]);
-  const [showChart, setShowChart] = useState(false);
-  const [showComplete, setShowComplete] = useState(false);
-  const bodyRef = useRef<HTMLDivElement>(null);
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  useEffect(() => {
-    let active = true;
+function prettyDate(iso: string) {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+}
 
-    async function runAnimation() {
-      // 1. Type the code lines
-      for (let lineIdx = 0; lineIdx < TERM_LINES.length; lineIdx++) {
-        if (!active) return;
-        const line = TERM_LINES[lineIdx];
+const STATUS_STYLE: Record<string, string> = { active: 'fn', completed: 'key', research: 'kw', publication: 'kw' };
 
-        if (line.tokens.length === 0) {
-          setTypedLines(prev => [...prev, {tokens: []}]);
-          await new Promise(r => setTimeout(r, 100));
-          continue;
-        }
+function nextEvent(events: TerminalData['events']) {
+  const today = new Date();
+  const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  return [...events].filter((e) => e.date >= iso).sort((a, b) => a.date.localeCompare(b.date))[0];
+}
 
-        // Add an empty line that we will fill
-        setTypedLines(prev => [...prev, {tokens: line.tokens.map(t => ({text: '', type: t.t}))}]);
+function stat(label: string, value: number): OutLine {
+  return [{ t: 'label', v: label }, { t: 'num', v: String(value) }];
+}
 
-        for (let tokIdx = 0; tokIdx < line.tokens.length; tokIdx++) {
-          if (!active) return;
-          const token = line.tokens[tokIdx];
-
-          // Fill token character by character
-          let typedText = '';
-          for (let charIdx = 0; charIdx < token.v.length; charIdx++) {
-            if (!active) return;
-            typedText += token.v[charIdx];
-
-            // Update the last line's token in state
-            const currentTypedText = typedText;
-            setTypedLines(prev => {
-              const updated = [...prev];
-              const lastLine = updated[updated.length - 1];
-              const updatedTokens = [...lastLine.tokens];
-              updatedTokens[tokIdx] = {text: currentTypedText, type: token.t};
-              updated[updated.length - 1] = {tokens: updatedTokens};
-              return updated;
-            });
-
-            await new Promise(r => setTimeout(r, 20));
-          }
-        }
-        await new Promise(r => setTimeout(r, 150));
-        if (bodyRef.current) {
-          bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-        }
+function output(cmd: Command, data: TerminalData): OutLine[] {
+  switch (cmd) {
+    case 'about':
+      return [
+        [{ t: 'fn', v: 'Statistics Programming Club' }],
+        [{ t: 'tc', v: 'Dept. of Statistics · University of Chittagong' }],
+        [{ t: 'cm', v: '# est. 2022 — programmers, problem-solvers & builders' }],
+        [{ t: 'label', v: 'focus' }, { t: 'str', v: 'python · r · ai/ml · deep learning · statistics' }],
+      ];
+    case 'stats':
+      return [
+        stat('members', data.members),
+        stat('projects', data.projects),
+        stat('publications', data.publications),
+        stat('years', data.years),
+      ];
+    case 'projects': {
+      if (data.recentProjects.length === 0) return [[{ t: 'cm', v: '# nothing published yet — check back soon' }]];
+      const rows: OutLine[] = [[{ t: 'cm', v: '# latest from the lab' }]];
+      for (const p of data.recentProjects) {
+        rows.push([{ t: STATUS_STYLE[p.status] ?? 'tc', v: '● ' }, { t: 'tc', v: p.title }, { t: 'dim', v: `  [${p.status}]` }]);
       }
-
-      // 2. Pause
-      await new Promise(r => setTimeout(r, 600));
-      if (!active) return;
-
-      // 3. Show training complete
-      setTypedLines(prev => [...prev, {tokens: [{text: '❯ Training complete. Results:', type: 'to'}]}]);
-      await new Promise(r => setTimeout(r, 300));
-      if (!active) return;
-
-      // 4. Trigger charts animation
-      setShowChart(true);
-      await new Promise(r => setTimeout(r, 500));
-      if (!active) return;
-
-      // 5. Show final command prompt
-      setShowComplete(true);
+      return rows;
     }
+    case 'events': {
+      const ev = nextEvent(data.events);
+      if (!ev) {
+        return [
+          [{ t: 'cm', v: '# no upcoming events right now' }],
+          [{ t: 'tc', v: 'new workshops & contests are posted as soon as they are scheduled' }],
+        ];
+      }
+      const when = [prettyDate(ev.date), ev.time, ev.location].filter(Boolean).join(' · ');
+      return [[{ t: 'kw', v: '▸ ' }, { t: 'tc', v: ev.title }], [{ t: 'dim', v: `  ${when}` }]];
+    }
+    case 'join':
+      return [
+        [{ t: 'tc', v: 'open to every Stat major & minor — no experience needed.' }],
+        [{ t: 'fn', v: '→ ' }, { t: 'lnk', v: 'see how to join', href: '/about' }],
+      ];
+  }
+}
 
-    runAnimation();
+const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
-    return () => {
-      active = false;
-    };
+export default function Terminal({ data }: { data: TerminalData }) {
+  const [lines, setLines] = useState<ScreenLine[]>([]);
+  const [busy, setBusy] = useState(true);
+  const [last, setLast] = useState<Command | null>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const runId = useRef(0);
+  const dataRef = useRef(data);
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
+  const run = useCallback(async (cmds: Command[], clearFirst: boolean) => {
+    const id = ++runId.current;
+    const live = () => runId.current === id;
+    const fast = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pause = (ms: number) => (fast ? Promise.resolve() : wait(ms));
+
+    setBusy(true);
+    if (clearFirst) setLines([]);
+
+    for (const cmd of cmds) {
+      if (!live()) return;
+      const typed = `pcstat ${cmd}`;
+      setLines((prev) => [...prev, { prompt: true, tokens: [] }]);
+      for (let i = 1; i <= typed.length; i++) {
+        if (!live()) return;
+        const text = typed.slice(0, i);
+        const sub = text.length > 7 ? text.slice(7) : '';
+        const tokens: Token[] = [{ t: 'fn', v: text.slice(0, 6) }];
+        if (text.length > 6) tokens.push({ t: 'tc', v: ' ' });
+        if (sub) tokens.push({ t: 'tc', v: sub });
+        setLines((prev) => [...prev.slice(0, -1), { prompt: true, tokens }]);
+        await pause(fast ? 0 : 42);
+      }
+      await pause(260);
+      for (const out of output(cmd, dataRef.current)) {
+        if (!live()) return;
+        setLines((prev) => [...prev, { tokens: out }]);
+        await pause(110);
+      }
+      setLast(cmd);
+      await pause(650);
+    }
+    if (live()) setBusy(false);
   }, []);
 
+  // Autoplay once on arrival.
   useEffect(() => {
-    if (bodyRef.current) {
-      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-    }
-  }, [typedLines, showChart, showComplete]);
+    void run([...COMMANDS], false);
+    return () => {
+      runId.current++;
+    };
+  }, [run]);
+
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [lines, busy]);
 
   return (
     <div className="term">
@@ -116,65 +158,51 @@ export default function Terminal() {
         <div className="dot dr"></div>
         <div className="dot dy"></div>
         <div className="dot dg"></div>
-        <span className="tttl">programming_club/train_model.py</span>
+        <span className="tttl">pcstat — ~/statistics-programming-club</span>
       </div>
-      <div className="tbody" id="term-body" ref={bodyRef}>
-        {typedLines.map((line, lineIdx) => (
-          line.tokens.length === 0 ? (
-            <div key={`empty-${lineIdx}`}>&nbsp;</div>
-          ) : (
-            <div key={`line-${lineIdx}`} className="tl">
-              {line.tokens.map((token, tokIdx) => (
-                <span key={`tok-${lineIdx}-${tokIdx}`} className={`t-${token.type}`}>
-                  {token.text}
-                </span>
-              ))}
-            </div>
-          )
-        ))}
 
-        {showChart && (
-          <div className="t-chart">
-            <div className="t-bar-row">
-              <span className="t-bar-lbl">Train Acc</span>
-              <div className="t-bar-track">
-                <div className="t-bar-fill f1" style={{ width: '92.4%' }}></div>
-              </div>
-              <span className="t-bar-val">92.4%</span>
-            </div>
-            <div className="t-bar-row">
-              <span className="t-bar-lbl">Val Acc</span>
-              <div className="t-bar-track">
-                <div className="t-bar-fill f2" style={{ width: '78.1%' }}></div>
-              </div>
-              <span className="t-bar-val">78.1%</span>
-            </div>
-            <div className="t-bar-row">
-              <span className="t-bar-lbl">F1 Score</span>
-              <div className="t-bar-track">
-                <div className="t-bar-fill f3" style={{ width: '85.1%' }}></div>
-              </div>
-              <span className="t-bar-val">0.851</span>
-            </div>
-            <div className="t-bar-row">
-              <span className="t-bar-lbl">Loss</span>
-              <div className="t-bar-track">
-                <div className="t-bar-fill f4" style={{ width: '61.2%' }}></div>
-              </div>
-              <span className="t-bar-val">0.612</span>
-            </div>
+      <p className="sr-only">
+        Statistics Programming Club, Department of Statistics, University of Chittagong, established 2022.
+        {` ${data.members} members, ${data.projects} projects and ${data.publications} publications.`}
+      </p>
+
+      <div className="tbody" id="term-body" ref={bodyRef} aria-hidden="true">
+        {lines.map((line, i) => (
+          <div key={i} className={`tl ${line.prompt ? 'tl-cmd' : 'tl-out'}`}>
+            {line.prompt && <span className="tp">❯</span>}
+            {line.tokens.map((tok, j) =>
+              tok.href ? (
+                <Link key={j} href={tok.href} className={`t-${tok.t}`}>
+                  {tok.v}
+                </Link>
+              ) : (
+                <span key={j} className={`t-${tok.t}`}>
+                  {tok.v}
+                </span>
+              ),
+            )}
+          </div>
+        ))}
+        {!busy && (
+          <div className="tl tl-cmd">
+            <span className="tp">❯</span>
+            <span className="tcur"></span>
           </div>
         )}
+      </div>
 
-        {showComplete && (
-          <>
-            <div>&nbsp;</div>
-            <div className="tl">
-              <span className="tp">❯❯❯ </span>
-              <span className="tcur"></span>
-            </div>
-          </>
-        )}
+      <div className="tfoot">
+        <span className="tfoot-lbl">try</span>
+        {COMMANDS.map((c) => (
+          <button
+            key={c}
+            type="button"
+            className={`tchip ${last === c && !busy ? 'is-last' : ''}`}
+            onClick={() => void run([c], true)}
+          >
+            {c}
+          </button>
+        ))}
       </div>
     </div>
   );

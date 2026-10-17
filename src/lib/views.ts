@@ -50,3 +50,30 @@ export function homeStats(db: DatabaseSchema, projData: { projects: Project[] },
   const totalPublications = all.filter((p) => p.status === 'publication' || p.status === 'research').length;
   return { totalMembers, totalProjects, totalPublications, totalYears };
 }
+
+/** The facts the home page terminal prints: the latest projects and the club's events. */
+export function terminalView(projData: { projects: Project[] }, eventsDoc: EventsSchema) {
+  const recentProjects = [...(projData.projects || [])]
+    .sort((a, b) => (b.year || '').localeCompare(a.year || ''))
+    .slice(0, 3)
+    .map((p) => ({ title: p.title, status: p.status }));
+  const events = (eventsDoc.events || []).map((e) => ({ title: e.title, date: e.date, time: e.time, location: e.location }));
+  return { recentProjects, events };
+}
+
+/** What the home page shows under the hero: the latest projects and the current committee. */
+export function homeExtras(db: DatabaseSchema, projData: { projects: Project[] }) {
+  const current = db.committees.find((c) => c.session === db.current_committee);
+  const members = (current?.members ?? []).map((m) => ({
+    id: m.student_id,
+    name: m.name,
+    role: m.role ?? '',
+    icon: m.icon_link ?? '',
+    initial: m.initial,
+  }));
+  const projects = [...(projData.projects || [])]
+    .sort((a, b) => (b.year || '').localeCompare(a.year || ''))
+    .slice(0, 3)
+    .map((p) => ({ title: p.title, description: p.description, status: p.status, year: p.year, tags: (p.tags || []).slice(0, 3) }));
+  return { members, projects, sessionLabel: current?.label ?? '' };
+}

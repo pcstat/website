@@ -182,7 +182,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
           <ul className="nis">
             {NAV_ITEMS.map((item) => (
               <li key={item.path} className={`ni ${isActive(item.path) ? 'active' : ''}`} data-tip={item.name}>
-                <Link href={item.path} scroll={false} style={{ display: 'flex', alignItems: 'center', gap: '.8rem', width: '100%', height: '100%' }}>
+                <Link href={item.path} scroll={false} aria-current={isActive(item.path) ? 'page' : undefined} style={{ display: 'flex', alignItems: 'center', gap: '.8rem', width: '100%', height: '100%' }}>
                   <span className="nic">{item.icon}</span>
                   <span className="nil">{item.name}</span>
                 </Link>
@@ -219,9 +219,9 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
           </button>
-          <div className={`hbg ${mobileMenuOpen ? 'open' : ''}`} id="hbg" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <button type="button" className={`hbg ${mobileMenuOpen ? 'open' : ''}`} id="hbg" aria-label="Toggle menu" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             <span></span><span></span><span></span>
-          </div>
+          </button>
         </div>
       </nav>
 
@@ -229,7 +229,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       <div ref={mobileMenuRef} className={`mm ${mobileMenuOpen ? 'open' : ''} ${isFullscreen ? 'force-mm' : ''}`} id="mm">
         {NAV_ITEMS.map((item) => (
           <div key={item.path} className={`mi ${isActive(item.path) ? 'active' : ''}`}>
-            <Link href={item.path} scroll={false} onClick={handleMobileLinkClick} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Link href={item.path} scroll={false} onClick={handleMobileLinkClick} aria-current={isActive(item.path) ? 'page' : undefined} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
               <span className="mi-icon">{item.icon}</span>&nbsp;&nbsp;{item.name}
             </Link>
           </div>
@@ -241,6 +241,17 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
            ══════════════════════════════════════════ */}
       <main className={isFullscreen ? 'fs-main' : `ct ${sidebarCollapsed ? 'col' : ''}`} id="ct">
         {children}
+        <footer className="sf">
+          <div className="sf-brand">
+            <span className="sf-mark">Statistics<span>.</span></span>
+            <span className="sf-sub">Programming Club</span>
+          </div>
+          <p className="sf-addr">Department of Statistics, University of Chittagong</p>
+          <div className="sf-meta">
+            <a href="mailto:programmingclub.stat.cu@gmail.com">programmingclub.stat.cu@gmail.com</a>
+            <span>© {currentYear} Statistics Programming Club</span>
+          </div>
+        </footer>
       </main>
     </>
   );

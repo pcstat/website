@@ -1,33 +1,14 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Member, ProfileData } from '@/lib/types';
+import type { Member, ProfileData, ProfileProject, ProfilePublication, ProfileTimelineItem } from '@/lib/types';
 import { useLayout } from '@/components/LayoutWrapper';
-import { useTheme } from '@/context/ThemeContext';
+import { FitName, isLongName } from '@/components/FitName';
+import { StatGrid } from '@/components/StatGrid';
+import { PageBar, type BarSection } from '@/components/PageBar';
 import styles from './DynamicProfile.module.css';
-
-// SVG Icons for Theme Toggle (scaled to fit switch thumb)
-const SUN_ICON = (
-  <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="5"></circle>
-    <line x1="12" y1="1" x2="12" y2="3"></line>
-    <line x1="12" y1="21" x2="12" y2="23"></line>
-    <line x1="4.22" y1="4.22" x2="5.63" y2="5.63"></line>
-    <line x1="18.37" y1="4.22" x2="19.78" y2="5.63"></line>
-    <line x1="1" y1="12" x2="3" y2="12"></line>
-    <line x1="21" y1="12" x2="23" y2="12"></line>
-    <line x1="4.22" y1="19.78" x2="5.63" y2="18.37"></line>
-    <line x1="18.37" y1="19.78" x2="19.78" y2="18.37"></line>
-  </svg>
-);
-
-const MOON_ICON = (
-  <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-  </svg>
-);
 
 interface DynamicProfileProps {
   id: string;
@@ -35,9 +16,106 @@ interface DynamicProfileProps {
   member: Member;
 }
 
+function TagList({ tags, className }: { tags?: string[]; className: string }) {
+  if (!tags || tags.length === 0) return null;
+  return (
+    <div className={className}>
+      {tags.map((t, i) => (
+        <span key={`${t}-${i}`} className={className === styles.timelineTags ? styles.timelineTag : styles.projectTag}>
+          {t}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function TimelineCard({ item }: { item: ProfileTimelineItem }) {
+  return (
+    <div className={styles.timelineCardContainer}>
+      <div className={styles.timelineYear}>
+        {item.start} – {item.end}
+      </div>
+      <div className={styles.timelineCard}>
+        <div className={styles.timelineRole}>
+          {item.role}
+          {item.end === 'present' && <span className={styles.currentBadge}>Current</span>}
+        </div>
+        {item.company && (
+          <div className={styles.timelineCompany}>
+            <span className={styles.companyIcon}>🏢</span>
+            <span>
+              {item.company}
+              {item.type && <span className={styles.jobType}> · {item.type}</span>}
+            </span>
+          </div>
+        )}
+        {item.description && <div className={styles.timelineDescription}>{item.description}</div>}
+        <TagList tags={item.tags} className={styles.timelineTags} />
+      </div>
+    </div>
+  );
+}
+
+function ProjectCard({ item, featured }: { item: ProfileProject; featured: boolean }) {
+  const links = item.links ?? {};
+  return (
+    <div className={`${styles.projectCard} ${featured ? styles.featured : ''}`}>
+      <div>
+        <div className={styles.projectLabel}>{featured ? '// Featured Project' : '// Project'}</div>
+        <h3 className={styles.projectTitle}>{item.title}</h3>
+        <p className={styles.projectDesc}>{item.description}</p>
+        <TagList tags={item.tags} className={styles.projectTags} />
+      </div>
+      {Object.keys(links).length > 0 && (
+        <div className={styles.projectFooter}>
+          <div className={styles.projectLinks}>
+            {links.github && (
+              <a href={links.github} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
+                GitHub ↗
+              </a>
+            )}
+            {links.demo && (
+              <a href={links.demo} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
+                {featured ? 'Live Demo ↗' : 'Demo ↗'}
+              </a>
+            )}
+            {featured && links.paper && (
+              <a href={links.paper} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
+                Paper ↗
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PublicationCard({ item, featured }: { item: ProfilePublication; featured: boolean }) {
+  return (
+    <div className={`${styles.projectCard} ${featured ? styles.featured : ''}`}>
+      <div>
+        <div className={styles.projectLabel}>{featured ? '// Featured Publication' : '// Publication'}</div>
+        <h3 className={styles.projectTitle}>{item.title}</h3>
+        <div className={styles.pubVenue}>{item.venue}</div>
+        <TagList tags={item.tags} className={styles.projectTags} />
+      </div>
+      {item.links?.paper && (
+        <div className={styles.projectFooter}>
+          <div className={styles.projectLinks}>
+            <a href={item.links.paper} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
+              View Paper ↗
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
   const { setIsFullscreen } = useLayout();
-  const { theme, toggleTheme } = useTheme();
+  const [imageError, setImageError] = useState(false);
 
   // Set fullscreen mode on mount, reset on unmount
   useEffect(() => {
@@ -49,57 +127,82 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
 
   // Fallbacks from member data if JSON is sparse
   const profileName = data.name || member.name;
-  const profileRole = data.role || member.role || "Executive Member";
-  const profileBio = data.bio || member.bio || "";
-  const profilePhoto = data.photo || member.icon_link || "";
+  const profileRole = data.role || member.role || 'Executive Member';
+  const profileBio = data.bio || member.bio || '';
+  const profilePhoto = data.photo || member.icon_link || '';
   const socials = data.socials || member.socials || [];
   const sessionVal = data.session || member.session;
 
   // Resolve CV Link: if it is a JSON file (ends with .json or has .json) or is /cv / cv, route to /cv?id=...
   let cvHref = data.cv_link || member.cv_link;
   if (cvHref) {
-    const isJson = cvHref.toLowerCase().endsWith('.json') || cvHref.toLowerCase().includes('.json');
-    if (cvHref === '/cv' || cvHref === 'cv' || isJson) {
-      cvHref = `/cv?id=${id}`;
-    }
+    const isJson = cvHref.toLowerCase().includes('.json');
+    if (cvHref === '/cv' || cvHref === 'cv' || isJson) cvHref = `/cv?id=${id}`;
   } else {
     cvHref = '';
   }
 
-  // Filter projects by featured
   const allProjects = data.projects || [];
-  const featuredProjects = allProjects.filter(p => p.featured);
-  const regularProjects = allProjects.filter(p => !p.featured);
+  const featuredProjects = allProjects.filter((p) => p.featured);
+  const regularProjects = allProjects.filter((p) => !p.featured);
 
-  // Filter publications by featured
   const allPublications = data.publications || [];
-  const featuredPublications = allPublications.filter(p => p.featured);
-  const regularPublications = allPublications.filter(p => !p.featured);
+  const featuredPublications = allPublications.filter((p) => p.featured);
+  const regularPublications = allPublications.filter((p) => !p.featured);
 
-  // Fallback for missing photos
-  const [imageError, setImageError] = React.useState(false);
+  // Newest first; "present" counts as newest. Sorted on a copy — never mutate the data.
+  const timeline = useMemo(
+    () =>
+      [...(data.timeline || [])].sort((a, b) => {
+        const yearA = a.start === 'present' ? 9999 : parseInt(a.start);
+        const yearB = b.start === 'present' ? 9999 : parseInt(b.start);
+        return yearB - yearA;
+      }),
+    [data.timeline],
+  );
 
-  // Calculate dynamic section numbers
-  let sectionCount = 0;
-  const getNextSectionNum = () => {
-    sectionCount++;
-    return sectionCount.toString().padStart(2, '0');
-  };
+  const hasSkills = !!data.skills && data.skills.length > 0;
+  const hasAchievements = !!data.achievements && data.achievements.length > 0;
+
+  // Sections in page order — also drives the numbering and the links in the top bar.
+  const sections = useMemo(() => {
+    const list: BarSection[] = [{ id: 'bio', label: 'Biography' }];
+    if (timeline.length > 0) list.push({ id: 'experience', label: 'Experience' });
+    if (hasSkills) list.push({ id: 'expertise', label: 'Expertise' });
+    if (allProjects.length > 0) list.push({ id: 'work', label: 'Work' });
+    if (allPublications.length > 0) list.push({ id: 'publications', label: 'Publications' });
+    if (hasAchievements) list.push({ id: 'achievements', label: 'Achievements' });
+    return list;
+  }, [timeline.length, hasSkills, allProjects.length, allPublications.length, hasAchievements]);
+
+  const num = (sectionId: string) => String(sections.findIndex((s) => s.id === sectionId) + 1).padStart(2, '0');
+  const longName = isLongName(profileName);
 
   return (
     <div className={styles.fullscreenContainer}>
+      <PageBar title={profileName} sections={sections} heroId="profile-name">
+        {cvHref && (
+          <Link href={cvHref} className={styles.barCv}>
+            CV ↗
+          </Link>
+        )}
+      </PageBar>
+
       <div className={styles.contentWrapper}>
         {/* HERO SECTION */}
         <section className={styles.heroSection}>
           <div className={styles.heroLeft}>
-            {data.tagline && (
-              <span className={styles.heroTagline}>// {data.tagline}</span>
-            )}
-            <h1 className={styles.heroName}>{profileName}</h1>
+            {data.tagline && <span className={styles.heroTagline}>// {data.tagline}</span>}
+            <FitName
+              id="profile-name"
+              text={profileName}
+              className={`${styles.heroName} ${longName ? styles.heroNameLong : ''}`}
+              maxLines={longName ? 5 : 3}
+              minSize={longName ? 30 : 36}
+              lineHeight={longName ? 1.02 : 0.95}
+            />
             <div className={styles.heroRole}>{profileRole}</div>
-            {data.subtitle && (
-              <div className={styles.heroSubtitle}>{data.subtitle}</div>
-            )}
+            {data.subtitle && <div className={styles.heroSubtitle}>{data.subtitle}</div>}
 
             {socials.length > 0 && (
               <div className={styles.socialsList}>
@@ -114,21 +217,18 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
 
           {data.stats && data.stats.length > 0 && (
             <div className={styles.heroRight}>
-              <div className={styles.statsGrid}>
-                {data.stats.map((stat, idx) => (
-                  <div key={idx} className={styles.statCard}>
-                    <span className={styles.statValue}>{stat.value}</span>
-                    <span className={styles.statLabel}>{stat.label}</span>
-                  </div>
-                ))}
-              </div>
+              <StatGrid
+                items={data.stats}
+                mobileColumns={Math.min(data.stats.length, 2)}
+                classes={{ grid: styles.statsGrid, card: styles.statCard, value: styles.statValue, label: styles.statLabel }}
+              />
             </div>
           )}
         </section>
 
         {/* ABOUT SECTION */}
-        <section className={styles.aboutSection}>
-          <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
+        <section className={styles.aboutSection} id="bio">
+          <span className={styles.sectionNumber}>{num('bio')} /</span>
           <h2 className={styles.masthead}>Biography</h2>
 
           <div className={styles.aboutGrid}>
@@ -165,17 +265,13 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
             </div>
 
             <div className={styles.aboutMain}>
-              {profileBio && (
-                <div className={styles.bioText}>
-                  {profileBio}
-                </div>
-              )}
+              {profileBio && <div className={styles.bioText}>{profileBio}</div>}
 
               {data.focus_areas && data.focus_areas.length > 0 && (
                 <div className={styles.focusAreas}>
                   <h3 className={styles.subHeading}>Focus Areas</h3>
                   <div className={styles.focusPills}>
-                    {data.focus_areas.map(area => (
+                    {data.focus_areas.map((area) => (
                       <span key={area} className={styles.focusPill}>
                         {area}
                       </span>
@@ -188,105 +284,45 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         </section>
 
         {/* TIMELINE SECTION */}
-        {data.timeline && data.timeline.length > 0 && (
-          <section className={styles.timelineSection}>
-            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
+        {timeline.length > 0 && (
+          <section className={styles.timelineSection} id="experience">
+            <span className={styles.sectionNumber}>{num('experience')} /</span>
             <h2 className={styles.masthead}>Experience</h2>
 
             <div className={styles.timelineWrapper}>
               <div className={styles.timelineSpine}></div>
 
-              {data.timeline
-                .sort((a, b) => {
-                  const yearA = a.start === 'present' ? 9999 : parseInt(a.start);
-                  const yearB = b.start === 'present' ? 9999 : parseInt(b.start);
-                  return yearB - yearA;
-                })
-                .map((item, idx) => {
-                  const isLeft = idx % 2 === 0;
-                  return (
-                    <div key={idx} className={styles.timelineRow}>
-                      <div className={`${styles.timelineSlot} ${isLeft ? styles.leftSlot : styles.emptySlot}`}>
-                        {isLeft && (
-                          <div className={styles.timelineCardContainer}>
-                            <div className={styles.timelineYear}>{item.start} – {item.end}</div>
-                            <div className={styles.timelineCard}>
-                              <div className={styles.timelineRole}>
-                                {item.role}
-                                {item.end === 'present' && <span className={styles.currentBadge}>Current</span>}
-                              </div>
-                              {item.company && (
-                                <div className={styles.timelineCompany}>
-                                  <span className={styles.companyIcon}>🏢</span>
-                                  {item.company}
-                                  {item.type && <span className={styles.jobType}> · {item.type}</span>}
-                                </div>
-                              )}
-                              {item.description && (
-                                <div className={styles.timelineDescription}>{item.description}</div>
-                              )}
-                              {item.tags && item.tags.length > 0 && (
-                                <div className={styles.timelineTags}>
-                                  {item.tags.map((tag, tagIdx) => (
-                                    <span key={tagIdx} className={styles.timelineTag}>{tag}</span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className={styles.timelineCenter}>
-                        <div className={`${styles.timelineNode} ${item.end === 'present' ? styles.currentNode : ''}`}></div>
-                        {idx !== (data.timeline?.length ?? 0) - 1 && <div className={styles.timelineConnector}></div>}
-                      </div>
-
-                      <div className={`${styles.timelineSlot} ${!isLeft ? styles.rightSlot : styles.emptySlot}`}>
-                        {!isLeft && (
-                          <div className={styles.timelineCardContainer}>
-                            <div className={styles.timelineYear}>{item.start} – {item.end}</div>
-                            <div className={styles.timelineCard}>
-                              <div className={styles.timelineRole}>
-                                {item.role}
-                                {item.end === 'present' && <span className={styles.currentBadge}>Current</span>}
-                              </div>
-                              {item.company && (
-                                <div className={styles.timelineCompany}>
-                                  <span className={styles.companyIcon}>🏢</span>
-                                  {item.company}
-                                  {item.type && <span className={styles.jobType}> · {item.type}</span>}
-                                </div>
-                              )}
-                              {item.description && (
-                                <div className={styles.timelineDescription}>{item.description}</div>
-                              )}
-                              {item.tags && item.tags.length > 0 && (
-                                <div className={styles.timelineTags}>
-                                  {item.tags.map((tag, tagIdx) => (
-                                    <span key={tagIdx} className={styles.timelineTag}>{tag}</span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+              {timeline.map((item, idx) => {
+                const isLeft = idx % 2 === 0;
+                return (
+                  <div key={idx} className={styles.timelineRow}>
+                    <div className={`${styles.timelineSlot} ${isLeft ? styles.leftSlot : styles.emptySlot}`}>
+                      {isLeft && <TimelineCard item={item} />}
                     </div>
-                  );
-                })}
+
+                    <div className={styles.timelineCenter}>
+                      <div className={`${styles.timelineNode} ${item.end === 'present' ? styles.currentNode : ''}`}></div>
+                      {idx !== timeline.length - 1 && <div className={styles.timelineConnector}></div>}
+                    </div>
+
+                    <div className={`${styles.timelineSlot} ${!isLeft ? styles.rightSlot : styles.emptySlot}`}>
+                      {!isLeft && <TimelineCard item={item} />}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
 
         {/* SKILLS SECTION */}
-        {data.skills && data.skills.length > 0 && (
-          <section className={styles.skillsSection}>
-            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
+        {hasSkills && (
+          <section className={styles.skillsSection} id="expertise">
+            <span className={styles.sectionNumber}>{num('expertise')} /</span>
             <h2 className={styles.masthead}>Expertise</h2>
 
             <div className={styles.skillsGrid}>
-              {data.skills.map((group, idx) => (
+              {data.skills!.map((group, idx) => (
                 <div key={idx} className={styles.skillCategoryCard}>
                   <div className={styles.skillCategoryHeader}>
                     {group.icon && (
@@ -297,7 +333,7 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
                     <h3 className={styles.skillCategoryTitle}>{group.category}</h3>
                   </div>
                   <div className={styles.skillPills}>
-                    {group.items.map(skill => (
+                    {group.items.map((skill) => (
                       <span key={skill} className={styles.skillPill}>
                         {skill}
                       </span>
@@ -311,82 +347,16 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
 
         {/* PROJECTS SECTION */}
         {allProjects.length > 0 && (
-          <section className={styles.projectsSection}>
-            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
+          <section className={styles.projectsSection} id="work">
+            <span className={styles.sectionNumber}>{num('work')} /</span>
             <h2 className={styles.masthead}>Featured Work</h2>
 
             <div className={styles.projectsGrid}>
               {featuredProjects.map((p, idx) => (
-                <div key={idx} className={`${styles.projectCard} ${styles.featured}`}>
-                  <div>
-                    <div className={styles.projectLabel}>// Featured Project</div>
-                    <h3 className={styles.projectTitle}>{p.title}</h3>
-                    <p className={styles.projectDesc}>{p.description}</p>
-                    {p.tags && p.tags.length > 0 && (
-                      <div className={styles.projectTags}>
-                        {p.tags.map(t => (
-                          <span key={t} className={styles.projectTag}>{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {p.links && Object.keys(p.links).length > 0 && (
-                    <div className={styles.projectFooter}>
-                      <div className={styles.projectLinks}>
-                        {p.links.github && (
-                          <a href={p.links.github} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                            GitHub ↗
-                          </a>
-                        )}
-                        {p.links.demo && (
-                          <a href={p.links.demo} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                            Live Demo ↗
-                          </a>
-                        )}
-                        {p.links.paper && (
-                          <a href={p.links.paper} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                            Paper ↗
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ProjectCard key={`f-${idx}`} item={p} featured />
               ))}
-
               {regularProjects.map((p, idx) => (
-                <div key={idx} className={styles.projectCard}>
-                  <div>
-                    <div className={styles.projectLabel}>// Project</div>
-                    <h3 className={styles.projectTitle}>{p.title}</h3>
-                    <p className={styles.projectDesc}>{p.description}</p>
-                    {p.tags && p.tags.length > 0 && (
-                      <div className={styles.projectTags}>
-                        {p.tags.map(t => (
-                          <span key={t} className={styles.projectTag}>{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {p.links && Object.keys(p.links).length > 0 && (
-                    <div className={styles.projectFooter}>
-                      <div className={styles.projectLinks}>
-                        {p.links.github && (
-                          <a href={p.links.github} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                            GitHub ↗
-                          </a>
-                        )}
-                        {p.links.demo && (
-                          <a href={p.links.demo} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                            Demo ↗
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ProjectCard key={`r-${idx}`} item={p} featured={false} />
               ))}
             </div>
           </section>
@@ -394,76 +364,29 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
 
         {/* PUBLICATIONS SECTION */}
         {allPublications.length > 0 && (
-          <section className={styles.publicationsSection}>
-            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
+          <section className={styles.publicationsSection} id="publications">
+            <span className={styles.sectionNumber}>{num('publications')} /</span>
             <h2 className={styles.masthead}>Publications</h2>
 
             <div className={styles.projectsGrid}>
               {featuredPublications.map((p, idx) => (
-                <div key={idx} className={`${styles.projectCard} ${styles.featured}`}>
-                  <div>
-                    <div className={styles.projectLabel}>// Featured Publication</div>
-                    <h3 className={styles.projectTitle}>{p.title}</h3>
-                    <div className={styles.pubVenue}>{p.venue}</div>
-                    {p.tags && p.tags.length > 0 && (
-                      <div className={styles.projectTags}>
-                        {p.tags.map(t => (
-                          <span key={t} className={styles.projectTag}>{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {p.links && p.links.paper && (
-                    <div className={styles.projectFooter}>
-                      <div className={styles.projectLinks}>
-                        <a href={p.links.paper} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                          View Paper ↗
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <PublicationCard key={`f-${idx}`} item={p} featured />
               ))}
-
               {regularPublications.map((p, idx) => (
-                <div key={idx} className={styles.projectCard}>
-                  <div>
-                    <div className={styles.projectLabel}>// Publication</div>
-                    <h3 className={styles.projectTitle}>{p.title}</h3>
-                    <div className={styles.pubVenue}>{p.venue}</div>
-                    {p.tags && p.tags.length > 0 && (
-                      <div className={styles.projectTags}>
-                        {p.tags.map(t => (
-                          <span key={t} className={styles.projectTag}>{t}</span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {p.links && p.links.paper && (
-                    <div className={styles.projectFooter}>
-                      <div className={styles.projectLinks}>
-                        <a href={p.links.paper} target="_blank" rel="noopener noreferrer" className={styles.projectLink}>
-                          View Paper ↗
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <PublicationCard key={`r-${idx}`} item={p} featured={false} />
               ))}
             </div>
           </section>
         )}
 
         {/* ACHIEVEMENTS SECTION */}
-        {data.achievements && data.achievements.length > 0 && (
-          <section className={styles.achievementsSection}>
-            <span className={styles.sectionNumber}>{getNextSectionNum()} /</span>
+        {hasAchievements && (
+          <section className={styles.achievementsSection} id="achievements">
+            <span className={styles.sectionNumber}>{num('achievements')} /</span>
             <h2 className={styles.masthead}>Achievements</h2>
 
             <div className={styles.achievementsGrid}>
-              {data.achievements.map((a, idx) => (
+              {data.achievements!.map((a, idx) => (
                 <div key={idx} className={styles.achievementCard}>
                   <div className={styles.achievementHeader}>
                     <h3 className={styles.achievementTitle}>{a.title}</h3>
@@ -477,13 +400,16 @@ export function DynamicProfile({ id, data, member }: DynamicProfileProps) {
         )}
 
         {/* CV CALL-TO-ACTION */}
-        {cvHref && (
-          <section className={styles.cvCtaSection}>
+        <section className={styles.cvCtaSection}>
+          {cvHref && (
             <Link href={cvHref} className={styles.cvButton}>
               View Full CV ↗
             </Link>
-          </section>
-        )}
+          )}
+          <a href="#top" className={styles.toTop} onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+            ↑ Back to top
+          </a>
+        </section>
       </div>
     </div>
   );

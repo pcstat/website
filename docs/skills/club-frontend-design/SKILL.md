@@ -19,6 +19,33 @@
 
 These changes maintain the club's visual identity while improving accessibility and usability.
 
+### Design Polish Layer (October 2026)
+
+A refinement layer at the end of `src/app/globals.css` ("DESIGN POLISH") sharpens depth, rhythm and detail **without changing the palette or the fonts**:
+
+- One card recipe for every surface (`.ec`, `.ac2`, `.ach`, `.ev`, `.abc`, `.mtc`, `.proj-card`, `.c-card`): soft top-lit gradient, 14px radius, accent glow on hover.
+- Page headers get an eyebrow rule and a short accent underline; headings use balanced wrapping.
+- Home hero: headline sized from its column (`cqi` units) so each statement stays on one line; terminal is a lit window; stats are a ledger strip under the hero.
+- Sidebar nav icons are quiet outlined chips (accent fill only when active).
+- New: site footer (`.sf`), empty state (`.empty-state`), styled 404 (`src/app/not-found.tsx`), visible keyboard focus, reduced-motion support.
+
+To roll the look back, delete that section (and the `.sf` footer / `.empty-state` markup).
+
+### Second Polish Pass (October 2026)
+
+- **Home terminal** (`src/components/Terminal.tsx`) is a club shell, not a code demo: it types `pcstat about / stats / projects / events / join` and prints live numbers, the three latest projects and the next event from the database (`terminalView` in `src/lib/views.ts`). Visitors can re-run any command with the chips under the window. Reduced-motion users get the finished output instantly.
+- **Home sections** under the hero (latest projects, the committee, a join call-to-action) read the same data (`homeExtras`).
+- **Profile & CV pages** share a slim fixed `PageBar` (`src/components/PageBar.tsx`): back button, section links with the active one highlighted, reading progress, theme toggle, and the person's name once the big heading scrolls away.
+- **Long names:** `FitName` (`src/components/FitName.tsx`) sizes a heading to its text — full size for short names, scaled down for many words or one very long word, and as a last resort it breaks the word (hyphenated if the browser can) — so a name never overflows or stretches the layout. Use it for any new place that shows a person's name large. Cards and chips elsewhere wrap names with `overflow-wrap: anywhere`.
+- **CV:** the CV prints as a clean one-colour page (Print / PDF button, `@media print` in `cv.module.css`); empty database values such as `null /4.0` are not shown.
+
+### Default Profile & Equal Boxes (October 2026)
+
+- **Default profile** (`DefaultProfile.tsx`) is the page every executive without a `profile.json` gets. It is built to look finished with almost nothing: a monogram portrait when there is no photo, an intro sentence generated from role and committee when there is no bio, sections that appear only when they have content, a count strip ("At a glance") only when there is something to count, and a friendly empty state when there is no work yet. Never render a heading or box for data that is missing.
+- **Equal boxes, never a split word:** `StatGrid` (`src/components/StatGrid.tsx`) lays out boxes of a number/word plus a caption. All boxes stay the same size and all values share ONE font size, chosen as the largest that fits. When values are long it first uses fewer, wider columns (down to a single stack), then shrinks everything together, and only as a last resort splits a word. Use it for any new row of stat-like boxes instead of per-box sizing.
+- Do not put `overflow-wrap: anywhere` on text inside shrink-to-fit boxes: it lowers the element's minimum width and makes ordinary words ("Llama") break early. Use `overflow-wrap: break-word` there.
+- The admin panel keeps verbatim copies of `FitName.tsx`, `StatGrid.tsx` and the profile / CV CSS modules (its `src/mirror/`). Re-copy them whenever these change.
+
 ### Color System
 
 The club uses a dual-theme color system with CSS variables for easy theming:

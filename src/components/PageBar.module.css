@@ -1,0 +1,166 @@
+/* Slim fixed bar for profile / CV pages. Sits to the right of the sidebar and follows its width. */
+.bar {
+  --bar-h: 56px;
+  position: fixed;
+  top: 0;
+  left: var(--nw);
+  right: 0;
+  height: var(--bar-h);
+  z-index: 150;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  border-bottom: 1px solid var(--b);
+  transition: left var(--ease);
+}
+
+:global(.ct.col) .bar { left: var(--nc); }
+
+.inner {
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 min(5vw, 4rem);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  flex-shrink: 0;
+  font: inherit;
+  font-family: var(--fm);
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--ac);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: .4rem .7rem .4rem .4rem;
+  cursor: pointer;
+  transition: background .18s, transform .18s;
+}
+
+.back:hover {
+  background: var(--acd);
+  transform: translateX(-2px);
+}
+
+/* The name only appears once the big heading has scrolled away; long names are cut with an ellipsis. */
+.title {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--fh);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+}
+
+.titleOn {
+  opacity: 1;
+  transform: none;
+}
+
+.sections {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  gap: .15rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sections::-webkit-scrollbar { display: none; }
+
+.sec {
+  flex-shrink: 0;
+  font-family: var(--fm);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--mut);
+  padding: .4rem .7rem;
+  border-radius: 999px;
+  transition: color .18s, background .18s;
+}
+
+.sec:hover { color: var(--txt); }
+
+.secOn {
+  color: var(--ac);
+  background: var(--acd);
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-shrink: 0;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: var(--txt);
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: color .18s, border-color .18s, transform .18s;
+}
+
+.icon:hover {
+  color: var(--ac);
+  border-color: var(--ac);
+  transform: rotate(14deg);
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--ac), var(--pu));
+  transform-origin: left;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+@media (max-width: 1000px), (max-height: 500px), (max-aspect-ratio: 1) {
+  .bar,
+  :global(.ct.col) .bar {
+    left: 0;
+    top: var(--nh);
+  }
+}
+
+@media (max-width: 900px) {
+  .sections { display: none; }
+  .title { max-width: 18ch; }
+}
+
+@media (max-width: 480px) {
+  .inner { padding: 0 1rem; gap: .5rem; }
+  .title { display: none; }
+}
+
+@media print {
+  .bar { display: none; }
+}

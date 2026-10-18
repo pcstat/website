@@ -4,7 +4,7 @@
  * (see src/lib/preview.ts), so a draft is shown exactly the way the published data would be.
  */
 import { memberNameMap } from './database/shared';
-import type { AchievementsSchema, Course, DatabaseSchema, EventsSchema, Project } from './types';
+import type { AchievementsSchema, Course, DatabaseSchema, EventsSchema, HomeConfig, Project } from './types';
 
 export function execView(db: DatabaseSchema) {
   const current = db.committees.find((c) => c.session === db.current_committee);
@@ -44,36 +44,56 @@ export function eventsView(doc: EventsSchema) {
 
 export function homeStats(db: DatabaseSchema, projData: { projects: Project[] }, totalYears: number) {
   const current = db.committees.find((c) => c.session === db.current_committee);
-  const totalMembers = current ? (current.total_members ?? current.members.length) : 0;
+  // A member count typed in by the admin is a count of members; otherwise the number is the executives we list.
+  const hasMemberCount = typeof current?.total_members === 'number';
+  const totalMembers = current ? (hasMemberCount ? (current.total_members as number) : current.members.length) : 0;
+  const membersLabel: 'MEMBERS' | 'EXECUTIVES' = hasMemberCount ? 'MEMBERS' : 'EXECUTIVES';
   const all = [...(projData.projects || []), { status: 'active' }]; // includes the hardcoded club website
   const totalProjects = all.filter((p) => p.status !== 'publication' && p.status !== 'research').length;
   const totalPublications = all.filter((p) => p.status === 'publication' || p.status === 'research').length;
-  return { totalMembers, totalProjects, totalPublications, totalYears };
+  return { totalMembers, membersLabel, totalProjects, totalPublications, totalYears };
 }
 
-/** The facts the home page terminal prints: the latest projects and the club's events. */
-export function terminalView(projData: { projects: Project[] }, eventsDoc: EventsSchema) {
-  const recentProjects = [...(projData.projects || [])]
-    .sort((a, b) => (b.year || '').localeCompare(a.year || ''))
-    .slice(0, 3)
-    .map((p) => ({ title: p.title, status: p.status }));
+/** The projects the admin pinned for the home page, in the pinned order (ids that match no project are skipped). */
+function pinnedProjects(projData: { projects: Project[] }, home: HomeConfig) {
+  const byId = new Map((projData.projects || []).map((p) => [p.id, p]));
+  return (home.pinned_projects || []).flatMap((id) => {
+    const project = byId.get(id);
+    return project ? [project] : [];
+  });
+}
+
+/** The facts the home page terminal prints: pinned team and projects, events, achievements tally, past committees. */
+export function terminalView(
+  db: DatabaseSchema,
+  projData: { projects: Project[] },
+  eventsDoc: EventsSchema,
+  achievementsDoc: AchievementsSchema,
+  home: HomeConfig,
+) {
+  const topProjects = pinnedProjects(projData, home).map((p) => ({ title: p.title, status: p.status }));
   const events = (eventsDoc.events || []).map((e) => ({ title: e.title, date: e.date, time: e.time, location: e.location }));
-  return { recentProjects, events };
+  const team = homeExtras(db, projData, home).members.map((m) => ({ name: m.name, role: m.role }));
+  const tally = (achievementsDoc.tally || []).map((t) => ({ value: t.value, label: t.label }));
+  const pastCommittees = db.committees.filter((c) => c.session !== db.current_committee).map((c) => c.label || c.session);
+  return { topProjects, events, team, tally, pastCommittees };
 }
 
-/** What the home page shows under the hero: the latest projects and the current committee. */
-export function homeExtras(db: DatabaseSchema, projData: { projects: Project[] }) {
+/** What the home page shows under the hero: the pinned top projects and the pinned executives of the current committee. */
+export function homeExtras(db: DatabaseSchema, projData: { projects: Project[] }, home: HomeConfig) {
   const current = db.committees.find((c) => c.session === db.current_committee);
-  const members = (current?.members ?? []).map((m) => ({
-    id: m.student_id,
-    name: m.name,
-    role: m.role ?? '',
-    icon: m.icon_link ?? '',
-    initial: m.initial,
+  const byId = new Map((current?.members ?? []).map((m) => [m.student_id, m]));
+  const members = (home.pinned_executives || []).flatMap((id) => {
+    const m = byId.get(id);
+    return m ? [{ id: m.student_id, name: m.name, role: m.role ?? '', icon: m.icon_link ?? '', initial: m.initial }] : [];
+  });
+  const projects = pinnedProjects(projData, home).map((p) => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    status: p.status,
+    year: p.year,
+    tags: (p.tags || []).slice(0, 3),
   }));
-  const projects = [...(projData.projects || [])]
-    .sort((a, b) => (b.year || '').localeCompare(a.year || ''))
-    .slice(0, 3)
-    .map((p) => ({ title: p.title, description: p.description, status: p.status, year: p.year, tags: (p.tags || []).slice(0, 3) }));
   return { members, projects, sessionLabel: current?.label ?? '' };
 }

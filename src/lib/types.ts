@@ -22,6 +22,7 @@ export interface Member {
 export interface Committee {
   session: string;
   label: string;
+  /** Number of club members. When set the home page says "MEMBERS"; when left out it counts the listed executives ("EXECUTIVES"). */
   total_members?: number;
   members: Member[];
 }
@@ -40,6 +41,15 @@ export interface DatabaseIndex {
   courses: string;
   achievements: string;
   certificates: string;
+  home: string;
+}
+
+/** `home.json` — what the home page pins. */
+export interface HomeConfig {
+  /** `student_id`s of current-committee members shown in "Meet the team", in this order. */
+  pinned_executives: string[];
+  /** Project `id`s shown in "Top projects", in this order. */
+  pinned_projects: string[];
 }
 
 export interface Achievement {
@@ -64,6 +74,7 @@ export interface AchievementsSchema {
 }
 
 export interface Project {
+  id: string;
   title: string;
   description: string;
   status: 'active' | 'completed' | 'research' | 'publication';

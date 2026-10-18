@@ -12,19 +12,8 @@ import type { Member } from '@/lib/types';
 import { useLayout } from '@/components/LayoutWrapper';
 import { FitName } from '@/components/FitName';
 import { PageBar } from '@/components/PageBar';
-
-/** Database values such as "null /4.0" come from empty fields — never show them. */
-function usable(value: unknown): value is string {
-  if (typeof value !== 'string') return false;
-  const v = value.trim();
-  return v !== '' && !/^(null|undefined|n\/a|-)\b/i.test(v);
-}
-
-function linkFor(kind: 'github' | 'email', value: string) {
-  if (kind === 'email') return `mailto:${value}`;
-  if (/^https?:\/\//i.test(value)) return value;
-  return value.includes('.') ? `https://${value}` : `https://github.com/${value}`;
-}
+import { CV_HEADER_KEYS, linkFor, shortUrl, usable } from './cvFormat';
+import { PrintCV } from './PrintCV';
 
 function RenderList({ bullets, format = 'bullets' }: { bullets?: any[]; format?: 'bullets' | 'commas' }) {
   if (!bullets || !Array.isArray(bullets)) return null;
@@ -67,14 +56,21 @@ function RenderList({ bullets, format = 'bullets' }: { bullets?: any[]; format?:
   );
 }
 
-function CVEntry({ title, subtitle, dates, bullets, commas }: { title?: string; subtitle?: string; dates?: string; bullets?: any[]; commas?: any[] }) {
+function CVEntry({ title, subtitle, location, link, dates, bullets, commas }: { title?: string; subtitle?: string; location?: string; link?: string; dates?: string; bullets?: any[]; commas?: any[] }) {
   return (
     <div className={styles.cvExpBlock}>
       <div className={styles.cvExpHeader}>
-        <span className={styles.cvExpRole}>{title}</span>
+        <span className={styles.cvExpRole}>
+          {title}
+          {usable(link) && (
+            <a className={styles.cvExpLink} href={linkFor('website', link)} target="_blank" rel="noopener noreferrer" aria-label={`${title ?? 'Project'} link`}>
+              {' '}↗
+            </a>
+          )}
+        </span>
         {dates && <span className={styles.cvExpDates}>{dates}</span>}
       </div>
-      {subtitle && <div className={styles.cvExpCompany}>{subtitle}</div>}
+      {(subtitle || usable(location)) && <div className={styles.cvExpCompany}>{[subtitle, usable(location) ? location : ''].filter(Boolean).join('  ·  ')}</div>}
       <RenderList bullets={bullets} format="bullets" />
       <RenderList bullets={commas} format="commas" />
     </div>
@@ -248,14 +244,36 @@ function CVContent() {
                     <span aria-hidden="true">✉</span> {cv.email}
                   </a>
                 )}
+                {usable(cv.phone) && (
+                  <a className={`${styles.cvDocMetaItem} ${styles.cvDocMetaLink}`} href={linkFor('phone', cv.phone)}>
+                    <span aria-hidden="true">☎</span> {cv.phone}
+                  </a>
+                )}
                 {usable(cv.github) && (
                   <a className={`${styles.cvDocMetaItem} ${styles.cvDocMetaLink}`} href={linkFor('github', cv.github)} target="_blank" rel="noopener noreferrer">
                     <span aria-hidden="true">⌥</span> {cv.github}
                   </a>
                 )}
+                {usable(cv.linkedin) && (
+                  <a className={`${styles.cvDocMetaItem} ${styles.cvDocMetaLink}`} href={linkFor('linkedin', cv.linkedin)} target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">in</span> {shortUrl(cv.linkedin)}
+                  </a>
+                )}
+                {usable(cv.website) && (
+                  <a className={`${styles.cvDocMetaItem} ${styles.cvDocMetaLink}`} href={linkFor('website', cv.website)} target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">🔗</span> {shortUrl(cv.website)}
+                  </a>
+                )}
               </div>
             </div>
           </div>
+
+          {usable(cv.summary) && (
+            <div className={styles.cvSummary}>
+              <div className={styles.cvSectionLabel}>// Summary</div>
+              <p className={styles.cvSummaryText}>{cv.summary}</p>
+            </div>
+          )}
 
           <div className={styles.cvDocBody}>
             <aside className={styles.cvDocSide}>
@@ -272,6 +290,11 @@ function CVContent() {
                       {usable(edu.cgpa) && <span>CGPA: {edu.cgpa}</span>}
                       {usable(edu.rank) && <span>Rank: {edu.rank}</span>}
                     </div>
+                  )}
+                  {usable(edu.honors) && <div className={styles.cvEduNote}>{edu.honors}</div>}
+                  {usable(edu.thesis) && <div className={styles.cvEduNote}><strong>Thesis:</strong> {edu.thesis}</div>}
+                  {Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
+                    <div className={styles.cvEduNote}><strong>Coursework:</strong> {edu.coursework.join(', ')}</div>
                   )}
                 </div>
               ))}
@@ -317,6 +340,8 @@ function CVContent() {
                   key={idx}
                   title={exp.title}
                   subtitle={exp.subtitle}
+                  location={exp.location}
+                  link={exp.link}
                   dates={exp.dates}
                   bullets={exp.bullets}
                   commas={exp.commas}
@@ -326,7 +351,7 @@ function CVContent() {
               {/* Dynamic Sections */}
               {Object.entries(cv)
                 .filter(([key, value]) => {
-                  const excluded = ['name', 'role', 'location', 'email', 'github', 'education', 'certifications', 'languages', 'experience'];
+                  const excluded = [...CV_HEADER_KEYS, 'education', 'certifications', 'languages', 'experience'];
                   return Array.isArray(value) && !excluded.includes(key);
                 })
                 .map(([key, value]) => {
@@ -343,6 +368,8 @@ function CVContent() {
                           key={idx}
                           title={item.title}
                           subtitle={item.subtitle}
+                          location={item.location}
+                          link={item.link}
                           dates={item.dates}
                           bullets={item.bullets}
                           commas={item.commas}
@@ -362,6 +389,9 @@ function CVContent() {
           </Link>
         </div>
       </div>
+
+      {/* What the browser prints: a one-column CV (the styled layout above is hidden in print). */}
+      <PrintCV name={displayName} role={role} cv={cv} />
     </section>
   );
 }

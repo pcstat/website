@@ -14,7 +14,7 @@
 import { useSyncExternalStore } from 'react';
 import { ADMIN_ORIGIN } from './config';
 import { resolveExecutives, type DatabaseContext } from './database/shared';
-import type { AchievementsSchema, CertificatesSchema, Course, DatabaseSchema, EventsSchema, Project } from './types';
+import type { AchievementsSchema, CertificatesSchema, Course, DatabaseSchema, EventsSchema, HomeConfig, Project } from './types';
 
 const READY = 'club-preview:ready';
 const DATA = 'club-preview:data';
@@ -47,6 +47,7 @@ export interface PreviewState {
   courses?: { courses: Course[] };
   achievements?: AchievementsSchema;
   certificates?: CertificatesSchema;
+  home?: HomeConfig;
 }
 
 let state: PreviewState | null = null;
@@ -74,6 +75,7 @@ function receive(payload: Payload) {
     courses: docs['courses.json'] as PreviewState['courses'],
     achievements: docs['achievements.json'] as PreviewState['achievements'],
     certificates: docs['certificates.json'] as PreviewState['certificates'],
+    home: docs['home.json'] as PreviewState['home'],
   });
 }
 

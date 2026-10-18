@@ -17,14 +17,16 @@ export default function HomePage({
   initialExtras: ReturnType<typeof homeExtras>;
 }) {
   const preview = usePreview();
-  const { totalMembers, totalProjects, totalPublications, totalYears } =
+  const { totalMembers, membersLabel, totalProjects, totalPublications, totalYears } =
     preview?.executives && preview.projects ? homeStats(preview.executives, preview.projects, initial.totalYears) : initial;
 
   const terminal =
-    preview?.projects && preview.events ? terminalView(preview.projects, preview.events) : initialTerminal;
+    preview?.executives && preview.projects && preview.events && preview.achievements && preview.home
+      ? terminalView(preview.executives, preview.projects, preview.events, preview.achievements, preview.home)
+      : initialTerminal;
 
   const extras =
-    preview?.executives && preview.projects ? homeExtras(preview.executives, preview.projects) : initialExtras;
+    preview?.executives && preview.projects && preview.home ? homeExtras(preview.executives, preview.projects, preview.home) : initialExtras;
 
   return (
     <section className="pg active" id="page-home" style={{ display: 'block' }}>
@@ -53,7 +55,7 @@ export default function HomePage({
 
         <div className="hero-right">
           <Terminal
-            data={{ members: totalMembers, projects: totalProjects, publications: totalPublications, years: totalYears, ...terminal }}
+            data={{ members: totalMembers, membersLabel, projects: totalProjects, publications: totalPublications, years: totalYears, ...terminal }}
           />
         </div>
 
@@ -70,7 +72,7 @@ export default function HomePage({
           <div className="sdiv"></div>
           <div>
             <div className="snum" id="stat-members">{totalMembers}</div>
-            <div className="slbl">// MEMBERS</div>
+            <div className="slbl">// {membersLabel}</div>
           </div>
           <div className="sdiv"></div>
           <div>
@@ -86,13 +88,13 @@ export default function HomePage({
             <div className="hs-head">
               <div>
                 <div className="pe">// Portfolio</div>
-                <h2 className="hs-title">Latest from <span>the lab</span></h2>
+                <h2 className="hs-title">Top <span>projects</span></h2>
               </div>
               <Link href="/projects" className="hs-more">All projects →</Link>
             </div>
             <div className="hs-grid">
               {extras.projects.map((p) => (
-                <Link key={p.title} href="/projects" className="hs-card">
+                <Link key={p.id} href="/projects" className="hs-card">
                   <div className="hs-card-top">
                     <span className="hs-status" data-status={p.status}>{p.status}</span>
                     <span className="hs-year">{p.year}</span>
@@ -115,7 +117,7 @@ export default function HomePage({
             <div className="hs-head">
               <div>
                 <div className="pe">// Committee{extras.sessionLabel ? ` · ${extras.sessionLabel}` : ''}</div>
-                <h2 className="hs-title">Meet <span>the team</span></h2>
+                <h2 className="hs-title">Club <span>leadership</span></h2>
               </div>
               <Link href="/exec" className="hs-more">All executives →</Link>
             </div>

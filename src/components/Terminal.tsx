@@ -6,10 +6,18 @@ import Link from 'next/link';
 /** Everything the club shell prints. Comes from the database, so the terminal is never out of date. */
 export interface TerminalData {
   members: number;
+  /** What `members` counts: "MEMBERS" when the admin typed a member count, "EXECUTIVES" when the executives are counted. */
+  membersLabel: 'MEMBERS' | 'EXECUTIVES';
   projects: number;
   publications: number;
   years: number;
-  recentProjects: { title: string; status: string }[];
+  topProjects: { title: string; status: string }[];
+  /** The executives pinned on the home page. */
+  team: { name: string; role: string }[];
+  /** The counters of the achievements page ("12 Gold" …). */
+  tally: { value: string; label: string }[];
+  /** Labels of the committees before the current one. */
+  pastCommittees: string[];
   events: { title: string; date: string; time?: string; location?: string }[];
 }
 
@@ -25,8 +33,11 @@ interface ScreenLine {
   tokens: Token[];
 }
 
-const COMMANDS = ['about', 'stats', 'projects', 'events', 'join'] as const;
+const COMMANDS = ['about', 'stats', 'team', 'projects', 'achievements', 'events', 'alumni', 'verify', 'join'] as const;
 type Command = (typeof COMMANDS)[number];
+
+/** What plays by itself when the page opens; the other commands are one click away. */
+const INTRO: Command[] = ['about', 'stats', 'projects', 'events', 'join'];
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -48,6 +59,11 @@ function stat(label: string, value: number): OutLine {
   return [{ t: 'label', v: label }, { t: 'num', v: String(value) }];
 }
 
+/** The last line of a command's output: a link to the page that has the full story. */
+function go(label: string, href: string): OutLine {
+  return [{ t: 'fn', v: '→ ' }, { t: 'lnk', v: label, href }];
+}
+
 function output(cmd: Command, data: TerminalData): OutLine[] {
   switch (cmd) {
     case 'about':
@@ -56,20 +72,39 @@ function output(cmd: Command, data: TerminalData): OutLine[] {
         [{ t: 'tc', v: 'Dept. of Statistics · University of Chittagong' }],
         [{ t: 'cm', v: '# est. 2022 — programmers, problem-solvers & builders' }],
         [{ t: 'label', v: 'focus' }, { t: 'str', v: 'python · r · ai/ml · deep learning · statistics' }],
+        go('about the club & contact', '/about'),
       ];
     case 'stats':
       return [
-        stat('members', data.members),
+        stat(data.membersLabel.toLowerCase(), data.members),
         stat('projects', data.projects),
         stat('publications', data.publications),
         stat('years', data.years),
+        go('meet the executives', '/exec'),
       ];
+    case 'team': {
+      if (data.team.length === 0) return [[{ t: 'cm', v: '# the leadership team will be listed here soon' }], go('all executives', '/exec')];
+      const rows: OutLine[] = [[{ t: 'cm', v: '# club leadership' }]];
+      for (const m of data.team) {
+        rows.push([{ t: 'fn', v: '● ' }, { t: 'tc', v: m.name }, ...(m.role ? [{ t: 'dim', v: `  [${m.role}]` }] : [])]);
+      }
+      rows.push(go('all executives', '/exec'));
+      return rows;
+    }
     case 'projects': {
-      if (data.recentProjects.length === 0) return [[{ t: 'cm', v: '# nothing published yet — check back soon' }]];
-      const rows: OutLine[] = [[{ t: 'cm', v: '# latest from the lab' }]];
-      for (const p of data.recentProjects) {
+      if (data.topProjects.length === 0) return [[{ t: 'cm', v: '# nothing published yet — check back soon' }], go('all projects', '/projects')];
+      const rows: OutLine[] = [[{ t: 'cm', v: '# top projects' }]];
+      for (const p of data.topProjects) {
         rows.push([{ t: STATUS_STYLE[p.status] ?? 'tc', v: '● ' }, { t: 'tc', v: p.title }, { t: 'dim', v: `  [${p.status}]` }]);
       }
+      rows.push(go('all projects & publications', '/projects'));
+      return rows;
+    }
+    case 'achievements': {
+      if (data.tally.length === 0) return [[{ t: 'cm', v: '# results are added after every contest' }], go('achievements', '/achievements')];
+      const rows: OutLine[] = [[{ t: 'cm', v: '# our results so far' }]];
+      for (const t of data.tally) rows.push([{ t: 'label', v: t.label.toLowerCase() }, { t: 'num', v: t.value }]);
+      rows.push(go('all achievements', '/achievements'));
       return rows;
     }
     case 'events': {
@@ -78,11 +113,25 @@ function output(cmd: Command, data: TerminalData): OutLine[] {
         return [
           [{ t: 'cm', v: '# no upcoming events right now' }],
           [{ t: 'tc', v: 'new workshops & contests are posted as soon as they are scheduled' }],
+          go('events', '/events'),
         ];
       }
       const when = [prettyDate(ev.date), ev.time, ev.location].filter(Boolean).join(' · ');
-      return [[{ t: 'kw', v: '▸ ' }, { t: 'tc', v: ev.title }], [{ t: 'dim', v: `  ${when}` }]];
+      return [[{ t: 'kw', v: '▸ ' }, { t: 'tc', v: ev.title }], [{ t: 'dim', v: `  ${when}` }], go('all events', '/events')];
     }
+    case 'alumni': {
+      if (data.pastCommittees.length === 0) return [[{ t: 'cm', v: '# our first committee is still serving' }], go('executives', '/exec')];
+      const rows: OutLine[] = [[{ t: 'cm', v: '# past committees' }]];
+      for (const label of data.pastCommittees) rows.push([{ t: 'kw', v: '▸ ' }, { t: 'tc', v: label }]);
+      rows.push(go('past executives', '/alumni'));
+      return rows;
+    }
+    case 'verify':
+      return [
+        [{ t: 'tc', v: 'every certificate we issue carries an ID.' }],
+        [{ t: 'dim', v: 'type it in on the verification page to confirm it is genuine.' }],
+        go('verify a certificate', '/certificate'),
+      ];
     case 'join':
       return [
         [{ t: 'tc', v: 'open to every Stat major & minor — no experience needed.' }],
@@ -141,7 +190,7 @@ export default function Terminal({ data }: { data: TerminalData }) {
 
   // Autoplay once on arrival.
   useEffect(() => {
-    void run([...COMMANDS], false);
+    void run(INTRO, false);
     return () => {
       runId.current++;
     };
@@ -163,7 +212,7 @@ export default function Terminal({ data }: { data: TerminalData }) {
 
       <p className="sr-only">
         Statistics Programming Club, Department of Statistics, University of Chittagong, established 2022.
-        {` ${data.members} members, ${data.projects} projects and ${data.publications} publications.`}
+        {` ${data.members} ${data.membersLabel.toLowerCase()}, ${data.projects} projects and ${data.publications} publications.`}
       </p>
 
       <div className="tbody" id="term-body" ref={bodyRef} aria-hidden="true">

@@ -4,12 +4,13 @@
  * The database is a separate repo that publishes `database.json` (an index of absolute URLs)
  * plus JSON files and photos. Data files only contain *relative* paths:
  *   - `icon_link`                 → relative to `imageBase`   (e.g. "executives/elon-musk.webp")
+ *                                   or an absolute link to a photo the member keeps in their own repository
  *   - `profile_link`, `cv_link`   → relative to the database root (e.g. "members/elon-musk/cv.json")
  * Absolute links ("https://…" or "/…") are used as they are.
  */
 import type { DatabaseIndex, DatabaseSchema, Member } from '../types';
 
-export const PAGE_KEYS = ['executives', 'projects', 'events', 'courses', 'achievements', 'certificates'] as const;
+export const PAGE_KEYS = ['executives', 'projects', 'events', 'courses', 'achievements', 'certificates', 'home'] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 
 export interface DatabaseContext {

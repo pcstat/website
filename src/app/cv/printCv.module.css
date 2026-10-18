@@ -1,0 +1,194 @@
+/*
+ * The printed CV (see PrintCV.tsx). Nothing here shows on screen: the page's own design is untouched.
+ * Plain black on white and fixed sizes in pt, so it prints the same in light and dark theme.
+ */
+.root {
+  display: none;
+}
+
+@media print {
+  .root {
+    display: block;
+    color: #000;
+    background: #fff;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.38;
+  }
+
+  .sheet {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .sheet > thead {
+    display: table-header-group; /* repeats on every page: the top margin */
+  }
+
+  .sheet > tfoot {
+    display: table-footer-group; /* repeats on every page: the bottom margin */
+  }
+
+  .sheet td {
+    padding: 0;
+  }
+
+  .margin {
+    height: 13mm;
+  }
+
+  .page {
+    padding: 0 16mm !important;
+  }
+
+  .header {
+    text-align: center;
+    padding-bottom: 7pt;
+    margin-bottom: 4pt;
+    border-bottom: 1.5pt solid #000;
+  }
+
+  .name {
+    margin: 0;
+    font-size: 23pt;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+    color: #000;
+  }
+
+  .role {
+    margin-top: 3pt;
+    font-size: 10.5pt;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #333;
+  }
+
+  .contact {
+    margin-top: 5pt;
+    font-size: 9.5pt;
+    color: #222;
+  }
+
+  .contact a,
+  .contact span {
+    white-space: nowrap;
+  }
+
+  .contact a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .contact .sep {
+    margin: 0 2pt;
+    color: #888;
+    white-space: normal; /* the only place the contact line may wrap */
+  }
+
+  .section {
+    margin-top: 11pt;
+  }
+
+  .heading {
+    margin: 0 0 5pt;
+    padding-bottom: 2pt;
+    border-bottom: 0.75pt solid #000;
+    font-size: 10.5pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #000;
+    break-after: avoid;
+  }
+
+  .entry {
+    margin-bottom: 6pt;
+  }
+
+  /* Short entries (education) stay in one piece; long ones may continue on the next page. */
+  .compact {
+    break-inside: avoid;
+  }
+
+  .row {
+    break-after: avoid;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12pt;
+  }
+
+  .title {
+    font-weight: 700;
+    color: #000;
+  }
+
+  .dates {
+    flex-shrink: 0;
+    font-size: 9.5pt;
+    color: #222;
+    white-space: nowrap;
+  }
+
+  .subtitle {
+    font-style: italic;
+    color: #222;
+  }
+
+  .place {
+    flex-shrink: 0;
+    font-size: 9.5pt;
+    color: #222;
+  }
+
+  .url {
+    margin-left: 6pt;
+    font-size: 8.5pt;
+    font-weight: 400;
+    color: #555;
+  }
+
+  .meta {
+    font-size: 9.5pt;
+    line-height: 1.4;
+    color: #333;
+  }
+
+  .meta strong {
+    color: #000;
+    font-weight: 600;
+  }
+
+  .bullets,
+  .children {
+    margin: 2pt 0 0;
+    padding-left: 15pt;
+    list-style: disc;
+  }
+
+  .children {
+    list-style: circle;
+    margin-top: 1pt;
+  }
+
+  .bullets li {
+    break-inside: avoid;
+    margin-bottom: 1.5pt;
+    padding-left: 1pt;
+    color: #111;
+  }
+
+  .commas,
+  .plain {
+    margin: 2pt 0 0;
+    color: #111;
+  }
+
+  .skillRow {
+    margin: 0 0 2.5pt;
+    color: #111;
+    break-inside: avoid;
+  }
+}

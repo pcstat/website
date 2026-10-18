@@ -12,6 +12,7 @@ import type {
   Course,
   DatabaseSchema,
   EventsSchema,
+  HomeConfig,
   Project,
 } from '../types';
 import {
@@ -91,6 +92,11 @@ export async function getEvents(): Promise<EventsSchema> {
 export async function getCourses(): Promise<{ courses: Course[] }> {
   const ctx = await getDatabaseContext();
   return fetchJson(ctx.index.courses);
+}
+
+export async function getHome(): Promise<HomeConfig> {
+  const ctx = await getDatabaseContext();
+  return fetchJson(ctx.index.home);
 }
 
 export async function getCertificates(): Promise<CertificatesSchema> {

@@ -44,6 +44,9 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileNavRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  // Label shown beside an icon of the collapsed sidebar. It is drawn outside the sidebar (position: fixed),
+  // because the sidebar clips everything that sticks out of it.
+  const [tip, setTip] = useState<{ label: string; top: number; left: number } | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,8 +104,17 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
     }
   }, [pathname]);
 
+  const showTip = (label: string) => (event: React.SyntheticEvent<HTMLElement>) => {
+    if (!sidebarCollapsed) return;
+    const item = event.currentTarget.getBoundingClientRect();
+    const bar = event.currentTarget.closest('nav')?.getBoundingClientRect();
+    setTip({ label, top: item.top + item.height / 2, left: (bar?.right ?? item.right) + 8 });
+  };
+  const hideTip = () => setTip(null);
+
   const handleSidebarToggle = () => {
     const nextState = !sidebarCollapsed;
+    setTip(null);
     setSidebarCollapsed(nextState);
     localStorage.setItem('sidebarState', nextState ? 'collapsed' : 'expanded');
   };
@@ -113,26 +125,30 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 
   const currentYear = new Date().getFullYear();
 
-  // Emojis/SVG icons for theme toggler
-  const SUN_ICON = (
-    <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+  // Icons for the theme toggles (the small ones sit inside the switch, the larger ones on the sidebar button).
+  const sunIcon = (size: number) => (
+    <svg viewBox="0 0 24 24" width={size} height={size} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
       <line x1="4.22" y1="4.22" x2="5.63" y2="5.63"></line>
-      <line x1="18.37" y1="4.22" x2="19.78" y2="5.63"></line>
+      <line x1="18.37" y1="18.37" x2="19.78" y2="19.78"></line>
       <line x1="1" y1="12" x2="3" y2="12"></line>
       <line x1="21" y1="12" x2="23" y2="12"></line>
       <line x1="4.22" y1="19.78" x2="5.63" y2="18.37"></line>
-      <line x1="18.37" y1="19.78" x2="19.78" y2="18.37"></line>
+      <line x1="18.37" y1="5.63" x2="19.78" y2="4.22"></line>
     </svg>
   );
 
-  const MOON_ICON = (
-    <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+  const moonIcon = (size: number) => (
+    <svg viewBox="0 0 24 24" width={size} height={size} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
     </svg>
   );
+
+  const SUN_ICON = sunIcon(10);
+  const MOON_ICON = moonIcon(10);
+  const themeLabel = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
 
   // Check if current item should highlight
   const isActive = (itemPath: string) => {
@@ -163,25 +179,23 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div id="theme-toggle" style={{ cursor: 'pointer' }} title="Toggle Theme" onClick={toggleTheme}>
-                <div className="theme-switch">
-                  <div className="switch-thumb">
-                    {theme === 'dark' ? MOON_ICON : SUN_ICON}
-                  </div>
-                </div>
-              </div>
-              <button className="sbt" id="sbt" title="Toggle sidebar" onClick={handleSidebarToggle}>
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                  <path d="M8.5 10.5L4.5 6.5L8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            </div>
+            <button className="sbt" id="sbt" title="Toggle sidebar" aria-label="Toggle sidebar" onClick={handleSidebarToggle}>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M8.5 10.5L4.5 6.5L8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
 
           <ul className="nis">
             {NAV_ITEMS.map((item) => (
-              <li key={item.path} className={`ni ${isActive(item.path) ? 'active' : ''}`} data-tip={item.name}>
+              <li
+                key={item.path}
+                className={`ni ${isActive(item.path) ? 'active' : ''}`}
+                onMouseEnter={showTip(item.name)}
+                onMouseLeave={hideTip}
+                onFocus={showTip(item.name)}
+                onBlur={hideTip}
+              >
                 <Link href={item.path} scroll={false} aria-current={isActive(item.path) ? 'page' : undefined} style={{ display: 'flex', alignItems: 'center', gap: '.8rem', width: '100%', height: '100%' }}>
                   <span className="nic">{item.icon}</span>
                   <span className="nil">{item.name}</span>
@@ -189,6 +203,26 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
               </li>
             ))}
           </ul>
+
+          <div className="sb-theme">
+            <button
+              type="button"
+              className="sb-theme-btn"
+              id="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={themeLabel}
+              onMouseEnter={showTip(themeLabel)}
+              onMouseLeave={hideTip}
+              onFocus={showTip(themeLabel)}
+              onBlur={hideTip}
+            >
+              <span className="nic sb-theme-ic">{theme === 'dark' ? moonIcon(13) : sunIcon(13)}</span>
+              <span className="nil">{theme === 'dark' ? 'Dark mode' : 'Light mode'}</span>
+              <span className="theme-switch sb-theme-switch" aria-hidden="true">
+                <span className="switch-thumb">{theme === 'dark' ? MOON_ICON : SUN_ICON}</span>
+              </span>
+            </button>
+          </div>
 
           <div className="sbf">
             <div className="sbfd"></div>
@@ -200,6 +234,12 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </nav>
+      )}
+
+      {!isFullscreen && tip && sidebarCollapsed && (
+        <div className="sb-tip" role="tooltip" style={{ top: tip.top, left: tip.left }}>
+          {tip.label}
+        </div>
       )}
 
       {/* ══════════════════════════════════════════

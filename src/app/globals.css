@@ -225,10 +225,6 @@ ul {
   pointer-events: none;
 }
 
-.sb.col #theme-toggle {
-  display: none;
-}
-
 .lm {
   font-family: var(--fh);
   font-size: 1.28rem;
@@ -381,12 +377,10 @@ ul {
   border-color: var(--ac);
 }
 
-/* Collapsed sidebar tooltips */
-.sb.col .ni::after {
-  content: attr(data-tip);
-  position: absolute;
-  left: calc(100% + 10px);
-  top: 50%;
+/* Collapsed sidebar: the name of the section appears beside the icon on hover / focus.
+   Drawn by LayoutWrapper as a fixed element, because .sb clips anything that sticks out of it. */
+.sb-tip {
+  position: fixed;
   transform: translateY(-50%);
   background: var(--s2);
   border: 1px solid var(--b2);
@@ -397,13 +391,71 @@ ul {
   font-weight: 600;
   white-space: nowrap;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity .15s;
+  box-shadow: var(--shadow);
   z-index: 300;
+  animation: sb-tip-in .15s ease;
 }
 
-.sb.col .ni:hover::after {
-  opacity: 1;
+@keyframes sb-tip-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Theme toggle: bottom of the sidebar, a full row when open, one icon when collapsed. */
+.sb-theme {
+  padding: .45rem .45rem .6rem;
+  border-top: 1px solid var(--b);
+  flex-shrink: 0;
+}
+
+.sb-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  width: 100%;
+  padding: .7rem .8rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--mut);
+  font: inherit;
+  font-size: .87rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s, color .18s;
+}
+
+.sb-theme-btn:hover {
+  background: var(--s2);
+  color: var(--txt);
+}
+
+.sb-theme-btn:hover .nic {
+  background: var(--bg);
+  color: var(--ac);
+}
+
+.sb-theme-btn:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: -2px;
+}
+
+.sb-theme-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0;
+}
+
+.sb-theme-btn .nil {
+  flex: 1;
+}
+
+.sb.col .sb-theme-switch {
+  display: none;
 }
 
 .sbf {

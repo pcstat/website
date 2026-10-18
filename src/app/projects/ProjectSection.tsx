@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { Project } from '@/lib/types';
 import Link from 'next/link';
+import { useSite } from '@/lib/site';
 
 const STATUS_CLASS: Record<string, string> = {
   active: 'active',
@@ -25,6 +26,7 @@ export default function ProjectSection({
   initialProjects: Project[],
   memberNamesMap: Record<string, string>
 }) {
+  const page = useSite().pages.projects;
   const [activeTab, setActiveTab] = useState<'all' | 'projects' | 'publications'>('all');
 
   // Filter projects based on active tab
@@ -49,9 +51,9 @@ export default function ProjectSection({
   return (
     <>
       <div className="ph rv vis">
-        <div className="pe">// Portfolio</div>
-        <h2 className="pt">Club <span>Projects & Publications</span></h2>
-        <p className="pd">Open-source tools, research projects, and applications built by club members.</p>
+        <div className="pe">// {page.eyebrow}</div>
+        <h2 className="pt">{page.title} <span>{page.accent}</span></h2>
+        <p className="pd">{page.description}</p>
 
         <div className="proj-toggle" id="proj-toggle">
           <button

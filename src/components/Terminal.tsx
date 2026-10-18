@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useSite } from '@/lib/site';
+import type { SiteConfig } from '@/lib/types';
 
 /** Everything the club shell prints. Comes from the database, so the terminal is never out of date. */
 export interface TerminalData {
@@ -33,10 +35,13 @@ interface ScreenLine {
   tokens: Token[];
 }
 
-const COMMANDS = ['about', 'stats', 'team', 'projects', 'achievements', 'events', 'alumni', 'verify', 'join'] as const;
-type Command = (typeof COMMANDS)[number];
+/**
+ * Every command the terminal knows. Which buttons are shown is `terminal.commands` in site.json.
+ * `verify` is NOT offered while certificates are a prototype — add it to the list in site.json (and the validator) when they go live.
+ */
+type Command = 'about' | 'stats' | 'team' | 'projects' | 'achievements' | 'events' | 'alumni' | 'verify' | 'join';
 
-/** What plays by itself when the page opens; the other commands are one click away. */
+/** What plays by itself when the page opens (only the enabled ones); the other commands are one click away. */
 const INTRO: Command[] = ['about', 'stats', 'projects', 'events', 'join'];
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -64,14 +69,15 @@ function go(label: string, href: string): OutLine {
   return [{ t: 'fn', v: '→ ' }, { t: 'lnk', v: label, href }];
 }
 
-function output(cmd: Command, data: TerminalData): OutLine[] {
+function output(cmd: Command, data: TerminalData, site: SiteConfig): OutLine[] {
+  const { club, terminal } = site;
   switch (cmd) {
     case 'about':
       return [
-        [{ t: 'fn', v: 'Statistics Programming Club' }],
-        [{ t: 'tc', v: 'Dept. of Statistics · University of Chittagong' }],
-        [{ t: 'cm', v: '# est. 2022 — programmers, problem-solvers & builders' }],
-        [{ t: 'label', v: 'focus' }, { t: 'str', v: 'python · r · ai/ml · deep learning · statistics' }],
+        [{ t: 'fn', v: club.full_name }],
+        [{ t: 'tc', v: terminal.tagline }],
+        [{ t: 'cm', v: `# est. ${club.founded} — ${terminal.motto}` }],
+        [{ t: 'label', v: 'focus' }, { t: 'str', v: terminal.focus }],
         go('about the club & contact', '/about'),
       ];
     case 'stats':
@@ -134,7 +140,7 @@ function output(cmd: Command, data: TerminalData): OutLine[] {
       ];
     case 'join':
       return [
-        [{ t: 'tc', v: 'open to every Stat major & minor — no experience needed.' }],
+        [{ t: 'tc', v: terminal.join_text }],
         [{ t: 'fn', v: '→ ' }, { t: 'lnk', v: 'see how to join', href: '/about' }],
       ];
   }
@@ -143,6 +149,12 @@ function output(cmd: Command, data: TerminalData): OutLine[] {
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 export default function Terminal({ data }: { data: TerminalData }) {
+  const site = useSite();
+  const commands = site.terminal.commands as Command[];
+  const siteRef = useRef(site);
+  useEffect(() => {
+    siteRef.current = site;
+  }, [site]);
   const [lines, setLines] = useState<ScreenLine[]>([]);
   const [busy, setBusy] = useState(true);
   const [last, setLast] = useState<Command | null>(null);
@@ -177,7 +189,7 @@ export default function Terminal({ data }: { data: TerminalData }) {
         await pause(fast ? 0 : 42);
       }
       await pause(260);
-      for (const out of output(cmd, dataRef.current)) {
+      for (const out of output(cmd, dataRef.current, siteRef.current)) {
         if (!live()) return;
         setLines((prev) => [...prev, { tokens: out }]);
         await pause(110);
@@ -190,10 +202,11 @@ export default function Terminal({ data }: { data: TerminalData }) {
 
   // Autoplay once on arrival.
   useEffect(() => {
-    void run(INTRO, false);
+    void run(INTRO.filter((c) => commands.includes(c)), false);
     return () => {
       runId.current++;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the intro plays once, with the commands of the first render
   }, [run]);
 
   useEffect(() => {
@@ -207,11 +220,11 @@ export default function Terminal({ data }: { data: TerminalData }) {
         <div className="dot dr"></div>
         <div className="dot dy"></div>
         <div className="dot dg"></div>
-        <span className="tttl">pcstat — ~/statistics-programming-club</span>
+        <span className="tttl">{site.terminal.title}</span>
       </div>
 
       <p className="sr-only">
-        Statistics Programming Club, Department of Statistics, University of Chittagong, established 2022.
+        {site.club.full_name}, {site.club.department}, {site.club.university}, established {site.club.founded}.
         {` ${data.members} ${data.membersLabel.toLowerCase()}, ${data.projects} projects and ${data.publications} publications.`}
       </p>
 
@@ -242,7 +255,7 @@ export default function Terminal({ data }: { data: TerminalData }) {
 
       <div className="tfoot">
         <span className="tfoot-lbl">try</span>
-        {COMMANDS.map((c) => (
+        {commands.map((c) => (
           <button
             key={c}
             type="button"

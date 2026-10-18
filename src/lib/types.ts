@@ -42,6 +42,7 @@ export interface DatabaseIndex {
   achievements: string;
   certificates: string;
   home: string;
+  site: string;
 }
 
 /** `home.json` — what the home page pins. */
@@ -211,4 +212,84 @@ export interface ProfileData {
   publications?: ProfilePublication[];
   achievements?: ProfileAchievement[];
   cv_link?: string;
+}
+
+/** `site.json` — everything that used to be hard-coded in the website: club details, sidebar, page texts, terminal. */
+export interface SiteClub {
+  /** Word before the dot of the logo (\"Statistics.\"). */
+  name: string;
+  /** Line under the logo, after \"// \". */
+  subtitle: string;
+  full_name: string;
+  /** Year the club was founded; drives \"Est.\" and the Years counter. */
+  founded: number;
+  department: string;
+  university: string;
+  email: string;
+  browser_title: string;
+  description: string;
+  share_description: string;
+}
+
+export interface SiteNavItem {
+  path: string;
+  label: string;
+  icon: string;
+}
+
+export interface SiteHeading {
+  eyebrow: string;
+  title: string;
+  /** The highlighted part of the heading, printed after `title`. */
+  accent: string;
+}
+
+export interface SitePageHeading extends SiteHeading {
+  description: string;
+}
+
+export interface SiteBlockHeading extends SiteHeading {
+  link_label: string;
+}
+
+export interface SitePill {
+  label: string;
+  style: 'py' | 'rp' | 'ml' | 'st';
+}
+
+export type TerminalCommandName = 'about' | 'stats' | 'team' | 'projects' | 'achievements' | 'events' | 'alumni' | 'join';
+
+export interface SiteConfig {
+  club: SiteClub;
+  nav: SiteNavItem[];
+  home: {
+    tag: string;
+    title_lines: string[];
+    description: string;
+    pills: SitePill[];
+    projects_block: SiteBlockHeading;
+    team_block: SiteBlockHeading;
+    join: SiteHeading & { text: string; button_label: string };
+  };
+  terminal: {
+    title: string;
+    tagline: string;
+    motto: string;
+    focus: string;
+    join_text: string;
+    commands: TerminalCommandName[];
+  };
+  pages: {
+    exec: SitePageHeading;
+    alumni: SitePageHeading;
+    projects: SitePageHeading;
+    achievements: SitePageHeading;
+    events: SitePageHeading;
+  };
+  about: SiteHeading & {
+    description: string;
+    cards: { title: string; text: string; wide?: boolean }[];
+    meetups: { label: string; title: string; detail: string }[];
+    contact: { title: string; accent: string; text: string; button_label: string };
+  };
 }

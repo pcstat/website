@@ -36,6 +36,12 @@ The website never imports content from its own repo: everything comes from the d
   so neither a CDN nor Next's data cache can serve an older copy.
 * `client.ts` — browser loaders for the `?id=` pages and certificate verification (needs CORS on the database site).
 
+## Site-wide texts (`site.json`)
+
+Club name, contact e-mail, sidebar entries, home / About / page-heading texts and the terminal come from the database file `site.json`.
+`src/app/layout.tsx` (server) loads it with `getSite()` and provides it through `SiteProvider`; client components read it with `useSite()`
+(`src/lib/site.tsx`), which returns the admin panel's draft while previewing. Nothing is hard-coded, so these texts change from the admin panel without touching this repo.
+
 ## Rendering
 
 | Route | Rendering | Data |

@@ -108,7 +108,7 @@ Lets the admin panel read and commit to the database repo.
 | Token name | `pcstat-admin-database` |
 | Expiration | Your choice. GitHub tokens expire (usually within a year) — **put the expiry date in your calendar**; the admin panel stops saving when the token expires. |
 | Repository access | **Only select repositories** → `pcstat/database` |
-| Permissions → Repository | **Contents: Read and write** (Metadata: Read is added automatically) |
+| Permissions → Repository | **Contents: Read and write** (Metadata: Read is added automatically). Add **Actions: Read and write** too if you want the panel's *Publish now* button (publishes changes that were saved with “Publish on save” switched off). |
 
 Generate and copy the token (`github_pat_…`). It goes into the **admin** repo as `DATABASE_REPO_TOKEN`.
 

@@ -14,6 +14,7 @@ import type {
   EventsSchema,
   HomeConfig,
   Project,
+  SiteConfig,
 } from '../types';
 import {
   assertAbsoluteIndexUrl,
@@ -97,6 +98,11 @@ export async function getCourses(): Promise<{ courses: Course[] }> {
 export async function getHome(): Promise<HomeConfig> {
   const ctx = await getDatabaseContext();
   return fetchJson(ctx.index.home);
+}
+
+export async function getSite(): Promise<SiteConfig> {
+  const ctx = await getDatabaseContext();
+  return fetchJson(ctx.index.site);
 }
 
 export async function getCertificates(): Promise<CertificatesSchema> {

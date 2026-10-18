@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Terminal from '@/components/Terminal';
 import { usePreview } from '@/lib/preview';
+import { useSite } from '@/lib/site';
 import { MemberImage } from '@/app/profile/MemberImage';
 import { homeExtras, homeStats, terminalView } from '@/lib/views';
 
@@ -17,8 +18,12 @@ export default function HomePage({
   initialExtras: ReturnType<typeof homeExtras>;
 }) {
   const preview = usePreview();
+  const site = useSite();
+  const { club, home } = site;
+  // The server computes the years from `club.founded`; a drafted founding year is recomputed here.
+  const years = preview?.site ? new Date().getFullYear() - club.founded : initial.totalYears;
   const { totalMembers, membersLabel, totalProjects, totalPublications, totalYears } =
-    preview?.executives && preview.projects ? homeStats(preview.executives, preview.projects, initial.totalYears) : initial;
+    preview?.executives && preview.projects ? homeStats(preview.executives, preview.projects, years) : { ...initial, totalYears: years };
 
   const terminal =
     preview?.executives && preview.projects && preview.events && preview.achievements && preview.home
@@ -32,24 +37,21 @@ export default function HomePage({
     <section className="pg active" id="page-home" style={{ display: 'block' }}>
       <div className="hero">
         <div className="hero-left">
-          <div className="htag">Est. 2022 &nbsp;·&nbsp; Statistics Programming Club</div>
+          <div className="htag">Est. {club.founded} &nbsp;·&nbsp; {home.tag}</div>
           <h1 className="htitle">
-            We write code.<br />
-            <span className="ac">We build things.</span><br />
-            <span className="dm">We compete.</span>
+            {home.title_lines.map((line, i) => (
+              <React.Fragment key={i}>
+                {i === 0 ? line : <span className={i === 1 ? 'ac' : 'dm'}>{line}</span>}
+                {i < home.title_lines.length - 1 && <br />}
+              </React.Fragment>
+            ))}
           </h1>
-          <p className="hdesc">
-            A community of programmers, problem-solvers, and builders.
-            From competitive programming to ML research and open-source —
-            this is where ideas become code.
-          </p>
+          <p className="hdesc">{home.description}</p>
 
           <div className="focus-pills">
-            <span className="pill pill-py">🐍 Python</span>
-            <span className="pill pill-rp"> 🆁 R Programming</span>
-            <span className="pill pill-ml">🤖 AI / ML</span>
-            <span className="pill pill-ml">🧠 Deep Learning</span>
-            <span className="pill pill-st">📊 Statistics</span>
+            {home.pills.map((pill, i) => (
+              <span key={i} className={`pill pill-${pill.style}`}>{pill.label}</span>
+            ))}
           </div>
         </div>
 
@@ -87,10 +89,10 @@ export default function HomePage({
           <div className="hs-block">
             <div className="hs-head">
               <div>
-                <div className="pe">// Portfolio</div>
-                <h2 className="hs-title">Top <span>projects</span></h2>
+                <div className="pe">// {home.projects_block.eyebrow}</div>
+                <h2 className="hs-title">{home.projects_block.title} <span>{home.projects_block.accent}</span></h2>
               </div>
-              <Link href="/projects" className="hs-more">All projects →</Link>
+              <Link href="/projects" className="hs-more">{home.projects_block.link_label}</Link>
             </div>
             <div className="hs-grid">
               {extras.projects.map((p) => (
@@ -116,10 +118,10 @@ export default function HomePage({
           <div className="hs-block">
             <div className="hs-head">
               <div>
-                <div className="pe">// Committee{extras.sessionLabel ? ` · ${extras.sessionLabel}` : ''}</div>
-                <h2 className="hs-title">Club <span>leadership</span></h2>
+                <div className="pe">// {home.team_block.eyebrow}{extras.sessionLabel ? ` · ${extras.sessionLabel}` : ''}</div>
+                <h2 className="hs-title">{home.team_block.title} <span>{home.team_block.accent}</span></h2>
               </div>
-              <Link href="/exec" className="hs-more">All executives →</Link>
+              <Link href="/exec" className="hs-more">{home.team_block.link_label}</Link>
             </div>
             <div className="hs-team">
               {extras.members.map((m) => (
@@ -137,11 +139,11 @@ export default function HomePage({
 
         <div className="hs-cta">
           <div className="hs-cta-copy">
-            <div className="pe">// Join us</div>
-            <h2 className="hs-title">Bring curiosity. <span>We bring the club.</span></h2>
-            <p>Open to every Stat major and minor — you don’t need to arrive as an expert.</p>
+            <div className="pe">// {home.join.eyebrow}</div>
+            <h2 className="hs-title">{home.join.title} <span>{home.join.accent}</span></h2>
+            <p>{home.join.text}</p>
           </div>
-          <Link href="/about" className="bjoin">How to join</Link>
+          <Link href="/about" className="bjoin">{home.join.button_label}</Link>
         </div>
       </div>
     </section>

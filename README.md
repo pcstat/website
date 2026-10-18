@@ -95,3 +95,18 @@ The admin panel can show this site with unsaved drafts (`NEXT_PUBLIC_ADMIN_ORIGI
 If you maintain this repo after me, add your name here.
 
 Known cleanup work is tracked in [docs/TODO.md](docs/TODO.md).
+
+## Pushing without deploying (`[skip ci]`)
+
+Put `[skip ci]` in the commit message and GitHub starts **no** workflow for that push — this works the same way in the
+database, admin and website repositories:
+
+```bash
+git commit -m "Fix typo in the notes [skip ci]"
+git push
+```
+
+* It is the **newest commit** of the push that counts. `[ci skip]`, `[no ci]`, `[skip actions]` and `[actions skip]` work too.
+* Nothing is deployed, so the live site keeps the old version. Deploy later from **Actions → (this workflow) → Run workflow** — manual runs are never skipped.
+* A skipped push is not validated either: run the checks yourself first (`pnpm typecheck && pnpm lint` here, `node scripts/validate.mjs` in the database repo).
+* Documentation-only pushes (`*.md`, `docs/`) are already ignored by this repo's workflow, no marker needed.

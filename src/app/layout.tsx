@@ -3,27 +3,33 @@ import './globals.css';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import PreviewBridge from '@/components/PreviewBridge';
 import { SITE_URL } from '@/lib/config';
+import { getSite } from '@/lib/database/server';
+import { SiteProvider } from '@/lib/site';
 
-export const metadata: Metadata = {
-  title: 'Statistics Programming Club - CU',
-  description: 'A community of data-driven programmers. Competitive programming, machine learning projects, and weekly meetups at the Department of Statistics, University of Chittagong.',
-  metadataBase: new URL(SITE_URL),
-  openGraph: {
-    title: 'Statistics Programming Club - CU',
-    description: 'We write code. We build things. We compete.',
-    images: '/resources/images/favicon.svg',
-    url: SITE_URL,
-  },
-  icons: {
-    icon: '/resources/images/favicon.svg',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { club } = await getSite();
+  return {
+    title: club.browser_title,
+    description: club.description,
+    metadataBase: new URL(SITE_URL),
+    openGraph: {
+      title: club.browser_title,
+      description: club.share_description,
+      images: '/resources/images/favicon.svg',
+      url: SITE_URL,
+    },
+    icons: {
+      icon: '/resources/images/favicon.svg',
+    },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const site = await getSite();
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
@@ -39,8 +45,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <PreviewBridge />
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <SiteProvider value={site}>
+          <PreviewBridge />
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </SiteProvider>
       </body>
     </html>
   );

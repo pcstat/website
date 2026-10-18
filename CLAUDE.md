@@ -13,7 +13,7 @@ through the address in the root `database.json` (`src/lib/config.ts`); the datab
 There is no admin code and no API route in this repo — the admin panel is its own repo.
 
 ## Rules
-- Do not put content (names, events, projects…) in this repo; it belongs in the database repo.
+- Do not put content (names, events, projects, page texts, sidebar labels…) in this repo; it belongs in the database repo (`site.json` holds the site-wide texts; read it with `useSite()` in client components or `getSite()` on the server).
 - Do not change the visual design unless asked; CSS lives in `src/app/globals.css` and `*.module.css`.
 - Data loaders must fail loudly — never add silent fallbacks.
 - New data fields: update `src/lib/types.ts` and the database repo's README/validator.

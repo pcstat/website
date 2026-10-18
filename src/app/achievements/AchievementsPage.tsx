@@ -3,18 +3,20 @@
 import React from 'react';
 import AchievementGrid from './AchievementGrid';
 import { usePreview } from '@/lib/preview';
+import { useSite } from '@/lib/site';
 import { achievementsView } from '@/lib/views';
 
 export default function AchievementsPage({ initial }: { initial: ReturnType<typeof achievementsView> }) {
   const preview = usePreview();
+  const page = useSite().pages.achievements;
   const { tally, achievements, names } = preview?.achievements && preview.executives ? achievementsView(preview.achievements, preview.executives) : initial;
 
   return (
     <section className="pg active" id="page-achievements" style={{ display: 'block' }}>
       <div className="ph rv vis">
-        <div className="pe">// Honors</div>
-        <h2 className="pt">Our <span>Achievements</span></h2>
-        <p className="pd">Competition results, recognitions, and milestones since 2022.</p>
+        <div className="pe">// {page.eyebrow}</div>
+        <h2 className="pt">{page.title} <span>{page.accent}</span></h2>
+        <p className="pd">{page.description}</p>
       </div>
 
       {/* Tally strip */}

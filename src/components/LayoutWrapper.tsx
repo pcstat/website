@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, createContext, useContext } from 'r
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+import { useSite } from '@/lib/site';
 
 export interface LayoutContextType {
   isFullscreen: boolean;
@@ -20,24 +21,10 @@ export function useLayout() {
   return context;
 }
 
-interface NavigationItem {
-  name: string;
-  path: string;
-  icon: string;
-}
-
-const NAV_ITEMS: NavigationItem[] = [
-  { name: 'Home', path: '/', icon: '~/' },
-  { name: 'Executives', path: '/exec', icon: '{}' },
-  { name: 'Past Executives', path: '/alumni', icon: '[]' },
-  { name: 'Projects & Publications', path: '/projects', icon: '⬡' },
-  { name: 'Achievements', path: '/achievements', icon: '★' },
-  // { name: 'Courses & Certificates', path: '/courses', icon: '◈' },
-  { name: 'Events', path: '/events', icon: '›_' },
-  { name: 'About / Contact', path: '/about', icon: '?' },
-];
-
 function InnerLayout({ children }: { children: React.ReactNode }) {
+  const { club, nav } = useSite();
+  // The sidebar comes from site.json (edited in the admin panel). Courses & certificates are prototypes and are not listed.
+  const NAV_ITEMS = nav.map((item) => ({ name: item.label, path: item.path, icon: item.icon }));
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -170,12 +157,12 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
             <div className="sbb">
               <div className="lm">
                 <Link href="/" scroll={false}>
-                  Statistics<span>.</span>
+                  {club.name}<span>.</span>
                 </Link>
               </div>
               <div className="ls">
                 <Link href="/" scroll={false} className="pcs">
-                  // Programming Club
+                  // {club.subtitle}
                 </Link>
               </div>
             </div>
@@ -230,7 +217,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '.4rem' }}>
                 <div className="st" style={{ marginBottom: 0 }}><span className="std"></span>Active · <span id="current-year">{currentYear}</span></div>
               </div>
-              <p>Department of Statistics<br />University of Chittagong</p>
+              <p>{club.department}<br />{club.university}</p>
             </div>
           </div>
         </nav>
@@ -248,7 +235,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       <nav ref={mobileNavRef} className={`tn ${isFullscreen ? 'force-tn' : ''}`}>
         <div className="lm">
           <Link href="/" scroll={false}>
-            Statistics<span style={{ color: 'var(--ac)' }}>.</span>
+            {club.name}<span style={{ color: 'var(--ac)' }}>.</span>
           </Link>
         </div>
         <div className="tn-right">
@@ -283,13 +270,13 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
         {children}
         <footer className="sf">
           <div className="sf-brand">
-            <span className="sf-mark">Statistics<span>.</span></span>
-            <span className="sf-sub">Programming Club</span>
+            <span className="sf-mark">{club.name}<span>.</span></span>
+            <span className="sf-sub">{club.subtitle}</span>
           </div>
-          <p className="sf-addr">Department of Statistics, University of Chittagong</p>
+          <p className="sf-addr">{club.department}, {club.university}</p>
           <div className="sf-meta">
-            <a href="mailto:programmingclub.stat.cu@gmail.com">programmingclub.stat.cu@gmail.com</a>
-            <span>© {currentYear} Statistics Programming Club</span>
+            <a href={`mailto:${club.email}`}>{club.email}</a>
+            <span>© {currentYear} {club.full_name}</span>
           </div>
         </footer>
       </main>

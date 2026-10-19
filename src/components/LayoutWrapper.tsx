@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { useSite } from '@/lib/site';
+import { Icon } from './Icon';
 
 export interface LayoutContextType {
   isFullscreen: boolean;
@@ -113,28 +114,8 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   const currentYear = new Date().getFullYear();
 
   // Icons for the theme toggles (the small ones sit inside the switch, the larger ones on the sidebar button).
-  const sunIcon = (size: number) => (
-    <svg viewBox="0 0 24 24" width={size} height={size} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="5"></circle>
-      <line x1="12" y1="1" x2="12" y2="3"></line>
-      <line x1="12" y1="21" x2="12" y2="23"></line>
-      <line x1="4.22" y1="4.22" x2="5.63" y2="5.63"></line>
-      <line x1="18.37" y1="18.37" x2="19.78" y2="19.78"></line>
-      <line x1="1" y1="12" x2="3" y2="12"></line>
-      <line x1="21" y1="12" x2="23" y2="12"></line>
-      <line x1="4.22" y1="19.78" x2="5.63" y2="18.37"></line>
-      <line x1="18.37" y1="5.63" x2="19.78" y2="4.22"></line>
-    </svg>
-  );
-
-  const moonIcon = (size: number) => (
-    <svg viewBox="0 0 24 24" width={size} height={size} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-    </svg>
-  );
-
-  const SUN_ICON = sunIcon(10);
-  const MOON_ICON = moonIcon(10);
+  const SUN_ICON = <Icon name="sun" size={10} />;
+  const MOON_ICON = <Icon name="moon" size={10} />;
   const themeLabel = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
 
   // Check if current item should highlight
@@ -184,7 +165,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
                 onBlur={hideTip}
               >
                 <Link href={item.path} scroll={false} aria-current={isActive(item.path) ? 'page' : undefined} style={{ display: 'flex', alignItems: 'center', gap: '.8rem', width: '100%', height: '100%' }}>
-                  <span className="nic">{item.icon}</span>
+                  <span className="nic"><Icon name={item.icon} size={18} /></span>
                   <span className="nil">{item.name}</span>
                 </Link>
               </li>
@@ -203,7 +184,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
               onFocus={showTip(themeLabel)}
               onBlur={hideTip}
             >
-              <span className="nic sb-theme-ic">{theme === 'dark' ? moonIcon(13) : sunIcon(13)}</span>
+              <span className="nic sb-theme-ic"><Icon name={theme === 'dark' ? 'moon' : 'sun'} size={18} /></span>
               <span className="nil">{theme === 'dark' ? 'Dark mode' : 'Light mode'}</span>
               <span className="theme-switch sb-theme-switch" aria-hidden="true">
                 <span className="switch-thumb">{theme === 'dark' ? MOON_ICON : SUN_ICON}</span>
@@ -257,7 +238,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
         {NAV_ITEMS.map((item) => (
           <div key={item.path} className={`mi ${isActive(item.path) ? 'active' : ''}`}>
             <Link href={item.path} scroll={false} onClick={handleMobileLinkClick} aria-current={isActive(item.path) ? 'page' : undefined} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-              <span className="mi-icon">{item.icon}</span>&nbsp;&nbsp;{item.name}
+              <span className="mi-icon"><Icon name={item.icon} size={18} /></span>&nbsp;&nbsp;{item.name}
             </Link>
           </div>
         ))}

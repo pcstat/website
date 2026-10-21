@@ -9,12 +9,12 @@ behaviour, so they were left for later. Check them off as they are fixed.
 - [ ] `total_members` and each member's `session` repeat information already held by the committee. Derive them.
 - [ ] Demo data uses famous people as fake members — replace with real data when moving to the real repos.
 
-## Certificates & courses (kept simple for now)
-- [ ] `/courses` and `/certificate` are prototypes: not in the sidebar / mobile nav (they are not listed in `site.json` → `nav`) and the home terminal has no `verify` command. Add them back through the admin panel (Navigation) and `terminal.commands` once finished.
-- [ ] Certificate `SPC-2024-0003` has `course1`/`course2` but no `course`, so the verification card shows an empty course.
-- [ ] Certificate IDs say `2024` but dates are 2026; the `status` field is not used by the UI.
-- [ ] Certificate templates (SVG) live in the website repo while certificates live in the database — decide whether templates should move too.
-- [ ] Verification fetches the whole certificate list in the browser; fine for a few hundred, revisit if it grows.
+## Certificates
+- [ ] Certificate pages are not in the admin's live preview (they are not content-database documents).
+- [ ] Open Graph / social preview image for a shared certificate link (`/c/<ID>`): the page is static, so a per-certificate preview needs a small edge function.
+- [ ] A set is downloaded whole on every lookup (about 38 KB gzipped for 4,000 people). If one set ever grows past ~20,000, split it into a second set code.
+- [ ] Optional privacy upgrade: the public set files list every recipient's name. If that is a concern, encrypt each record with a key derived from its ID (the holder has the ID).
+- [ ] Show on a course card how many certificates were issued for it (a set can already link `course_id`).
 
 ## Profile & CV
 - [ ] CV JSON is typed as `any`; write a real type + validation in the database repo's `validate.mjs`.

@@ -40,7 +40,6 @@ export interface DatabaseIndex {
   events: string;
   courses: string;
   achievements: string;
-  certificates: string;
   home: string;
   site: string;
 }
@@ -113,31 +112,6 @@ export interface ClubEvent {
 export interface EventsSchema {
   note: string;
   events: ClubEvent[];
-}
-
-export interface IssuedCertificate {
-  id: string;
-  recipient: string;
-  course: string;
-  course1?: string;
-  course2?: string;
-  date: string;
-  status?: string;
-  template?: string;
-  reason?: string;
-  reason2?: string;
-  person1?: string;
-  post1?: string;
-  person2?: string;
-  post2?: string;
-  modules?: string;
-  hours?: string;
-  score?: string;
-  grade?: string;
-}
-
-export interface CertificatesSchema {
-  issued_certificates: IssuedCertificate[];
 }
 
 export interface ProfileStat {
@@ -285,6 +259,8 @@ export interface SiteConfig {
     projects: SitePageHeading;
     achievements: SitePageHeading;
     events: SitePageHeading;
+    courses: SitePageHeading;
+    certificate: SitePageHeading;
   };
   about: SiteHeading & {
     description: string;

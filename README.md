@@ -8,7 +8,7 @@ Next.js 16 (App Router) · React 19 · TypeScript · pnpm · static export hoste
 
 | Repo | Role |
 |---|---|
-| **`pcstat/website`** (this one) | The website. Contains **no content** — only code, styles, fonts and the certificate SVG templates. |
+| **`pcstat/website`** (this one) | The website. Contains **no content** — only code, styles and fonts. |
 | [`pcstat/database`](https://github.com/pcstat/database) | The database: JSON files + photos, published on Cloudflare Pages. |
 | [`pcstat/admin`](https://github.com/pcstat/admin) | The admin panel: edits the database repo through the GitHub API. |
 
@@ -52,7 +52,8 @@ To work against local data, serve a clone of the database (`pnpm dlx serve ../da
 | Pages | How they load data | Why |
 |---|---|---|
 | Home stats, Executives, Past Executives, Projects, Achievements, Events, Courses | At **build time** (`src/lib/database/server.ts`) → plain static HTML | Best for SEO; refreshed by the automatic rebuild the database repo triggers on every change. |
-| Profile (`/profile?id=`), CV (`/cv?id=`), Certificate verification | In the **browser** (`src/lib/database/client.ts`) | They depend on a query string; always show the live data. |
+| Profile (`/profile?id=`), CV (`/cv?id=`) | In the **browser** (`src/lib/database/client.ts`) | They depend on a query string; always show the live data. |
+| Certificate verification (`/certificate`), a certificate's own page (`/certificate/view?id=`, short link `/c/<ID>`) | In the **browser**, from the separate **certificates** repo on GitHub (`src/lib/certificates/client.ts`) | Certificates are not in the content database. An ID names its set, so one small file is read. Issuing a certificate never rebuilds the website. |
 
 ## Project structure
 
@@ -67,7 +68,7 @@ src/
     format.ts     Role / medal formatting helpers
     database/     shared.ts (link resolution) · server.ts (build time) · client.ts (browser)
 public/
-  fonts/ · resources/images/ · resources/certificates/svg/   (design assets)
+  fonts/ · resources/images/   (design assets)
 docs/             ARCHITECTURE.md · DEPLOYMENT.md · TODO.md · skills/
 ```
 
@@ -84,7 +85,7 @@ The admin panel can show this site with unsaved drafts (`NEXT_PUBLIC_ADMIN_ORIGI
 * **Change content** (executives, projects, events…) → use the admin panel, or edit the JSON in the database repo. Never edit content in this repo.
 * **Add a page** → create `src/app/<name>/page.tsx`, add it to the nav list in `src/components/LayoutWrapper.tsx`, add a loader to `src/lib/database/server.ts` if it needs new data.
 * **Change the accent colour** → `--ac` in `src/app/globals.css`.
-* **Add a certificate design** → add an SVG with `{{name}}`, `{{course}}`, `{{date}}`, `{{id}}` … placeholders to `public/resources/certificates/svg/` and reference it from `template` in `certificates.json`.
+* **Add a certificate design** → in the **certificates** repo: add an SVG with `{{name}}`, `{{course}}`, `{{date}}`, `{{id}}` … placeholders to `templates/` and describe its fields in `templates/manifest.json` (see that repo's README). Nothing to change here.
 
 ## Maintainers
 

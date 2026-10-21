@@ -24,7 +24,7 @@ export function useLayout() {
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
   const { club, nav } = useSite();
-  // The sidebar comes from site.json (edited in the admin panel). Courses & certificates are prototypes and are not listed.
+  // The sidebar comes from site.json (edited in the admin panel).
   const NAV_ITEMS = nav.map((item) => ({ name: item.label, path: item.path, icon: item.icon }));
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();

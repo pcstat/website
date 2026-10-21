@@ -10,7 +10,7 @@
  */
 import type { DatabaseIndex, DatabaseSchema, Member } from '../types';
 
-export const PAGE_KEYS = ['executives', 'projects', 'events', 'courses', 'achievements', 'certificates', 'home', 'site'] as const;
+export const PAGE_KEYS = ['executives', 'projects', 'events', 'courses', 'achievements', 'home', 'site'] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 
 export interface DatabaseContext {

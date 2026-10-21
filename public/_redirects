@@ -1,0 +1,3 @@
+# Short, shareable certificate links: /c/SPC-PY26-7W34N opens that certificate's page.
+# (Cloudflare Pages redirect rules; a 302 so the page itself stays /certificate/view?id=…)
+/c/*  /certificate/view?id=:splat  302

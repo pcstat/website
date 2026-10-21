@@ -3,18 +3,20 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePreview } from '@/lib/preview';
+import { useSite } from '@/lib/site';
 import { coursesView } from '@/lib/views';
 
 export default function CoursesPage({ initial }: { initial: ReturnType<typeof coursesView> }) {
   const preview = usePreview();
+  const page = useSite().pages.courses;
   const { courses } = preview?.courses ? coursesView(preview.courses) : initial;
 
   return (
     <section className="pg active" id="page-courses" style={{ display: 'block' }}>
       <div className="ph rv vis">
-        <div className="pe">// Learning</div>
-        <h2 className="pt">Courses & <span>Certificates</span></h2>
-        <p className="pd">Professional certifications and specialized courses completed by our members.</p>
+        <div className="pe">// {page.eyebrow}</div>
+        <h2 className="pt">{page.title} <span>{page.accent}</span></h2>
+        <p className="pd">{page.description}</p>
       </div>
 
       <div className="cgrid rv vis" id="courses-grid">

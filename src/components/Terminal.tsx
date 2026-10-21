@@ -37,7 +37,6 @@ interface ScreenLine {
 
 /**
  * Every command the terminal knows. Which buttons are shown is `terminal.commands` in site.json.
- * `verify` is NOT offered while certificates are a prototype — add it to the list in site.json (and the validator) when they go live.
  */
 type Command = 'about' | 'stats' | 'team' | 'projects' | 'achievements' | 'events' | 'alumni' | 'verify' | 'join';
 

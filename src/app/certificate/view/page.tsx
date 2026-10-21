@@ -2,83 +2,79 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { usePreview } from '@/lib/preview';
 import Link from 'next/link';
 import CertificateViewer from './CertificateViewer';
-import { clientGetCertificates } from '@/lib/database/client';
+import { findCertificate, loadTemplate, RegistryUnreachableError } from '@/lib/certificates/client';
+import { formatDateLong, renderTemplate, templateValues, type CertificateRecord } from '@/lib/certificates/core';
+
+/**
+ * The page of ONE certificate — what a recipient shares. Its address is /certificate/view?id=<ID>, and the short
+ * form /c/<ID> (public/_redirects) leads here too, so a certificate can go on a CV, in an e-mail or in a QR code.
+ * Nothing is generated per certificate: the page looks the ID up in its set file when it is opened.
+ */
+type State =
+  | { kind: 'loading' }
+  | { kind: 'error'; message: string }
+  | { kind: 'revoked'; cert: CertificateRecord }
+  | { kind: 'ready'; cert: CertificateRecord; svgContent: string };
+
+function ShareBar({ certId }: { certId: string }) {
+  const [copied, setCopied] = useState(false);
+  const link = typeof window === 'undefined' ? '' : `${window.location.origin}/c/${encodeURIComponent(certId)}`;
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.prompt('Copy this link:', link);
+    }
+  }
+  return (
+    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', marginTop: '1.25rem', fontFamily: 'var(--fm)', fontSize: '0.85rem' }}>
+      <span style={{ color: 'var(--mut)' }}>Share this certificate:</span>
+      <code style={{ padding: '0.35rem 0.6rem', border: '1px solid var(--b)', borderRadius: '6px', wordBreak: 'break-all' }}>{link}</code>
+      <button className="bjoin" onClick={() => void copy()} style={{ border: 'none', cursor: 'pointer', padding: '0.45rem 1rem', fontSize: '0.85rem' }}>
+        {copied ? 'Copied ✓' : 'Copy link'}
+      </button>
+    </div>
+  );
+}
 
 function CertificateContent() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  // Inside the admin panel's live preview the page reloads its data whenever a new draft arrives.
-  const previewRev = usePreview()?.rev ?? 0;
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [certData, setCertData] = useState<{ svgContent: string; certId: string } | null>(null);
+  const id = useSearchParams().get('id');
+  const [state, setState] = useState<State>({ kind: 'loading' });
 
   useEffect(() => {
-    if (!id) {
-      setError('No Certificate ID provided.');
-      setLoading(false);
-      return;
-    }
-
-    const fetchCertificate = async () => {
+    let cancelled = false;
+    const run = async () => {
+      if (!id) return { kind: 'error', message: 'No Certificate ID provided.' } as State;
       try {
-        // 1. Look the certificate up in the live certificates registry
-        const data = await clientGetCertificates();
-        const cert = data.issued_certificates.find((c) => c.id === id);
-        if (!cert) {
-          setError('Certificate not found.');
-          setLoading(false);
-          return;
+        // 1. The ID names its set, so this downloads one set file and finds the certificate in it.
+        const cert = await findCertificate(id);
+        if (!cert) return { kind: 'error', message: 'Certificate not found. Check the ID and try again.' } as State;
+        if (cert.status === 'revoked') return { kind: 'revoked', cert } as State;
+        // 2. The design, 3. filled in with escaped values.
+        const svg = await loadTemplate(cert.template);
+        return { kind: 'ready', cert, svgContent: renderTemplate(svg, templateValues(cert)) } as State;
+      } catch (err) {
+        if (err instanceof RegistryUnreachableError) {
+          console.warn(err.message);
+          return { kind: 'error', message: 'The certificate registry cannot be reached right now. That does not mean this certificate is invalid — please try again in a moment.' } as State;
         }
-
-        // 2. Fetch SVG template
-        const templateName = cert.template || 'Certificate_A.svg';
-        const svgRes = await fetch(`/resources/certificates/svg/${templateName}`);
-        if (!svgRes.ok) throw new Error('Failed to load certificate template');
-
-        let svgContent = await svgRes.text();
-
-        // 3. Perform string replacements
-        const replacements: Record<string, string> = {
-          '{{name}}': cert.recipient || '',
-          '{{course}}': cert.course || '',
-          '{{course1}}': cert.course1 || cert.course || '',
-          '{{course2}}': cert.course2 || '',
-          '{{date}}': cert.date || '',
-          '{{id}}': cert.id || '',
-          '{{reason}}': cert.reason || '',
-          '{{reason2}}': cert.reason2 || '',
-          '{{person1}}': cert.person1 || '',
-          '{{post1}}': cert.post1 || '',
-          '{{person2}}': cert.person2 || '',
-          '{{post2}}': cert.post2 || '',
-          '{{modules}}': cert.modules || '',
-          '{{hours}}': cert.hours || '',
-          '{{score}}': cert.score || '',
-          '{{grade}}': cert.grade || '',
-        };
-
-        for (const [placeholder, value] of Object.entries(replacements)) {
-          svgContent = svgContent.split(placeholder).join(value);
-        }
-
-        setCertData({ svgContent, certId: cert.id });
-      } catch (err: any) {
         console.error('Error loading certificate:', err);
-        setError('Failed to load certificate data.');
-      } finally {
-        setLoading(false);
+        return { kind: 'error', message: 'This certificate could not be displayed. Please try again later.' } as State;
       }
     };
+    void run().then((next) => {
+      if (!cancelled) setState(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
-    fetchCertificate();
-  }, [id, previewRev]);
-
-  if (loading) {
+  if (state.kind === 'loading') {
     return (
       <section className="pg active" style={{ display: 'block' }}>
         <div className="ph rv vis">
@@ -89,12 +85,12 @@ function CertificateContent() {
     );
   }
 
-  if (error || !certData) {
+  if (state.kind === 'error') {
     return (
       <section className="pg active" style={{ display: 'block' }}>
         <div className="ph rv vis">
           <h2 className="pt" style={{ color: '#f44' }}>Verification <span>Failed</span></h2>
-          <p className="pd">{error}</p>
+          <p className="pd">{state.message}</p>
         </div>
         <div className="jcta rv vis" style={{ justifyContent: 'center', marginTop: '2rem' }}>
           <Link className="bjoin" href="/certificate">
@@ -105,15 +101,39 @@ function CertificateContent() {
     );
   }
 
+  if (state.kind === 'revoked') {
+    const { cert } = state;
+    return (
+      <section className="pg active" style={{ display: 'block' }}>
+        <div className="ph rv vis">
+          <h2 className="pt" style={{ color: '#f44' }}>Certificate <span>Revoked</span></h2>
+          <p className="pd">
+            Certificate {cert.id} ({cert.recipient} — {cert.title}) was withdrawn{cert.revoked_at ? ` on ${formatDateLong(cert.revoked_at)}` : ''} and is no longer valid.
+            {cert.revoked_reason ? ` Reason: ${cert.revoked_reason}` : ''}
+          </p>
+        </div>
+        <div className="jcta rv vis" style={{ justifyContent: 'center', marginTop: '2rem' }}>
+          <Link className="bjoin" href="/certificate">
+            ← Back to Verification
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  const { cert } = state;
   return (
     <section className="pg active" id="page-certificate-view" style={{ display: 'block' }}>
       <div className="ph rv vis">
-        <div className="pe">// Document</div>
+        <div className="pe">// Document · ✓ Verified</div>
         <h2 className="pt">Official <span>Certificate</span></h2>
-        <p className="pd">Verified digital record of achievement issued by Statistics Programming Club.</p>
+        <p className="pd">
+          Verified digital record of achievement: {cert.recipient} — {cert.title}, {formatDateLong(cert.date)}. Issued by Statistics Programming Club.
+        </p>
       </div>
 
-      <CertificateViewer svgContent={certData.svgContent} certId={certData.certId} />
+      <CertificateViewer svgContent={state.svgContent} certId={cert.id} />
+      <ShareBar certId={cert.id} />
     </section>
   );
 }

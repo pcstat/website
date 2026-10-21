@@ -8,7 +8,6 @@
 import { DATABASE_INDEX_URL } from '../config';
 import type {
   AchievementsSchema,
-  CertificatesSchema,
   Course,
   DatabaseSchema,
   EventsSchema,
@@ -103,11 +102,6 @@ export async function getHome(): Promise<HomeConfig> {
 export async function getSite(): Promise<SiteConfig> {
   const ctx = await getDatabaseContext();
   return fetchJson(ctx.index.site);
-}
-
-export async function getCertificates(): Promise<CertificatesSchema> {
-  const ctx = await getDatabaseContext();
-  return fetchJson(ctx.index.certificates);
 }
 
 /** Maps student IDs to member names. IDs that match no member are left out of the result. */

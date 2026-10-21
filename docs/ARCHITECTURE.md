@@ -4,7 +4,7 @@
 
 | Repo | Contains | Deployed as |
 |---|---|---|
-| Website (this repo) | Next.js code, CSS, fonts, certificate SVG templates, `database.json` (address of the database) | Cloudflare Pages (static `out/`, built on GitHub) |
+| Website (this repo) | Next.js code, CSS, fonts, `database.json` (addresses of the database and of the certificate registry) | Cloudflare Pages (static `out/`, built on GitHub) |
 | Database | `database.json` (relative paths), content JSON, `members/`, `photos/` | Cloudflare Pages (plain static files, CORS enabled) |
 | Admin | Next.js app with login + editors, `database.json` (same as the website's) | Cloudflare Workers (OpenNext) |
 
@@ -34,7 +34,8 @@ The website never imports content from its own repo: everything comes from the d
   `icon_link` → relative to `imageBase`; `profile_link` / `cv_link` → relative to the database root.
 * `server.ts` — build-time loaders (`getExecutives()`, `getProjects()`, …). Retries 3×, memoised per process, cache-busted
   so neither a CDN nor Next's data cache can serve an older copy.
-* `client.ts` — browser loaders for the `?id=` pages and certificate verification (needs CORS on the database site).
+* `client.ts` — browser loaders for the `?id=` pages (needs CORS on the database site).
+* `src/lib/certificates/` — certificates. `core.ts` is the shared rule book (ID format, dates, safe template filling) and is **identical** in the certificates repo and the admin panel; `client.ts` loads one set file and one template straight from the registry repository on GitHub (`certificates` in `database.json`; an optional `url` overrides the address).
 
 ## Site-wide texts (`site.json`)
 
@@ -48,7 +49,7 @@ Club name, contact e-mail, sidebar entries, home / About / page-heading texts an
 |---|---|---|
 | `/`, `/exec`, `/alumni`, `/projects`, `/achievements`, `/events`, `/courses`, `/about` | Static HTML at build | build-time loaders |
 | `/profile?id=`, `/cv?id=` | Static shell, data in the browser | client loaders |
-| `/certificate`, `/certificate/view?id=` | Static shell, data in the browser | client loaders + SVG template from `public/resources/certificates/svg/` |
+| `/certificate`, `/certificate/view?id=` (and `/c/<ID>` → redirect, `public/_redirects`) | Static shell, data in the browser | `src/lib/certificates/client.ts`: the ID's set code selects `sets/<code>.json` in the certificates repo (read from GitHub); the SVG design comes from its `templates/` |
 
 ## Theme
 
@@ -69,6 +70,6 @@ Drafts are held in a tiny external store:
 
 * list pages (home, exec, alumni, projects, events, achievements, courses) render through client views that derive their data with the
   pure functions in `src/lib/views.ts` — from the build-time props normally, from the draft while previewing;
-* runtime-loaded pages (profile, CV, certificate) get drafts through `fetchJson` (`previewFile`) and reload when a new draft arrives.
+* runtime-loaded pages (profile, CV) get drafts through `fetchJson` (`previewFile`) and reload when a new draft arrives. Certificates are not part of live preview: they are not content-database documents.
 
 Nothing is persisted; without the variable the bridge does nothing.

@@ -1,6 +1,6 @@
 /**
  * Runtime database loaders, used in the browser by the pages that depend on a `?id=` query
- * (profile, CV, certificate verification). They always read the live database, so edits made
+ * (profile, CV). Certificates have their own loaders: see src/lib/certificates/client.ts. They always read the live database, so edits made
  * in the admin panel show up there without waiting for a website rebuild.
  *
  * Requires the database site to send CORS headers (`_headers` in the database repo).
@@ -9,7 +9,6 @@ import { DATABASE_INDEX_URL } from '../config';
 import { previewFile } from '../preview';
 import type {
   AchievementsSchema,
-  CertificatesSchema,
   DatabaseSchema,
   ProfileData,
   Project,
@@ -59,11 +58,6 @@ export async function clientGetProjects(): Promise<{ projects: Project[] }> {
 export async function clientGetAchievements(): Promise<AchievementsSchema> {
   const ctx = await getDatabaseContext();
   return fetchJson(ctx.index.achievements);
-}
-
-export async function clientGetCertificates(): Promise<CertificatesSchema> {
-  const ctx = await getDatabaseContext();
-  return fetchJson(ctx.index.certificates);
 }
 
 /** Loads a member's CV JSON. `cvLink` is the already-resolved absolute URL from `clientGetExecutives`. */

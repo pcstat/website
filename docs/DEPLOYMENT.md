@@ -293,7 +293,8 @@ Now the website repo has its workflow, so the database can start it:
 2. Change something small (for example an event title) → **Save**.
 3. In `pcstat/database` → **Actions**: a run starts (about 1–2 minutes). When it ends, the website repo's **Actions** shows a new run.
 4. After that run finishes (a few minutes), reload the website: the list pages show the change.
-   Profile, CV and certificate pages read the database live in the browser, so they change as soon as the database run finishes.
+   Profile and CV pages read the database live in the browser, so they change as soon as the database run finishes.
+   Certificates are a separate repository read directly from GitHub (§14); issuing one never rebuilds the website.
 
 ---
 
@@ -395,3 +396,25 @@ Local development: run the admin on `http://localhost:3000` and the website on a
 A member can keep their profile and CV in their own public GitHub repository and edit them without any access to the admin
 panel. The admin links them in **Member files → Source…** (GitHub username + repository, or pasted links). Nothing has to be set
 up in Cloudflare or GitHub for this; see `docs/MEMBER-REPOS.md` in the admin repo for the member-facing instructions and templates.
+
+---
+
+## 14. The certificate registry (its own repository)
+
+Certificates are not stored in the database: there will be thousands, so they live in **`pcstat/certificates`** — one JSON file per *set* of certificates (a course run, a contest … such as `PY26`), plus the SVG designs. Its README describes the layout; this section is only the setup.
+
+**Nothing has to be deployed.** Like the database, the registry is read straight from GitHub (`raw.githubusercontent.com/pcstat/certificates/main/…`) by the browser, so a certificate can be verified as soon as it is committed (GitHub caches raw files for about five minutes).
+
+1. **Create the repository** `pcstat/certificates` on GitHub — **public**, because the website reads it without a token — and push the contents of the certificates repo (the patch / folder you were given) to the `main` branch.
+2. **Both `database.json` files** (website and admin, kept identical) name it; `url` stays empty to read from GitHub:
+
+   ```json
+   "certificates": { "repo": "pcstat/certificates", "branch": "main", "url": "" }
+   ```
+
+3. **Admin token**: the token from §2.1 (`DATABASE_REPO_TOKEN`) must also cover the new repository — edit the token and add `pcstat/certificates` (Contents: Read and write). A fine-grained token that lists only the database makes GitHub answer *404* for the registry. If you prefer a separate token, add the admin secret `CERTIFICATES_REPO_TOKEN`.
+4. **Test**: admin → *Certificates* → *New set* → add a name → **Save**. Open `/certificate` on the website and verify the new ID. If the page says the registry *cannot be reached*, the browser console names the address it tried: open it — `…/templates/manifest.json` must show the file.
+
+> **Privacy.** Because the repository is public and the website reads the files as they are, everything in a set file is public — including each person's optional *internal note*. Do not put e-mail addresses or other personal details in notes.
+
+Optional: the repository also contains a workflow that builds a copy without the notes and publishes it to Cloudflare Pages (`deploy.yml`). The website uses it only if you put that copy's address in `certificates.url`.

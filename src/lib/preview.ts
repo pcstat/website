@@ -14,7 +14,7 @@
 import { useSyncExternalStore } from 'react';
 import { ADMIN_ORIGIN } from './config';
 import { resolveExecutives, type DatabaseContext } from './database/shared';
-import type { AchievementsSchema, CertificatesSchema, Course, DatabaseSchema, EventsSchema, HomeConfig, Project, SiteConfig } from './types';
+import type { AchievementsSchema, Course, DatabaseSchema, EventsSchema, HomeConfig, Project, SiteConfig } from './types';
 
 const READY = 'club-preview:ready';
 const DATA = 'club-preview:data';
@@ -46,7 +46,6 @@ export interface PreviewState {
   events?: EventsSchema;
   courses?: { courses: Course[] };
   achievements?: AchievementsSchema;
-  certificates?: CertificatesSchema;
   home?: HomeConfig;
   site?: SiteConfig;
 }
@@ -75,7 +74,6 @@ function receive(payload: Payload) {
     events: docs['events.json'] as PreviewState['events'],
     courses: docs['courses.json'] as PreviewState['courses'],
     achievements: docs['achievements.json'] as PreviewState['achievements'],
-    certificates: docs['certificates.json'] as PreviewState['certificates'],
     home: docs['home.json'] as PreviewState['home'],
     site: docs['site.json'] as PreviewState['site'],
   });

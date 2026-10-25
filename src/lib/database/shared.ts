@@ -19,6 +19,19 @@ export interface DatabaseContext {
   root: string;
   /** Where relative photo paths are resolved from, always ending with "/". */
   imageBase: string;
+  /**
+   * What gets written into pages for photos / links (differs from `root` / `imageBase` only when the database is read
+   * from a private GitHub repo by the build: then it is the site's own proxy path). Defaults to root / imageBase.
+   */
+  publicRoot?: string;
+  publicImageBase?: string;
+}
+
+/** Joins a (possibly root-relative, e.g. "/api/github/…/") base and a relative path. */
+export function joinBase(base: string, relative: string): string {
+  if (!base.startsWith('/')) return new URL(relative, base).href;
+  const url = new URL(relative, `http://base.invalid${base}`);
+  return `${url.pathname}${url.search}${url.hash}`;
 }
 
 export function isAbsoluteLink(value: string): boolean {
@@ -30,7 +43,7 @@ export function resolveLink(value: string | undefined, base: string): string | u
   return isAbsoluteLink(value) ? value : new URL(value, base).href;
 }
 
-export function buildContext(indexUrl: string, index: DatabaseIndex): DatabaseContext {
+export function buildContext(indexUrl: string, index: DatabaseIndex, publicRoot?: string): DatabaseContext {
   for (const key of PAGE_KEYS) {
     if (!index[key]) throw new Error(`database.json (${indexUrl}) has no "${key}" entry.`);
   }
@@ -41,7 +54,10 @@ export function buildContext(indexUrl: string, index: DatabaseIndex): DatabaseCo
   // from here on every entry is an absolute URL.
   const resolved = { ...index, imageBase } as DatabaseIndex;
   for (const key of PAGE_KEYS) resolved[key] = resolveLink(index[key], root) as string;
-  return { index: resolved, root, imageBase };
+  if (!publicRoot) return { index: resolved, root, imageBase };
+  const imageRelative = index.imageBase.endsWith('/') ? index.imageBase : `${index.imageBase}/`;
+  const publicImageBase = isAbsoluteLink(index.imageBase) ? imageBase : joinBase(publicRoot, imageRelative);
+  return { index: resolved, root, imageBase, publicRoot, publicImageBase };
 }
 
 export function assertAbsoluteIndexUrl(indexUrl: string): void {
@@ -55,11 +71,15 @@ export function assertAbsoluteIndexUrl(indexUrl: string): void {
 
 /** Turns the relative icon / profile / CV paths of a member into absolute URLs. */
 export function resolveMember(member: Member, ctx: DatabaseContext): Member {
+  const root = ctx.publicRoot ?? ctx.root;
+  const imageBase = ctx.publicImageBase ?? ctx.imageBase;
+  const resolve = (value: string | undefined, base: string) =>
+    !value || isAbsoluteLink(value) ? value : joinBase(base, value);
   return {
     ...member,
-    icon_link: resolveLink(member.icon_link, ctx.imageBase),
-    profile_link: resolveLink(member.profile_link, ctx.root),
-    cv_link: resolveLink(member.cv_link, ctx.root),
+    icon_link: resolve(member.icon_link, imageBase),
+    profile_link: resolve(member.profile_link, root),
+    cv_link: resolve(member.cv_link, root),
   };
 }
 

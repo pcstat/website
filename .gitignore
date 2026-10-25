@@ -66,3 +66,4 @@ CLAUDE.local.md
 tmp/
 temp/
 backup/
+.wrangler/

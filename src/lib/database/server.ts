@@ -5,7 +5,8 @@
  * swallowed: if the database cannot be reached the build FAILS, and the previous deployment keeps
  * serving — better than silently publishing a site with empty pages.
  */
-import { DATABASE_INDEX_URL } from '../config';
+import { DATABASE_INDEX_URL, DATABASE_PUBLIC_ROOT } from '../config';
+import { serverAuthHeaders } from '../github-source';
 import type {
   AchievementsSchema,
   Course,
@@ -34,7 +35,7 @@ async function fetchJsonOnce<T>(url: string): Promise<T> {
   // Next's data cache (which survives between builds) nor a CDN can hand back an older copy.
   const fresh = new URL(url);
   fresh.searchParams.set('t', String(Date.now()));
-  const res = await fetch(fresh, { cache: 'force-cache' });
+  const res = await fetch(fresh, { cache: 'force-cache', headers: serverAuthHeaders(url) });
   if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
   return (await res.json()) as T;
 }
@@ -66,7 +67,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 export async function getDatabaseContext(): Promise<DatabaseContext> {
   assertAbsoluteIndexUrl(DATABASE_INDEX_URL);
   const index = await fetchJson<DatabaseContext['index']>(DATABASE_INDEX_URL);
-  return buildContext(DATABASE_INDEX_URL, index);
+  return buildContext(DATABASE_INDEX_URL, index, DATABASE_PUBLIC_ROOT);
 }
 
 export async function getExecutives(): Promise<DatabaseSchema> {

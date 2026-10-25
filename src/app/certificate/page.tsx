@@ -4,7 +4,7 @@ import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { certificatesEnabled, findCertificate, RegistryUnreachableError } from '@/lib/certificates/client';
-import { formatDateLong, idCheck, normalizeId, type CertificateRecord } from '@/lib/certificates/core';
+import { formatDateLong, normalizeId, type CertificateRecord } from '@/lib/certificates/core';
 import { useSite } from '@/lib/site';
 
 type Result =
@@ -12,7 +12,6 @@ type Result =
   | { kind: 'empty' }
   | { kind: 'loading' }
   | { kind: 'found'; cert: CertificateRecord }
-  | { kind: 'typo' }
   | { kind: 'missing' }
   | { kind: 'error' };
 
@@ -35,14 +34,8 @@ function ResultView({ result }: { result: Result }) {
       return <span style={{ color: 'var(--ac)' }}>// Please enter a Certificate ID.</span>;
     case 'loading':
       return <span style={{ color: 'var(--mut)' }}>// Verifying...</span>;
-    case 'typo':
-      return (
-        <span style={{ color: '#f44' }}>
-          // This ID does not look right — it contains a typing mistake. Check it against the certificate (for example the letter O and the digit 0) and try again.
-        </span>
-      );
     case 'missing':
-      return <span style={{ color: '#f44' }}>// Invalid Certificate ID. No record found in our registry.</span>;
+      return <span style={{ color: '#f44' }}>// Certificate not found.</span>;
     case 'error':
       return (
         <span style={{ color: 'var(--ac)' }}>
@@ -98,8 +91,8 @@ function VerifyForm() {
         // Keep the ID in the address, so the verified result can be shared or printed as a link / QR code.
         window.history.replaceState(null, '', `?id=${encodeURIComponent(cert.id)}`);
       } else {
-        // Not found: tell a mistyped ID (the check character does not fit) from one that was never issued.
-        setResult({ kind: idCheck(raw) === 'invalid' ? 'typo' : 'missing' });
+        // Whatever the reason (never issued, mistyped, wrong set) the answer is the same: not found.
+        setResult({ kind: 'missing' });
       }
     } catch (err) {
       if (err instanceof RegistryUnreachableError) console.warn(err.message);

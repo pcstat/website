@@ -52,7 +52,7 @@ function CertificateContent() {
       try {
         // 1. The ID names its set, so this downloads one set file and finds the certificate in it.
         const cert = await findCertificate(id);
-        if (!cert) return { kind: 'error', message: 'Certificate not found. Check the ID and try again.' } as State;
+        if (!cert) return { kind: 'error', message: 'Certificate not found.' } as State;
         if (cert.status === 'revoked') return { kind: 'revoked', cert } as State;
         // 2. The design, 3. filled in with escaped values.
         const svg = await loadTemplate(cert.template);

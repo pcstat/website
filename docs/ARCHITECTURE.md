@@ -49,7 +49,7 @@ Club name, contact e-mail, sidebar entries, home / About / page-heading texts an
 |---|---|---|
 | `/`, `/exec`, `/alumni`, `/projects`, `/achievements`, `/events`, `/courses`, `/about` | Static HTML at build | build-time loaders |
 | `/profile?id=`, `/cv?id=` | Static shell, data in the browser | client loaders |
-| `/certificate`, `/certificate/view?id=` (and `/c/<ID>` → redirect, `public/_redirects`) | Static shell, data in the browser | `src/lib/certificates/client.ts`: the ID's set code selects `sets/<code>.json` in the certificates repo (read from GitHub); the SVG design comes from its `templates/` |
+| `/certificate`, `/certificate/view?id=` (and `/c/<ID>` → redirect, `public/_redirects`) | Static shell, data in the browser | `src/lib/certificates/client.ts`: the ID's set code selects `sets/<code>.json` in the certificates repo (read from GitHub through `functions/api/github`, which holds the token); the SVG design comes from its `templates/` |
 
 ## Theme
 

@@ -1,7 +1,8 @@
 /**
- * Browser loaders for certificates. They are read straight from the certificate registry repository on GitHub
- * (`certificates` in database.json; see CERTIFICATES_BASE_URL), never from the content database and never at build
- * time — a certificate is verifiable as soon as it is committed, without rebuilding this website.
+ * Browser loaders for certificates. They are read from the certificate registry (`certificates` in database.json; see
+ * CERTIFICATES_BASE_URL): from its deployment link when it has one, otherwise from its (possibly private) GitHub repo
+ * through this site's proxy (functions/api/github), never from the content database and never at build time — a
+ * certificate is verifiable as soon as it is committed, without rebuilding this website.
  *
  * Certificates are stored one file per SET ("PY26", "CONTEST26"), and an ID is SPC-<set code>-<person id>:
  *   sets/<code>.json       { code, certificate: <what every certificate of the set shares>, people: { <person id>: <the person> } }
@@ -10,6 +11,7 @@
  * (resolveCertificate) — nothing is searched, however many sets exist.
  */
 import { CERTIFICATES_BASE_URL } from '../config';
+import { PROXY_PREFIX } from '../github-source';
 import { resolveCertificate, setFileName, splitId, type CertificateRecord, type SetFile } from './core';
 
 export const certificatesEnabled = CERTIFICATES_BASE_URL !== '';
@@ -17,7 +19,7 @@ export const certificatesEnabled = CERTIFICATES_BASE_URL !== '';
 /** The registry's site cannot be reached at all (not deployed yet, wrong address in database.json, offline …). */
 export class RegistryUnreachableError extends Error {}
 
-const unreachable = () => new RegistryUnreachableError(`Could not reach the certificate registry at ${CERTIFICATES_BASE_URL} — does the repository in "certificates" of database.json exist, is it public and are its files pushed?`);
+const unreachable = () => new RegistryUnreachableError(`Could not reach the certificate registry at ${CERTIFICATES_BASE_URL} — does the repository in "certificates" of database.json exist, are its files pushed, and is the DATA_READ_TOKEN secret set if the repo is private?`);
 
 /** True when the registry can be read at all: templates/manifest.json exists in every registry (the repo itself or a built copy). */
 async function registryReachable(): Promise<boolean> {
@@ -30,14 +32,22 @@ async function registryReachable(): Promise<boolean> {
 
 const sets = new Map<string, Promise<SetFile | null>>();
 
-/** One set file; null when the registry has no such set (a 404 — an ID whose set was never created). */
-function loadSet(code: string): Promise<SetFile | null> {
-  const hit = sets.get(code);
+/** True when the registry is read through the site's proxy, which hands out one person of a set at a time. */
+const viaProxy = CERTIFICATES_BASE_URL.includes(PROXY_PREFIX);
+
+/**
+ * One set file; null when the registry has no such set (a 404 — an ID whose set was never created).
+ * Through the proxy the file only contains the one person asked for (`person`); from a deployment link it is whole.
+ */
+function loadSet(code: string, person: string): Promise<SetFile | null> {
+  const cacheKey = viaProxy ? `${code}/${person}` : code;
+  const hit = sets.get(cacheKey);
   if (hit) return hit;
   const loading = (async () => {
     let res: Response | null = null;
     try {
-      res = await fetch(`${CERTIFICATES_BASE_URL}sets/${setFileName(code)}`, { cache: 'no-cache' });
+      const query = viaProxy ? `?person=${encodeURIComponent(person)}` : '';
+      res = await fetch(`${CERTIFICATES_BASE_URL}sets/${setFileName(code)}${query}`, { cache: 'no-cache' });
     } catch {
       // The browser hides responses that lack the CORS header, and GitHub / Cloudflare Pages add that header only to
       // files that exist — so a set that does NOT exist can also end up here. Decided below.
@@ -51,8 +61,8 @@ function loadSet(code: string): Promise<SetFile | null> {
     }
     throw new Error(`HTTP ${res.status} loading certificate set ${code}`);
   })();
-  sets.set(code, loading);
-  loading.catch(() => sets.delete(code)); // a failed load must not stay cached
+  sets.set(cacheKey, loading);
+  loading.catch(() => sets.delete(cacheKey)); // a failed load must not stay cached
   return loading;
 }
 
@@ -64,7 +74,7 @@ export async function findCertificate(input: string): Promise<CertificateRecord 
   if (!certificatesEnabled) throw new Error('Certificate verification is not configured (see "certificates" in database.json).');
   const parts = splitId(input);
   if (!parts) return null;
-  const set = await loadSet(parts.set);
+  const set = await loadSet(parts.set, parts.person);
   return set ? resolveCertificate(set, parts.person) : null;
 }
 
